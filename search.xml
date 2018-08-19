@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title><![CDATA[Hello World]]></title>
-    <url>%2F2018%2F08%2F19%2Fhello-world%2F</url>
-    <content type="text"><![CDATA[Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub. Quick StartCreate a new post1$ hexo new "My New Post" More info: Writing Run server1$ hexo server More info: Server Generate static files1$ hexo generate More info: Generating Deploy to remote sites1$ hexo deploy More info: Deployment]]></content>
+    <title><![CDATA[关于我：一名来自双非学校的小混混]]></title>
+    <url>%2F2018%2F08%2F19%2F%E5%85%B3%E4%BA%8E%E6%88%91%EF%BC%9A%E4%B8%80%E5%90%8D%E5%8F%8C%E9%9D%9E%E7%9A%84%E5%B0%8F%E6%B7%B7%E6%B7%B7%2F</url>
+    <content type="text"><![CDATA[前言玩公众号有一两个月了，还没介绍过自己，这篇文章简单介绍下自己。 关于我本人姓林，名秋地，自称帅地，就读于广州某双非大学，专业是软件工程，现在是准大三，热爱编程。不过大一读的专业是与编程无关的，之后转专业到软件工程来，从此陷入码农的世界无法自拔。 刚到软件工程那会，感觉打acm特别有意思，心里对acm比赛充满了兴趣。于是买了各种算法的书籍，也去各大网站刷题。后来刷着刷着，说真的，那些题对于我来说，是真的难啊。一道题做了几个小时，有些题看答案也看了几个小时，没研究几道题一天就过去了。 慢慢着，发现自己并不适合打acm，加上自己参加那些牛客网什么的月赛和周周练之类的，每次都做的不大理想，于是就果断放弃打acm了，跑去好好学习其他技术。 写作历程之所以会选择写作，主要是基于以下原因： 用在刷题的时间少了，自然也就多了一些时间。个人也比较喜欢上各种博客论坛逛，在论坛里经常是只看不输出，慢慢着，萌生了去尝试写文章的想法。 从小就害怕写作文，看到一个自己心里挺懂的问题，但想要用语言把自己的想法有条理着描述出来，每次都把文字组织的很混乱。于是，也有点想去写文章锻炼一下自己的写作能力。 每次看技术书籍都看到很快，总觉得自己理解了，但每次要用的时候，发现忘了一干二净，然后经常听大佬们说，输出很重要 ….. 基于以上等原因，我开始了我的第一次写作。 最开始我是在CDNS写的文章。说真的，对于新手来说，写文章真的是太花时间了，一篇简单的文章，都能让我写四五个小时，而且写了之后也没啥人看。心想，要是我拿这四五个小时去看书，不知道还得看多少页的书呢。 大概写了几篇吧，就没去写了。写原创文章真的好累。 然后又过了几个月，心里又萌生了坚持把文章写下去的想法，加上在张哥(stormzhang)(不要告诉我你不知道帅张）的公众号里也一直强调未来写作的重要性，于是自己就真的想逼自己一把，坚持写下去。于是这次就搞了个公众号来写文章记录自己的学习历程。 说真的，自从关注了张哥的公众号之后，收获了不少思想层面上的东西，再次真的非常谢谢张哥。（张哥的公众号：stormzhang) 希望自己能够一直坚持下去….. 写作内容我的专业是软件工程，并且我现在主要用的语言是Java，所以分享的内容包括： 计算机网络。 数据库。 操作系统。 java相关的技术体系。 数据结构与算法。 Linux。 主要是自己一边学习，把所学的，感觉比较不错的，会用自己的理解写出来。 自己发现leetcode这个网站的题挺不错，而且感觉相比其他网站的题会容易一点，大佬们也经常建议把里面的题都过一遍。所以写作的内容也会分享在leetcode的刷题贴。 最后现在是准大三，毕业后的目标是bat等公司，虽然有点难。但，并非没机会。欢迎你的关注，与我一起成长。 完]]></content>
+      <categories>
+        <category>me</category>
+      </categories>
+      <tags>
+        <tag>about</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[聊一聊让我蒙蔽一晚上的各种常量池]]></title>
