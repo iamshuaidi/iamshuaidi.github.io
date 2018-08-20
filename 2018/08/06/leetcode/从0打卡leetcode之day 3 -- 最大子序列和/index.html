@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="jvm," />
+  <meta name="keywords" content="leetcode," />
 
 
 
@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="1.解释器与JIT编译器首先我们先来了解一下运行在虚拟机之上的解释器与JIT编译器。 当我们的虚拟机在运行一个java程序的时候，它可以采用两种方式来运行这个java程序：  采用解释器的形式，也就是说，在运行.class运行的时候，解释器一边把.class文件翻译成本地机器码，一边执行。显然这种一边解释翻译一边执行发方式，可以使我们立即启动和执行程序，省去编译的时间。不过由于需要一遍解释翻译，会">
-<meta name="keywords" content="jvm">
+<meta name="description" content="前言 深知自己在算法方面上很菜，于是打算通过打卡的方式，逼自己一把。每天在leetcode上打卡，并且把自己的想法分享出来。这将是一段漫长而又艰辛的旅程。如果你也想和我一起走上一条充满艰辛的航路，那么，别犹豫了，上车吧，一起学习一起探讨。   从零打卡leetcode之day 31234567题目描述：给定一个int类型的数组，求最大子序列的和。也就是说，从这个数组中截取一个子数组，这个子数组的元">
+<meta name="keywords" content="leetcode">
 <meta property="og:type" content="article">
-<meta property="og:title" content="JVM(1)---虚拟机在运行期的优化策略">
-<meta property="og:url" content="https://iamshuaidi.github.io/2018/08/10/JVM(1)---虚拟机在运行期的优化策略/index.html">
+<meta property="og:title" content="从0打卡leetcode之day 3 -- 最大子序列和">
+<meta property="og:url" content="https://iamshuaidi.github.io/2018/08/06/leetcode/从0打卡leetcode之day 3 -- 最大子序列和/index.html">
 <meta property="og:site_name" content="帅地">
-<meta property="og:description" content="1.解释器与JIT编译器首先我们先来了解一下运行在虚拟机之上的解释器与JIT编译器。 当我们的虚拟机在运行一个java程序的时候，它可以采用两种方式来运行这个java程序：  采用解释器的形式，也就是说，在运行.class运行的时候，解释器一边把.class文件翻译成本地机器码，一边执行。显然这种一边解释翻译一边执行发方式，可以使我们立即启动和执行程序，省去编译的时间。不过由于需要一遍解释翻译，会">
+<meta property="og:description" content="前言 深知自己在算法方面上很菜，于是打算通过打卡的方式，逼自己一把。每天在leetcode上打卡，并且把自己的想法分享出来。这将是一段漫长而又艰辛的旅程。如果你也想和我一起走上一条充满艰辛的航路，那么，别犹豫了，上车吧，一起学习一起探讨。   从零打卡leetcode之day 31234567题目描述：给定一个int类型的数组，求最大子序列的和。也就是说，从这个数组中截取一个子数组，这个子数组的元">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-08-20T07:31:19.988Z">
+<meta property="og:updated_time" content="2018-08-20T08:30:03.996Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="JVM(1)---虚拟机在运行期的优化策略">
-<meta name="twitter:description" content="1.解释器与JIT编译器首先我们先来了解一下运行在虚拟机之上的解释器与JIT编译器。 当我们的虚拟机在运行一个java程序的时候，它可以采用两种方式来运行这个java程序：  采用解释器的形式，也就是说，在运行.class运行的时候，解释器一边把.class文件翻译成本地机器码，一边执行。显然这种一边解释翻译一边执行发方式，可以使我们立即启动和执行程序，省去编译的时间。不过由于需要一遍解释翻译，会">
+<meta name="twitter:title" content="从0打卡leetcode之day 3 -- 最大子序列和">
+<meta name="twitter:description" content="前言 深知自己在算法方面上很菜，于是打算通过打卡的方式，逼自己一把。每天在leetcode上打卡，并且把自己的想法分享出来。这将是一段漫长而又艰辛的旅程。如果你也想和我一起走上一条充满艰辛的航路，那么，别犹豫了，上车吧，一起学习一起探讨。   从零打卡leetcode之day 31234567题目描述：给定一个int类型的数组，求最大子序列的和。也就是说，从这个数组中截取一个子数组，这个子数组的元">
 
 
 
@@ -120,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="https://iamshuaidi.github.io/2018/08/10/JVM(1)---虚拟机在运行期的优化策略/"/>
+  <link rel="canonical" href="https://iamshuaidi.github.io/2018/08/06/leetcode/从0打卡leetcode之day 3 -- 最大子序列和/"/>
 
 
 
 
 
-  <title>JVM(1)---虚拟机在运行期的优化策略 | 帅地</title>
+  <title>从0打卡leetcode之day 3 -- 最大子序列和 | 帅地</title>
   
 
 
@@ -297,7 +297,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://iamshuaidi.github.io/2018/08/10/JVM(1)---虚拟机在运行期的优化策略/">
+    <link itemprop="mainEntityOfPage" href="https://iamshuaidi.github.io/2018/08/06/leetcode/从0打卡leetcode之day 3 -- 最大子序列和/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="帅地">
@@ -314,7 +314,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">JVM(1)---虚拟机在运行期的优化策略</h1>
+          <h1 class="post-title" itemprop="name headline">从0打卡leetcode之day 3 -- 最大子序列和</h1>
         
 
         <div class="post-meta">
@@ -326,8 +326,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-08-10T00:00:00+08:00">
-                2018-08-10
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-08-06T00:00:00+08:00">
+                2018-08-06
               </time>
             
 
@@ -349,8 +349,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/jvm/" itemprop="url" rel="index">
-                    <span itemprop="name">jvm</span>
+                  <a href="/categories/leetcode刷题贴/" itemprop="url" rel="index">
+                    <span itemprop="name">leetcode刷题贴</span>
                   </a>
                 </span>
 
@@ -386,98 +386,60 @@
       
 
       
-        <h3 id="1-解释器与JIT编译器"><a href="#1-解释器与JIT编译器" class="headerlink" title="1.解释器与JIT编译器"></a>1.解释器与JIT编译器</h3><p>首先我们先来了解一下运行在虚拟机之上的<strong>解释器</strong>与<strong>JIT编译器</strong>。</p>
-<p>当我们的虚拟机在运行一个java程序的时候，它可以采用两种方式来运行这个java程序：</p>
-<ol>
-<li>采用解释器的形式，也就是说，在运行.class运行的时候，解释器一边把.class文件翻译成<strong>本地机器码</strong>，一边执行。显然这种一边解释翻译一边执行发方式，可以使我们立即启动和执行程序，省去编译的时间。不过由于需要一遍解释翻译，会让程序的执行速度比较慢。</li>
-<li>采用JIT编译器的方式：注意，JIT编译器是把.class文件翻译成<strong>本地机器码</strong>，而javac编译器是把.java源文件编译成.class文件。如果采用JIT编译器的方式则是在启动运行一个程序的时候，先把.class文件全部翻译成<strong>本地机器码</strong>，然后再来执行，显然，这种方式在执行的时候由于不用对.clasa文件进行翻译，所以执行的速度会比较快。当然，代价就是我们需要花销一定的时间来把字节码翻译成<strong>本地机器码</strong>。这样，程序在启动的时候，会有更多的延迟。</li>
-</ol>
-<p>这两种方式可以说是各有优势，虚拟机(特指HotSpot虚拟机)在执行的时候，一般会采用两种方式结合的策略。</p>
-<p>也就是说，在程序执行的时候，有些代码采用<strong>解释器</strong>的方式，有些代码采用<strong>编译器</strong>，称之为<strong>即时编译</strong>。一般我们会对<strong>热点代码</strong>采用编译器的方式。</p>
-<h3 id="2-编译对象与触发条件"><a href="#2-编译对象与触发条件" class="headerlink" title="2.编译对象与触发条件"></a>2.编译对象与触发条件</h3><p>上面已经说了，运行过程中，如果遇到<strong>热点代码</strong>就会触发对该代码进行编译，编译成本地机器码。</p>
-<p>什么是热点代码？</p>
-<p><strong>热点代码</strong>主要有一下两类：</p>
-<ol>
-<li>被多次调用的方法。</li>
-<li>被多次执行的循环体。</li>
-</ol>
-<p>不过这里需要注意的是，由于循环体是存在方法之中的，尽管编译动作是由循环体触发的，但编译器仍然会以这个方法来作为编译的对象。</p>
-<h3 id="3-热点探测"><a href="#3-热点探测" class="headerlink" title="3.热点探测"></a>3.热点探测</h3><p>判断一段代码是不是热点代码，是不是需要触发即时编译，这样的行为我们称之为<strong>热点探测</strong>。热点探测判定有以下两种方式：</p>
-<ol>
-<li>基于采样的热点探测：这种方式虚拟机会周期性着检查各个线程的栈顶，如果发现某个方法经常出现在栈顶，那么这个方法就是<strong>热点方法</strong>。可能有人会问，所谓<strong>经常</strong>，那什么样才算经常，对于这个我只能告诉你，这个取决于你自己的设置，如果自己没有进行相应的设置的话，就采用虚拟机的默认设置。</li>
-<li>基于计数器的热点探测：这种方法我们会为每个方法设置一个<strong>计数器</strong>，统计方法被调用的次数，如果到达一定的次数，我们就把它当作是<strong>热点方法</strong>。</li>
-</ol>
-<p><strong>两种方法的优缺点</strong>：</p>
-<p>显然第一种方法在实现上是比较简单、高效的，但是缺点也很明显，精确度不高，容易受到线程阻塞等别的外界因素的干扰。</p>
-<p>第二种方式的统计结果会很精确，但需要为每个方法建立并维护一个计数器。实现上会相对复杂一点并且开销也会大点。</p>
-<p>不过，这里需要指出的是，我们的HotSpot虚拟机采用的是<strong>基于计数器</strong>的方式。</p>
-<blockquote>
-<p>说明：虚拟机在执行方法的时候，会先判断该方法是否存在已经编译好的版本，如果存在，则执行编译好的<strong>本地机器码</strong>，否则，采用一边解释一边编译的方式。</p>
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><blockquote>
+<p>深知自己在算法方面上很菜，于是打算通过打卡的方式，逼自己一把。每天在leetcode上打卡，并且把自己的想法分享出来。这将是一段漫长而又艰辛的旅程。如果你也想和我一起走上一条充满艰辛的航路，那么，别犹豫了，上车吧，一起学习一起探讨。</p>
 </blockquote>
-<h3 id="4-编译优化技术"><a href="#4-编译优化技术" class="headerlink" title="4.编译优化技术"></a>4.编译优化技术</h3><p>先看一段代码：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">int a = 1;</span><br><span class="line">if(false)&#123;</span><br><span class="line">    System.out.println(&quot;无用代码&quot;);</span><br><span class="line">&#125;</span><br><span class="line">int b = 2;</span><br></pre></td></tr></table></figure>
-<p>对于这段代码，我们都知道是if语句体里面的代码是一定不可能会被执行到的，也就是说，这实际上是一段一点用处也没有的代码，在执行时只能浪费判断时间。</p>
-<p>实际上，对于我们书写的代码，编译器在编译的时候是会进行优化的。对于上面的代码，编译优化之后会变成这样：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">int a = 1;</span><br><span class="line">int b = 2;</span><br></pre></td></tr></table></figure>
-<p>那段无用的代码会被消除掉。</p>
-<h4 id="各种编译优化策略"><a href="#各种编译优化策略" class="headerlink" title="各种编译优化策略"></a>各种编译优化策略</h4><p>我们刚才已经说了，对于有些被多次调用的方法或者循环体，虚拟机会先把他们编译成本地机器码。由于这些<strong>热点代码</strong>都是一些会被多次重复执行的代码，为了使得编译好的代码更加完美，运行的更快。编译器做了很多的编译优化策略，例如上面的无用代码消除就是其中的一种。</p>
-<p>下面我们来讲讲大概都有那些优化策略：</p>
-<p>大概预览一波：</p>
+<hr>
+<h4 id="从零打卡leetcode之day-3"><a href="#从零打卡leetcode之day-3" class="headerlink" title="从零打卡leetcode之day 3"></a>从零打卡leetcode之day 3</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">题目描述：</span><br><span class="line">给定一个int类型的数组，求最大子序列的和。</span><br><span class="line">也就是说，从这个数组中截取一个子数组，这个子数组的元素和最大。</span><br><span class="line"></span><br><span class="line">例如：</span><br><span class="line">-1 20 -4 14 -4 -2 </span><br><span class="line">这个数组的最大字序列和为30。即20 -4 14。</span><br></pre></td></tr></table></figure>
+<h3 id="解题"><a href="#解题" class="headerlink" title="解题"></a>解题</h3><p><strong>1.初级版解法</strong></p>
+<p>对于这道题，其实我们可以采取遍历所有可能的组合，然后再比较哪种组合的和最大。</p>
+<p>也就是说，我们可以找出所有子序列，然后逐个比较。代码如下。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">solve</span><span class="params">(<span class="keyword">int</span>[] arrs)</span></span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span> max = <span class="number">0</span>;<span class="comment">//用来存放目标子序列的和</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span> temp = <span class="number">0</span>;<span class="comment">//用来存每个子序列的和</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; arrs.length; i++)&#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> j = i; j &lt; arrs.length; j++)&#123;</span><br><span class="line">        </span><br><span class="line">            temp = <span class="number">0</span>;</span><br><span class="line">            </span><br><span class="line">            <span class="comment">//计算子序列的和</span></span><br><span class="line">            <span class="keyword">for</span>(<span class="keyword">int</span> k = <span class="number">0</span>; k &lt; arrs.length; k++)&#123;</span><br><span class="line">                temp += arrs[k];</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">//进行比较</span></span><br><span class="line">            <span class="keyword">if</span>(temp &gt; max)&#123;</span><br><span class="line">                max = temp;</span><br><span class="line">            &#125;</span><br><span class="line">            </span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> max;</span><br><span class="line">&#125;`</span><br></pre></td></tr></table></figure>
+<p>在这三个循环中，外面两个循环枚举出所有子序列，第三个循环计算子序列的和。</p>
+<p>看到三个for循环，时间复杂度的O(n3)。这速度，实在是太慢了。我们来优化优化。</p>
+<p><strong>2.进阶版</strong></p>
+<p>其实，你仔细看一下里面的那两层for循环，会发现其实可以把它们合并成一个for循环的。</p>
+<p>也就是说，我们可以在枚举所有子序列的过程中，是可以一边进行数据处理的。还是直接看代码好理解点。如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">solve2</span><span class="params">(<span class="keyword">int</span>[] arrs)</span></span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">int</span> max = <span class="number">0</span>; </span><br><span class="line">    </span><br><span class="line">    <span class="keyword">int</span> temp = <span class="number">0</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; arrs.length; i++)&#123;</span><br><span class="line">        </span><br><span class="line">        temp = <span class="number">0</span>;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> j = i; j &lt; arrs.length; j++)&#123;</span><br><span class="line">            </span><br><span class="line">            <span class="comment">//一边处理数据</span></span><br><span class="line">            temp += arrs[j];</span><br><span class="line">            </span><br><span class="line">            <span class="comment">//进行比较选择</span></span><br><span class="line">            </span><br><span class="line">            <span class="keyword">if</span>(max &lt; temp)&#123;</span><br><span class="line">                </span><br><span class="line">                max = temp;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> temp;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>该方法用了两个for循环，时间复杂度为O(n2)，相对来说好了一点。</p>
+<p><strong>3.再次优化进阶</strong></p>
+<p>这次，我们可以使用递归的思想来处理。递归最重要的就是要找到：</p>
 <ol>
-<li>公共子表达式消除。</li>
-<li>数组范围检查消除。</li>
-<li>方法内联。</li>
-<li>逃逸分析。</li>
+<li>递归的结束条件</li>
+<li>把问题分解成若干个子问题。</li>
 </ol>
-<p><strong>(1).公共子表达式消除</strong></p>
-<p>含义：如果一个表达式 E 已经计算过了，并且从先前的计算到现在 E 中的所有变量的值都没有发生变化，那个 E 的这次出现就成为了公共子表达式。对于这样的表示式，没有必要对它再次进行计算了，直接沿用之前的结果就可以了。</p>
-<p>我们来举个例子。例如</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">int d = (c * b) * 10 + a + (a + b * c);</span><br></pre></td></tr></table></figure>
-<p>这段代码到了即时编译器的手里，它会进行如下优化：</p>
-<p>表达式中有两个 b * c的表达式，并且在计算期间b与c的值并不会变。所以这条表达式可能会被视为：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">int d = E * 10 + a+ (a + E);</span><br></pre></td></tr></table></figure>
-<p>接着继续优化成</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">int d = E * 11 + a + a;</span><br></pre></td></tr></table></figure>
-<p>接着<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">int d = E * 11 + 2a;</span><br></pre></td></tr></table></figure></p>
-<p>这样，代码在执行的时候，就会节省了一些时间了。</p>
-<p><strong>(2).数组范围检查消除</strong></p>
-<p>我们知道，java是一门动态安全的语言，对数组的访问不像c/c++那样，可以采用指针指向一块可能不存在的区域。例如假如有一个数组arr[]，在java语言中访问数组arr[i]的时候，是会先进行上下界范围检查的，即先检查i是否满足i &gt;= 0 &amp;&amp; i &lt; arr.length这个条件。如果不满足则会抛出相应的异常。这种安全检查策略可以避免<strong>溢出</strong>。但每次数组访问都会进行这样一次检查无疑在速度性能上造成一定的影响。</p>
-<p>实际上，对于这样一种情况，编译器也是可以帮助我们做出相应的优化的。例如对于数组的下标是一个常量的，如arr[2]，只要在编译期根据数据流分析来确定arr.length的值，并判断下标‘2’并没有越界，这样在执行的时候就无需在判断了。</p>
-<p>更常见的情况是数组访问发生在循环体中，并且使用循环变量来进行数组的访问，对于这样的情况，只要编译器通过数据流就可以判断循环变量的取值范围是否在[0, arr.length)之内，如果是，那么整个循环中就可以节省很多次数组边界检测判断的操劳了。</p>
-<p>对于这些安全检查所消耗的时间，实际上，我们还可以采用另外一种策略–<strong>隐式异常处理</strong>。例如当我们在访问一个对象arr的属性arr.value的时候，没有优化之前虚拟机是这样处理的：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">if(arr != null)&#123;</span><br><span class="line">    return arr.value;</span><br><span class="line">&#125;else&#123;</span><br><span class="line">    throw new NollPointException();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>采用优化策略之后编程这样子：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">try&#123;</span><br><span class="line">    return arr.value;</span><br><span class="line">&#125;catch(segment_fault)&#123;</span><br><span class="line">    uncommon_trap();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>就是说，虚拟机会注册一个Segment Fault信号的异常处理器(uncommon_trap())，这样当arr不为空的时候，对value的访问可以省去对arr的判断。代价就是当arr为空时，必须转入到异常处理器中恢复并抛出NullPointException异常，这个过程会从用户态转到内核态中处理，结束后在回到用户态，速度远比一次判断空检查慢。当arr极少为null的时候，这样做是值得的，但假如arr经常为null时，那么会得不偿失。</p>
-<p>不过，虚拟机还是挺聪明的，它会根据运行期收集到的信息来自动选择最优方案。</p>
-<p><strong>(3).方法内联</strong></p>
-<p>先看一段代码</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public static void f(Object obj)&#123;</span><br><span class="line">    if)(obj != null)&#123;</span><br><span class="line">        System.out.println(&quot;do something&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public static void test(String[] args)&#123;</span><br><span class="line">    Object obj = null;</span><br><span class="line">    f(obj);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>对于这段代码，如果把两个方法结合在一起看，我们可以发现test()方法里面都是一些无用的代码。因为f(obj)这个方法的调用，没啥卵用。但是如果不做内联优化，后续尽管进行了无用代码的消除，也是无法发现任何无用代码的，因为如果把f(Object obj)和test(String[] args)两个发放分开看的话，我们就无法得只f(obj)是否有用了。</p>
-<p>内联优化后的代码可以是这样：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public static void f(Object obj)&#123;</span><br><span class="line">    if)(obj != null)&#123;</span><br><span class="line">        System.out.println(&quot;do something&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public static void test(String[] args)&#123;</span><br><span class="line">    Object obj = null;</span><br><span class="line">    //该方法直接不执行了</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><strong>(4).逃逸分析</strong></p>
-<p>逃逸分析是目前Java虚拟机比较前沿的优化技术，它并非是直接优化代码，而是为其他优化手段提供依据发分析技术。</p>
-<p>逃逸分析主要是对<strong>对象动态作用域</strong>进行分析：当一个对象在某个方法被定义后，它有可能被外部的其他方法所引用，例如作为参数传递给其他方法，称之为<strong>方法逃逸</strong>，也有可能被外部线程访问到，例如类变量，称之为<strong>线程逃逸</strong>。</p>
-<p>假如我们可以证明一个对象并不会发生逃逸的话，我们就可以通过一些方式对这个变量进行一些高效的优化了。如下所示：</p>
-<p><strong>1).栈上分配</strong></p>
-<p>我们都知道一个对象创建之后是放在<strong>堆</strong>上的，这个对象可以被其他线程所共享，并且我们知道在堆上的对象如果不再使用时，虚拟机的垃圾收集系统就会对它进行帅选并回收。但无论是<strong>回收</strong>还是<strong>帅选</strong>，都是需要花费时间的。</p>
-<p>但是假如我们知道这个对象不会逃逸的话，我们就可以直接在栈上对这个对象进行内存分配了，这样，这个对象所占用的内存空间就可以随进栈和出栈而自动被销毁了。这样，垃圾收集系统就可以省了很多帅选、销毁的时间了。</p>
-<p><strong>2).同步消除</strong></p>
-<p>线程同步本身是一个相对耗时的过程，如果我们能判断这个变量不会逃出线程的话，那么我们就可以对这个变量的同步措施进行消除了。</p>
-<p><strong>3).标量替换</strong></p>
-<p>什么是标量？</p>
-<p>当一个数据无法分解成更小的时候，我们称之为<strong>变量</strong>，例如像int,long,char等基本数据类型。相对地，如果一个变量可以分解成更小的，我们称之为<strong>聚合量</strong>，例如Java中的对象。</p>
-<p>假如这个对象不会发生逃逸。</p>
-<p>我们可以根据程序访问的情况，如果一个方法只是用到一个对象里面的若干个属性，我们在真正执行这个方法的时候，我们可以不创建这个对象，而是直接创建它那几个被使用到的变量来代替。这样，不仅可以节省内存以及时间，而且这些变量可以随出栈入栈而销毁。</p>
-<p>不过，对于编译器优化的技术还有很多，上面这几种算是比较典型的。</p>
-<p>本次讲解到这里。</p>
-<p><strong>完</strong></p>
-<p>参考书籍：深入Java虚拟机</p>
-<blockquote>
-<p>如果你习惯在微信公众号看技术文章<br>想要获取更多资源的同学<br>欢迎关注我的公众号：<strong>苦逼的码农</strong><br>每周不定时更新文章，同时更新自己算法刷题记录。</p>
-</blockquote>
-<p>煎熬了几分</p>
+<p>对于这道题，其实我们可以把序列分成左右两部分。那么，最大子序列和的位置会出现在以下三种情况：</p>
+<ol>
+<li>子序列完全在左半部分。</li>
+<li>子序列完全在右半部分。</li>
+<li>一部分在左，一部分在右。</li>
+</ol>
+<p>所以我们只要分别求出左半部分的最大子序列和、右半部分的最大子序列和(注意，问题已经转化为求左右两部分的最大子序列和了，也就是说问题被分解成若干子问题了)、以及跨越左右两部分的最大子序列和。最后比较三者之中哪个比较大就可以了。</p>
+<p>如何求解左半部分和右半部分的最大子序列？</p>
+<p>其实道理一样，把左半部分和右半部分再次分解左右两部分就可以了。</p>
+<p>那么，如何求解跨越左右两部分的最大子序列呢？</p>
+<p>其实只要求出包含左半部分中<strong>最右边元素的子序列的最大和</strong>，以及求出包含右半部分中<strong>最左边元素的子序列的最大和</strong>，然后让两者相加，即可求出跨域左右两部分的最大子序列和了。</p>
+<p>子问题已经分解出来了，那么递归的<strong>结束条件</strong>是什么？</p>
+<p>我们把数组分成左右两部分，其实当左右两部分只有一个元素时，递归结束。</p>
+<p>这道题的递归思路算是找出来了，不过，代码实现？假如你对递归不大熟悉的话，可能在实现上还是有那么点困难的。对于递归的学习，大家也可以看我写的关于递归与动态规划的几篇文章。</p>
+<p>我就直接抛代码了。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//递归版本</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">solve3</span><span class="params">(<span class="keyword">int</span>[] arrs, <span class="keyword">int</span> left, <span class="keyword">int</span> right)</span></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> max = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//表示只有一个元素，无需在分解</span></span><br><span class="line">    <span class="keyword">if</span>(left == right)&#123;</span><br><span class="line">        <span class="comment">//为什么？因为低于0的数肯定不可以是最大值的</span></span><br><span class="line">        <span class="comment">//大不了最大值为0</span></span><br><span class="line">        max = arrs[left] &gt;= <span class="number">0</span> ? arrs[left]:<span class="number">0</span>;</span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span> center = (left + right)/<span class="number">2</span>;</span><br><span class="line">        <span class="comment">//求解左半部分最大子序列</span></span><br><span class="line">        <span class="keyword">int</span> leftMax = solve3(arrs, left, center);</span><br><span class="line">        <span class="comment">//求解右半部分最大子序列</span></span><br><span class="line">        <span class="keyword">int</span> rightMax = solve3(arrs, center+<span class="number">1</span>, right);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//求解kua跨越左右两部分的最大子序列</span></span><br><span class="line">        <span class="comment">//1.求包含左部分最右元素的最大和</span></span><br><span class="line">        <span class="keyword">int</span> l = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">int</span> l_max = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = center; i &gt;= left; i--)&#123;</span><br><span class="line">            l += arrs[i];</span><br><span class="line">            <span class="keyword">if</span>(l &gt; l_max)&#123;</span><br><span class="line">                l_max = l;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//2.求包含右部分最左元素的最大和</span></span><br><span class="line">        <span class="keyword">int</span> r = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">int</span> r_max = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = center+<span class="number">1</span>; i &lt;= right; i++)&#123;</span><br><span class="line">            r += arrs[i];</span><br><span class="line">            <span class="keyword">if</span>(r &gt; r_max)&#123;</span><br><span class="line">                r_max = r;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//跨越左右两部分的最大子序列</span></span><br><span class="line">         max = l_max + r_max;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//取三者最大值</span></span><br><span class="line">        <span class="keyword">if</span>(max &lt; leftMax) max = leftMax;</span><br><span class="line">        <span class="keyword">if</span>(max &lt; rightMax) max = rightMax;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> max;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>递归求解方法的时间复杂度为O(nlgn)。这速度，比第一种做法，不知道快了几个级别….</p>
+<p>递归解法可以说是很快的了</p>
+<p>但是，等等，我还是不满意…</p>
+<p><strong>4.最终版:动态规划</strong></p>
+<p>接下来的最终版，时间复杂度可以缩减到O(n), 虽然说是采用了动态规划的思想，不过，我觉得你没学过动态规划也可以看懂。</p>
+<p>假如我给你<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span> <span class="number">2</span> -<span class="number">4</span> <span class="number">5</span> <span class="number">6</span></span><br></pre></td></tr></table></figure></p>
+<p>五个元素，你在计算前面三个元素的时候，即</p>
+<p>1 + 2 + -4 = -1</p>
+<p>发现前面三个元素的和是小于0的，那么，这个</p>
+<p>1 2 -4</p>
+<p>的子序列我们还要吗？显然，这个子序列的和都小于0了，我们是可以直接淘汰的。因为如果还要这个子序列的话，它和后面的5一相加，结果变成了4，我们还不如让我们的目标子序列直接从5开始呢。</p>
+<p>先看代码吧，可能反而会好理解点</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//基于动态规划的思想</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">solve4</span><span class="params">(<span class="keyword">int</span>[] arrs)</span></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> max = <span class="number">0</span>;<span class="comment">//存放目标子序列的最大值</span></span><br><span class="line">    <span class="keyword">int</span> temp = <span class="number">0</span>;<span class="comment">//存放子序列的最大值</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; arrs.length; i++)&#123;</span><br><span class="line">        temp += arrs[i];</span><br><span class="line">        <span class="keyword">if</span>(temp &gt; max)&#123;</span><br><span class="line">            max = temp;</span><br><span class="line">        &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">            <span class="comment">//如果这个子序列的值小于0，那么淘汰</span></span><br><span class="line">            <span class="comment">//从后面的子序列开始算起</span></span><br><span class="line">            <span class="keyword">if</span>(temp &lt; <span class="number">0</span>)&#123;</span><br><span class="line">                temp = <span class="number">0</span>;</span><br><span class="line">            &#125;</span><br><span class="line">         &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> max;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这道题不是leetcode上的题目，不过我觉得这道题很不错，所以拿出来分享给大家。</p>
+<p>如果你有什么不大清楚的，欢迎微信群里讨论，当然也可以直接来问我勒。欢迎转发让更多人加入打卡行列勒。</p>
+<p>如果这道题能对你有所帮助，不妨点个赞。哈哈</p>
 
       
     </div>
@@ -495,7 +457,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/jvm/" rel="tag"># jvm</a>
+            <a href="/tags/leetcode/" rel="tag"># leetcode</a>
           
         </div>
       
@@ -508,8 +470,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/08/08/从jvm角度看懂类初始化、方法重载、重写。/" rel="next" title="从jvm角度看懂类初始化、方法重载、重写。">
-                <i class="fa fa-chevron-left"></i> 从jvm角度看懂类初始化、方法重载、重写。
+              <a href="/2018/08/05/leetcode/从零打卡leetcode之day 2--两数相加/" rel="next" title="从零打卡leetcode之day 2--两数相加">
+                <i class="fa fa-chevron-left"></i> 从零打卡leetcode之day 2--两数相加
               </a>
             
           </div>
@@ -518,8 +480,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2018/08/12/leetcode/从0打卡leetcode之day 5 ---两个排序数组的中位数/" rel="prev" title="从0打卡leetcode之day 5 ---两个排序数组的中位数">
-                从0打卡leetcode之day 5 ---两个排序数组的中位数 <i class="fa fa-chevron-right"></i>
+              <a href="/2018/08/08/从jvm角度看懂类初始化、方法重载、重写。/" rel="prev" title="从jvm角度看懂类初始化、方法重载、重写。">
+                从jvm角度看懂类初始化、方法重载、重写。 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -652,7 +614,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-解释器与JIT编译器"><span class="nav-number">1.</span> <span class="nav-text">1.解释器与JIT编译器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-编译对象与触发条件"><span class="nav-number">2.</span> <span class="nav-text">2.编译对象与触发条件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-热点探测"><span class="nav-number">3.</span> <span class="nav-text">3.热点探测</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-编译优化技术"><span class="nav-number">4.</span> <span class="nav-text">4.编译优化技术</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#各种编译优化策略"><span class="nav-number">4.1.</span> <span class="nav-text">各种编译优化策略</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#从零打卡leetcode之day-3"><span class="nav-number">1.0.1.</span> <span class="nav-text">从零打卡leetcode之day 3</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#解题"><span class="nav-number">1.1.</span> <span class="nav-text">解题</span></a></li></ol></li></ol></div>
             
 
           </div>
