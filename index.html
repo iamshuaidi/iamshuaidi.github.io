@@ -296,6 +296,399 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://iamshuaidi.github.io/2018/08/20/https的安全保卫战/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="帅地">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="帅地">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/08/20/https的安全保卫战/" itemprop="url">未命名</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-08-20T15:33:23+08:00">
+                2018-08-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <hr>
+<p>title: 一文看懂https如何保证数据传输的安全性的<br>date: 2018-7-30<br>tags: [https]<br>categories: [计算机网络]</p>
+<hr>
+<p>大家都知道，在客户端与服务器数据传输的过程中，http协议的传输是不安全的，也就是一般情况下http是<strong>明文</strong>传输的。但https协议的数据传输是安全的，也就是说https数据的传输是经过加密。</p>
+<p>在客户端与服务器这两个完全没有见过面的陌生人交流中，https是如何保证数据传输的安全性的呢？</p>
+<p>下面我将带大家一步步了解https是如何加密才得以保证数据传输的安全性的。我们先把客户端称为小客，服务器称为小服。然后一步步探索在小客与小服的交流中（就是一方请求一方响应）,https是如何保证他们的交流不会被中间人窃听的。</p>
+<h1 id="1-对称加密"><a href="#1-对称加密" class="headerlink" title="1. 对称加密"></a>1. 对称加密</h1><p>假如现在小客与小服要进行一次私密的对话，他们不希望这次对话内容被其他外人知道。可是，我们平时的数据传输过程中又是明文传输的，万一被某个黑客把他们的对话内容给窃取了，那就难受了。  </p>
+<p>为了解决这个问题，小服这家伙想到了一个方法来<strong>加密</strong>数据，让黑客看不到具体的内容。该方法是这样子的：  </p>
+<p>在每次数据传输之前，小服会先传输小客一把密钥，然后小服在之后给小客发消息的过程中，会用这把密钥对这些消息进行<strong>加密</strong>。小客在收到这些消息后，会用之前小服给的那把<strong>密钥</strong>对这些消息进行<strong>解密</strong>，这样，小客就能得到密文里面真正的数据了。如果小客要给小服发消息，也同样用这把<strong>密钥</strong>来对消息进行加密，小服收到后也用这把密钥进行解密。  这样，就保证了数据传输的安全性。如图所示:</p>
+<p><img src="https://i.imgur.com/GSoVDgS.png" alt=""></p>
+<p>这时，小服想着自己的策咯，还是挺得意的。</p>
+<p>可是，这时候问题来了。这个策略安全的前提是，小客拥有小服的那把密钥。可问题是，小服是以明文的方式把这把密钥传输给小客的，这个时候，如果黑客截取了这把密钥，那就难受了。小服与小客就算是加密了内容，在截取了密钥的黑客老哥眼里，这和明文没啥区别。  </p>
+<h1 id="2-非对称加密"><a href="#2-非对称加密" class="headerlink" title="2. 非对称加密"></a>2. 非对称加密</h1><p>小服还是挺聪明的，得意了一会之后，小服意识到了密钥会被截取这个问题。倔强的小服又想到了另外一种方法：用<strong>非对称加密</strong>的方法来加密数据。该方法是这样的：</p>
+<p>小服和小客都拥有两把钥匙，一把钥匙的公开的（全世界都知道也没关系），称之为<strong>公钥</strong>；而另一把钥匙是保密（也就是只有自己才知道），称之为<strong>私钥</strong>。并且，<strong>用公钥加密的数据，只有对应的私钥才能解密；用私钥加密的数据，只有对应的公钥才能解密。</strong></p>
+<p>所以在传输数据的过程中，小服在给小客传输数据的过程中，会用小客给他的<strong>公钥</strong>进行加密，然后小客收到后，再用自己的<strong>私钥</strong>进行解密。小客给小服发消息的时候，也一样会用小服给他的公钥进行加密，然后小服再用自己的私钥进行解密。    这样，数据就能安全着到达双方。如图：</p>
+<p><img src="https://i.imgur.com/aIktIxY.png" alt=""></p>
+<p>想着这么复杂的策略都能想出来，小服可是得意的不能在得意了…..</p>
+<p>看着那么得意的小服，小客这时心情就不得好了。还没等小服得意多久，小客就给它泼了一波冷水了。</p>
+<p>小客严肃着说：其实，你的这种方法也不是那么的安全啊。还是存在被黑客截取的危险啊。例如：</p>
+<p>你在给我传输公钥的过程中，如果黑客截取了你的公钥，并且拿着自己的公钥来<strong>冒充你的公钥</strong>来发给我。我收到公钥之后，会用公钥进行加密传输（这时用的公钥实际上是黑客的公钥）。黑客截取了加密的消息之后，可以用<strong>他自己的私钥</strong>来进行解密来获取消息内容。然后在用你（小服）的公钥来对消息进行加密，之后再发给你（小服）。 这样子，我们的对话内容还是被黑客给截取了啊。（倒过来小客给小服传输公钥的时候也一样）。</p>
+<p>我靠，这么精妙的想法居然也不行，小服这波，满脸无神。 </p>
+<h2 id="插讲下"><a href="#插讲下" class="headerlink" title="插讲下"></a>插讲下</h2><p>其实在传输数据的过程中，在速度上用<strong>对称加密</strong>的方法会比<strong>非对称加密</strong>的方法快很多。所以在传输数据的时候，一般不单单只用非对称加密这种方法(我们先假设非对称密码这种方法很安全)，而是会用<strong>非对称加密 + 对称加密</strong>这两种结合的方法。  你想啊，对于对称加密这种方法来说，之所以不安全是因为<strong>密钥</strong>在传输的过程中，被别人知道了。基于这个，我们可以用<strong>非对称加密</strong>方法来安全着传输<strong>密钥</strong>，之后在用对称加密的方法来传输消息内容（当然，我这里假定了非对称加密传输是安全的，下面会讲如何使之安全）。</p>
+<h1 id="数字证书"><a href="#数字证书" class="headerlink" title="数字证书"></a>数字证书</h1><p>我们回头想一下，是什么原因导致<strong>非对称加密</strong>这种方法的不安全性呢？它和<strong>对称加密</strong>方法的不安全性不同。非对称加密之所以不安全，是因为小客收到了公钥之后，无法确定这把公钥是否真的是小服。</p>
+<p>也就是说，我们需要找到一种策略来证明这把公钥就是小服的，而不是别人冒充的。</p>
+<p>为了解决这个问题，小服和小客通过绞尽脑汁想出了一种终极策略：<strong>数字证书</strong>：</p>
+<p>我们需要找到一个拥有公信力、大家都认可的<strong>认证中心(CA)</strong></p>
+<p>小服再给小客发公钥的过程中，会把公钥以及小服的个人信息通过<strong>Hash算法</strong>生成<strong>消息摘要</strong>。如图：</p>
+<p><img src="https://i.imgur.com/nySQRa4.png" alt=""></p>
+<p>为了防止摘要被人调换，小服还会用<strong>CA提供的私钥</strong>对消息摘要进行加密来形成数字签名。如图：</p>
+<p><img src="https://i.imgur.com/gLTxMqb.png" alt=""></p>
+<p>并且，最后还会把原来没Hash算法之前的信息和数字签名合并在一起，形成<strong>数字证书</strong>。如图：</p>
+<p><img src="https://i.imgur.com/Rzla3Se.png" alt=""></p>
+<p>当小客拿到这份数字证书之后，就会用<strong>CA提供的公钥</strong>来对数字证书里面的<strong>数字签名</strong>进行解密得到<strong>消息摘要</strong>，然后对数字证书里面<strong>小服的公钥和个人信息</strong>进行Hash得到另一份<strong>消息摘要</strong>，然后把两份消息摘要进行对比，如果一样，则证明这些东西确实是小服的，否则就不是。如图：</p>
+<p><img src="https://i.imgur.com/UYXxm0g.png" alt=""></p>
+<p>这时可能有人会有疑问，CA的公钥是怎么拿给小客的呢？小服又怎么有CA的私钥呢？其实，(有些)服务器在一开始就向认证中心申请了这些证书，而客户端里，也会内置这些证书。如图(此图来元阮一峰的网络日志)</p>
+<p><img src="https://i.imgur.com/0CVqeGc.png" alt=""></p>
+<p>当客户端收到服务器返回来的数据时，就会在内置的证书列表里，查看是否有有解开该数字证书的公钥，如果有则…..否则…..</p>
+<p>讲到这里，就大概结束了。希望对你有所帮助勒。如果有哪里写得不对的地方，欢迎大家指出。</p>
+<p>推荐阅读：</p>
+<p><a href="https://juejin.im/post/5b5a7be96fb9a04fa7755e9e" target="_blank" rel="noopener">一文读懂一台计算机是如何把数据传送给另外一台计算机的</a></p>
+<p>一文带你简要了解https是如何保证数据传输的安全性的。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://iamshuaidi.github.io/2018/08/20/线程安全(上)--彻底搞懂volatile关键字/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="帅地">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="帅地">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/08/20/线程安全(上)--彻底搞懂volatile关键字/" itemprop="url">线程安全(上)--彻底搞懂volatile关键字</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-08-20T00:00:00+08:00">
+                2018-08-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>对于volatile这个关键字，相信很多朋友都听说过，甚至使用过，这个关键字虽然字面上理解起来比较简单，但是要用好起来却不是一件容易的事。</p>
+<p>这篇文章将从多个方面来讲解volatile，让你对它更加理解。</p>
+<h2 id="计算机中为什么会出现线程不安全的问题"><a href="#计算机中为什么会出现线程不安全的问题" class="headerlink" title="计算机中为什么会出现线程不安全的问题"></a>计算机中为什么会出现线程不安全的问题</h2><p>volatile既然是与线程安全有关的问题，那我们先来了解一下计算机在处理数据的过程中为什么会出现线程不安全的问题。</p>
+<p>大家都知道，计算机在执行程序时，每条指令都是在CPU中执行的，而执行指令过程中会涉及到数据的读取和写入。由于程序运行过程中的临时数据是存放在主存（物理内存）当中的，这时就存在一个问题，由于CPU执行速度很快，而从内存读取数据和向内存写入数据的过程跟CPU执行指令的速度比起来要慢的多，因此如果任何时候对数据的操作都要通过和内存的交互来进行，会大大降低指令执行的速度。</p>
+<p>为了处理这个问题，在CPU里面就有了高速缓存(Cache)的概念。当程序在运行过程中，会将运算需要的数据从主存复制一份到CPU的高速缓存当中，那么CPU进行计算时就可以直接从它的高速缓存读取数据和向其中写入数据，当运算结束之后，再将高速缓存中的数据刷新到主存当中。</p>
+<p>我举个简单的例子，比如cpu在执行下面这段代码的时候,</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">t = t + 1;</span><br></pre></td></tr></table></figure>
+<p>会先从高速缓存中查看是否有t的值，如果有，则直接拿来使用，如果没有，则会从主存中读取，读取之后会复制一份存放在高速缓存中方便下次使用。之后cup进行对t加1操作，然后把数据写入高速缓存，最后会把高速缓存中的数据刷新到主存中。</p>
+<p>这一过程在单线程运行是没有问题的，但是在多线程中运行就会有问题了。在多核CPU中，每条线程可能运行于不同的CPU中，因此每个线程运行时有自己的高速缓存（对单核CPU来说，其实也会出现这种问题，只不过是以线程调度的形式来分别执行的，本次讲解以多核cup为主）。这时就会出现同一个变量在两个高速缓存中的<strong>值</strong>不一致问题了。</p>
+<p>例如：</p>
+<p>两个线程分别读取了t的值，假设此时t的值为0，并且把t的值存到了各自的高速缓存中，然后线程1对t进行了加1操作，此时t的值为1，并且把t的值写回到主存中。但是线程2中高速缓存的值还是0，进行加1操作之后，t的值还是为1，然后再把t的值写回主存。</p>
+<p>此时，就出现了线程不安全问题了。</p>
+<h2 id="Java中的线程安全问题"><a href="#Java中的线程安全问题" class="headerlink" title="Java中的线程安全问题"></a>Java中的线程安全问题</h2><p>上面那种线程安全问题，可能对于不同的操作系统会有不同的处理机制，例如Windows操作系统和Linux的操作系统的处理方法可能会不同。</p>
+<p>我们都知道，Java是一种夸平台的语言，因此Java这种语言在处理线程安全问题的时候，会有自己的处理机制，例如volatile关键字，synchronized关键字，并且这种机制适用于各种平台。</p>
+<p>Java内存模型规定所有的变量都是存在主存当中（类似于前面说的物理内存），每个线程都有自己的工作内存（类似于前面的高速缓存）。线程对变量的所有操作都必须在工作内存中进行，而不能直接对主存进行操作。并且每个线程不能访问其他线程的工作内存。</p>
+<p>由于java中的每个线程有自己的工作空间，这种工作空间相当于上面所说的高速缓存，因此多个线程在处理一个<strong>共享变量</strong>的时候，就会出现线程安全问题。</p>
+<blockquote>
+<p>这里简单解释下<strong>共享变量</strong>，上面我们所说的t就是一个共享变量，也就是说，能够被多个线程访问到的变量，我们称之为共享变量。在java中共享变量包括实例变量，静态变量，数组元素。他们都被存放在堆内存中。</p>
+</blockquote>
+<h2 id="volatile关键字"><a href="#volatile关键字" class="headerlink" title="volatile关键字"></a>volatile关键字</h2><p>上面扯了一大堆，都没提到volatile关键字的作用，下面开始讲解volatile关键字是如何保证线程安全问题的。</p>
+<h4 id="可见性"><a href="#可见性" class="headerlink" title="可见性"></a>可见性</h4><h5 id="什么是可见性？"><a href="#什么是可见性？" class="headerlink" title="什么是可见性？"></a>什么是可见性？</h5><p>意思就是说，在多线程环境下，某个共享变量如果被其中一个线程给修改了，其他线程能够立即知道这个共享变量已经被修改了，当其他线程要读取这个变量的时候，最终会去内存中读取，而不是从自己的<strong>工作空间</strong>中读取</p>
+<p>例如我们上面说的，当线程1对t进行了加1操作并把数据写回到主存之后，线程2就会知道它自己工作空间内的t已经被修改了，当它要执行加1操作之后，就会去主存中读取。这样，两边的数据就能一致了。</p>
+<p>假如一个变量被声明为volatile，那么这个变量就具有了<strong>可见性</strong>的性质了。这就是volatile关键的作用之一了。</p>
+<h5 id="volatile保证变量可见性的原理"><a href="#volatile保证变量可见性的原理" class="headerlink" title="volatile保证变量可见性的原理"></a>volatile保证变量可见性的原理</h5><p>当一个变量被声明为volatile时，在编译成会变指令的时候，会多出下面一行：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0x00bbacde: lock add1 $0x0,(%esp);</span><br></pre></td></tr></table></figure>
+<p>这句指令的意思就是在寄存器执行一个加0的空操作。不过这条指令的前面有一个lock(锁)前缀。</p>
+<p>当处理器在处理拥有lock前缀的指令时：</p>
+<p>在之前的处理中，lock会导致传输数据的总线被锁定，其他处理器都不能访问总线，从而保证处理lock指令的处理器能够独享操作数据所在的内存区域，而不会被其他处理所干扰。</p>
+<p>但由于总线被锁住，其他处理器都会被堵住，从而影响了多处理器的执行效率。为了解决这个问题，在后来的处理器中，处理器遇到lock指令时不会再锁住总线，而是会检查数据所在的内存区域，如果该数据是在处理器的内部缓存中，则会锁定此缓存区域，处理完后把缓存写回到主存中，并且会利用<strong>缓存一致性协议</strong>来保证其他处理器中的缓存数据的一致性。</p>
+<h5 id="缓存一致性协议"><a href="#缓存一致性协议" class="headerlink" title="缓存一致性协议"></a>缓存一致性协议</h5><p>刚才我在说可见性的时候，说“如果一个共享变量被一个线程修改了之后，当其他线程要读取这个变量的时候，最终会去内存中读取，而不是从自己的<strong>工作空间</strong>中读取”，实际上是这样的：</p>
+<p>线程中的处理器会一直在总线上嗅探其内部缓存中的内存地址在其他处理器的操作情况，一旦嗅探到某处处理器打算修改其内存地址中的值，而该内存地址刚好也在自己的内部缓存中，那么处理器就会强制让自己对该缓存地址的无效。所以当该处理器要访问该数据的时候，由于发现自己缓存的数据无效了，就会去主存中访问。</p>
+<h4 id="有序性"><a href="#有序性" class="headerlink" title="有序性"></a>有序性</h4><p>实际上，当我们把代码写好之后，虚拟机不一定会按照我们写的代码的顺序来执行。例如对于下面的两句代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">int a = 1;</span><br><span class="line">int b = 2;</span><br></pre></td></tr></table></figure>
+<p>对于这两句代码，你会发现无论是先执行a = 1还是执行b = 2，都不会对a,b最终的值造成影响。所以虚拟机在编译的时候，是有可能把他们进行<strong>重排序</strong>的。</p>
+<p>为什么要进行重排序呢？</p>
+<p>你想啊，假如执行 int a = 1这句代码需要100ms的时间，但执行int b = 2这句代码需要1ms的时间，并且先执行哪句代码并不会对a,b最终的值造成影响。那当然是先执行int b = 2这句代码了。</p>
+<p>所以，虚拟机在进行代码编译优化的时候，对于那些改变顺序之后不会对最终变量的值造成影响的代码，是有可能将他们进行重排序的。</p>
+<p>更多代码编译优化可以看我写的另一篇文章：<br><a href="https://mp.weixin.qq.com/s/NHBSv6AmpsKTZPmhj_sU6A" target="_blank" rel="noopener">虚拟机在运行期对代码的优化策略</a></p>
+<p>那么重排序之后真的不会对代码造成影响吗？</p>
+<p>实际上，对于有些代码进行重排序之后，虽然对变量的值没有造成影响，但有可能会出现线程安全问题的。具体请看下面的代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">public class NoVisibility&#123;</span><br><span class="line">    private static boolean ready;</span><br><span class="line">    private static int number;</span><br><span class="line">    </span><br><span class="line">    private static class Reader extends Thread&#123;</span><br><span class="line">        public void run()&#123;</span><br><span class="line">        while(!ready)&#123;</span><br><span class="line">            Thread.yield();</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(number);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">    public static void main(String[] args)&#123;</span><br><span class="line">        new Reader().start();</span><br><span class="line">        number = 42;</span><br><span class="line">        ready = true;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这段代码最终打印的一定是42吗？如果没有重排序的话，打印的确实会是42，但如果number = 42和ready = true被进行了重排序，颠倒了顺序，那么就有可能打印出0了，而不是42。（因为number的初始值会是0).</p>
+<p>因此，重排序是有可能导致线程安全问题的。</p>
+<p>如果一个变量被声明volatile的话，那么这个变量不会被进行重排序，也就是说，虚拟机会保证这个变量之前的代码一定会比它先执行，而之后的代码一定会比它慢执行。</p>
+<p>例如把上面中的number声明为volatile，那么number = 42一定会比ready = true先执行。</p>
+<blockquote>
+<p>不过这里需要注意的是，虚拟机只是保证这个变量之前的代码一定比它先执行，但并没有保证这个变量之前的代码不可以重排序。之后的也一样。</p>
+</blockquote>
+<p>volatile关键字能够保证代码的<strong>有序性</strong>，这个也是volatile关键字的作用。</p>
+<p>总结一下，一个被volatile声明的变量主要有以下两种特性保证保证线程安全。</p>
+<ol>
+<li>可见性。</li>
+<li>有序性。</li>
+</ol>
+<h4 id="volatile真的能完全保证一个变量的线程安全吗？"><a href="#volatile真的能完全保证一个变量的线程安全吗？" class="headerlink" title="volatile真的能完全保证一个变量的线程安全吗？"></a>volatile真的能完全保证一个变量的线程安全吗？</h4><p>我们通过上面的讲解，发现volatile关键字还是挺有用的，不但能够保证变量的可见性，还能保证代码的有序性。</p>
+<p>那么，它真的能够保证一个变量在多线程环境下都能被正确的使用吗？</p>
+<p>答案是否定的。原因是因为Java里面的运算并非是<strong>原子操作</strong>。</p>
+<h5 id="原子操作"><a href="#原子操作" class="headerlink" title="原子操作"></a>原子操作</h5><p><strong>原子操作</strong>：即一个操作或者多个操作 要么全部执行并且执行的过程不会被任何因素打断，要么就都不执行。</p>
+<p>也就是说，处理器要嘛把这组操作全部执行完，中间不允许被其他操作所打断，要嘛这组操作不要执行。</p>
+<p>刚才说Java里面的运行并非是原子操作。我举个例子，例如这句代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">int a = b + 1;</span><br></pre></td></tr></table></figure>
+<p>处理器在处理代码的时候，需要处理以下三个操作：</p>
+<ol>
+<li>从内存中读取b的值。</li>
+<li>进行a = b + 1这个运算</li>
+<li>把a的值写回到内存中</li>
+</ol>
+<p>而这三个操作处理器是不一定就会连续执行的，有可能执行了第一个操作之后，处理器就跑去执行别的操作的。</p>
+<h5 id="证明volatile无法保证线程安全的例子"><a href="#证明volatile无法保证线程安全的例子" class="headerlink" title="证明volatile无法保证线程安全的例子"></a>证明volatile无法保证线程安全的例子</h5><p>由于Java中的运算并非是原子操作，所以导致volatile声明的变量无法保证线程安全。</p>
+<p>对于这句话，我给大家举个例子。代码如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">public class Test&#123;</span><br><span class="line">    public static volatile int t = 0;</span><br><span class="line">    </span><br><span class="line">    public static void main(String[] args)&#123;</span><br><span class="line">    </span><br><span class="line">        Thread[] threads = new Thread[10];</span><br><span class="line">        for(int i = 0; i &lt; 10; i++)&#123;</span><br><span class="line">            //每个线程对t进行1000次加1的操作</span><br><span class="line">            threads[i] new Thread(new Runnable()&#123;</span><br><span class="line">                @Override</span><br><span class="line">                public void run()&#123;</span><br><span class="line">                    for(int j = 0; j &lt; 1000; j++)&#123;</span><br><span class="line">                        t = t + 1;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;);</span><br><span class="line">            threads[i].start();</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        //等待所有累加线程都结束</span><br><span class="line">        while(Thread.activeCount() &gt; 1)&#123;</span><br><span class="line">            Thread.yield();</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        //打印t的值</span><br><span class="line">        System.out.println(t);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>最终的打印结果会是1000 * 10 = 10000吗？答案是否定的。</p>
+<p>问题就出现在t = t + 1这句代码中。我们来分析一下</p>
+<p>例如：</p>
+<p>线程1读取了t的值，假如t = 0。之后线程2读取了t的值，此时t = 0。</p>
+<p>然后线程1执行了加1的操作，此时t = 1。但是这个时候，处理器还没有把t = 1的值写回主存中。这个时候处理器跑去执行线程2，注意，刚才线程2已经读取了t的值，所以这个时候并不会再去读取t的值了，所以此时t的值还是0，然后线程2执行了对t的加1操作，此时t =1 。</p>
+<p>这个时候，就出现了线程安全问题了，两个线程都对t执行了加1操作，但t的值却是1。所以说，volatile关键字并不一定能够保证变量的安全性。</p>
+<h4 id="什么情况下volatile能够保证线程安全"><a href="#什么情况下volatile能够保证线程安全" class="headerlink" title="什么情况下volatile能够保证线程安全"></a>什么情况下volatile能够保证线程安全</h4><p>刚才虽然说，volatile关键字不一定能够保证线程安全的问题，其实，在大多数情况下volatile还是可以保证变量的线程安全问题的。所以，在满足以下两个条件的情况下，volatile就能保证变量的线程安全问题：</p>
+<ol>
+<li>运算结果并不依赖变量的当前值，或者能够确保只有单一的线程修改变量的值。</li>
+<li>变量不需要与其他状态变量共同参与不变约束。</li>
+</ol>
+<p>讲到这里，关于volatile关键字的就算讲完了。如果有哪里讲的不对的地方，非常欢迎你的指点。下篇应该会讲synchronize关键字。</p>
+<p><strong>完</strong></p>
+<p>参考书籍：</p>
+<ol>
+<li>深入理解Java虚拟机(JVM高级特性与最佳实践)。</li>
+<li>Java并非编程实战</li>
+</ol>
+<blockquote>
+<p>关注公众号：<strong>苦逼的码农</strong>，获取更多原创文章，后台回复”礼包”送你一份资源大礼包。</p>
+</blockquote>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://iamshuaidi.github.io/2018/08/19/关于我：一名双非的小混混/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -715,6 +1108,437 @@
 
 
     
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://iamshuaidi.github.io/2018/08/10/JVM(1)---虚拟机在运行期的优化策略/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="帅地">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="帅地">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/08/10/JVM(1)---虚拟机在运行期的优化策略/" itemprop="url">JVM(1)---虚拟机在运行期的优化策略</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-08-10T00:00:00+08:00">
+                2018-08-10
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/jvm/" itemprop="url" rel="index">
+                    <span itemprop="name">jvm</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="1-解释器与JIT编译器"><a href="#1-解释器与JIT编译器" class="headerlink" title="1.解释器与JIT编译器"></a>1.解释器与JIT编译器</h3><p>首先我们先来了解一下运行在虚拟机之上的<strong>解释器</strong>与<strong>JIT编译器</strong>。</p>
+<p>当我们的虚拟机在运行一个java程序的时候，它可以采用两种方式来运行这个java程序：</p>
+<ol>
+<li>采用解释器的形式，也就是说，在运行.class运行的时候，解释器一边把.class文件翻译成<strong>本地机器码</strong>，一边执行。显然这种一边解释翻译一边执行发方式，可以使我们立即启动和执行程序，省去编译的时间。不过由于需要一遍解释翻译，会让程序的执行速度比较慢。</li>
+<li>采用JIT编译器的方式：注意，JIT编译器是把.class文件翻译成<strong>本地机器码</strong>，而javac编译器是把.java源文件编译成.class文件。如果采用JIT编译器的方式则是在启动运行一个程序的时候，先把.class文件全部翻译成<strong>本地机器码</strong>，然后再来执行，显然，这种方式在执行的时候由于不用对.clasa文件进行翻译，所以执行的速度会比较快。当然，代价就是我们需要花销一定的时间来把字节码翻译成<strong>本地机器码</strong>。这样，程序在启动的时候，会有更多的延迟。</li>
+</ol>
+<p>这两种方式可以说是各有优势，虚拟机(特指HotSpot虚拟机)在执行的时候，一般会采用两种方式结合的策略。</p>
+<p>也就是说，在程序执行的时候，有些代码采用<strong>解释器</strong>的方式，有些代码采用<strong>编译器</strong>，称之为<strong>即时编译</strong>。一般我们会对<strong>热点代码</strong>采用编译器的方式。</p>
+<h3 id="2-编译对象与触发条件"><a href="#2-编译对象与触发条件" class="headerlink" title="2.编译对象与触发条件"></a>2.编译对象与触发条件</h3><p>上面已经说了，运行过程中，如果遇到<strong>热点代码</strong>就会触发对该代码进行编译，编译成本地机器码。</p>
+<p>什么是热点代码？</p>
+<p><strong>热点代码</strong>主要有一下两类：</p>
+<ol>
+<li>被多次调用的方法。</li>
+<li>被多次执行的循环体。</li>
+</ol>
+<p>不过这里需要注意的是，由于循环体是存在方法之中的，尽管编译动作是由循环体触发的，但编译器仍然会以这个方法来作为编译的对象。</p>
+<h3 id="3-热点探测"><a href="#3-热点探测" class="headerlink" title="3.热点探测"></a>3.热点探测</h3><p>判断一段代码是不是热点代码，是不是需要触发即时编译，这样的行为我们称之为<strong>热点探测</strong>。热点探测判定有以下两种方式：</p>
+<ol>
+<li>基于采样的热点探测：这种方式虚拟机会周期性着检查各个线程的栈顶，如果发现某个方法经常出现在栈顶，那么这个方法就是<strong>热点方法</strong>。可能有人会问，所谓<strong>经常</strong>，那什么样才算经常，对于这个我只能告诉你，这个取决于你自己的设置，如果自己没有进行相应的设置的话，就采用虚拟机的默认设置。</li>
+<li>基于计数器的热点探测：这种方法我们会为每个方法设置一个<strong>计数器</strong>，统计方法被调用的次数，如果到达一定的次数，我们就把它当作是<strong>热点方法</strong>。</li>
+</ol>
+<p><strong>两种方法的优缺点</strong>：</p>
+<p>显然第一种方法在实现上是比较简单、高效的，但是缺点也很明显，精确度不高，容易受到线程阻塞等别的外界因素的干扰。</p>
+<p>第二种方式的统计结果会很精确，但需要为每个方法建立并维护一个计数器。实现上会相对复杂一点并且开销也会大点。</p>
+<p>不过，这里需要指出的是，我们的HotSpot虚拟机采用的是<strong>基于计数器</strong>的方式。</p>
+<blockquote>
+<p>说明：虚拟机在执行方法的时候，会先判断该方法是否存在已经编译好的版本，如果存在，则执行编译好的<strong>本地机器码</strong>，否则，采用一边解释一边编译的方式。</p>
+</blockquote>
+<h3 id="4-编译优化技术"><a href="#4-编译优化技术" class="headerlink" title="4.编译优化技术"></a>4.编译优化技术</h3><p>先看一段代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">int a = 1;</span><br><span class="line">if(false)&#123;</span><br><span class="line">    System.out.println(&quot;无用代码&quot;);</span><br><span class="line">&#125;</span><br><span class="line">int b = 2;</span><br></pre></td></tr></table></figure>
+<p>对于这段代码，我们都知道是if语句体里面的代码是一定不可能会被执行到的，也就是说，这实际上是一段一点用处也没有的代码，在执行时只能浪费判断时间。</p>
+<p>实际上，对于我们书写的代码，编译器在编译的时候是会进行优化的。对于上面的代码，编译优化之后会变成这样：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">int a = 1;</span><br><span class="line">int b = 2;</span><br></pre></td></tr></table></figure>
+<p>那段无用的代码会被消除掉。</p>
+<h4 id="各种编译优化策略"><a href="#各种编译优化策略" class="headerlink" title="各种编译优化策略"></a>各种编译优化策略</h4><p>我们刚才已经说了，对于有些被多次调用的方法或者循环体，虚拟机会先把他们编译成本地机器码。由于这些<strong>热点代码</strong>都是一些会被多次重复执行的代码，为了使得编译好的代码更加完美，运行的更快。编译器做了很多的编译优化策略，例如上面的无用代码消除就是其中的一种。</p>
+<p>下面我们来讲讲大概都有那些优化策略：</p>
+<p>大概预览一波：</p>
+<ol>
+<li>公共子表达式消除。</li>
+<li>数组范围检查消除。</li>
+<li>方法内联。</li>
+<li>逃逸分析。</li>
+</ol>
+<p><strong>(1).公共子表达式消除</strong></p>
+<p>含义：如果一个表达式 E 已经计算过了，并且从先前的计算到现在 E 中的所有变量的值都没有发生变化，那个 E 的这次出现就成为了公共子表达式。对于这样的表示式，没有必要对它再次进行计算了，直接沿用之前的结果就可以了。</p>
+<p>我们来举个例子。例如</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">int d = (c * b) * 10 + a + (a + b * c);</span><br></pre></td></tr></table></figure>
+<p>这段代码到了即时编译器的手里，它会进行如下优化：</p>
+<p>表达式中有两个 b * c的表达式，并且在计算期间b与c的值并不会变。所以这条表达式可能会被视为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">int d = E * 10 + a+ (a + E);</span><br></pre></td></tr></table></figure>
+<p>接着继续优化成</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">int d = E * 11 + a + a;</span><br></pre></td></tr></table></figure>
+<p>接着<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">int d = E * 11 + 2a;</span><br></pre></td></tr></table></figure></p>
+<p>这样，代码在执行的时候，就会节省了一些时间了。</p>
+<p><strong>(2).数组范围检查消除</strong></p>
+<p>我们知道，java是一门动态安全的语言，对数组的访问不像c/c++那样，可以采用指针指向一块可能不存在的区域。例如假如有一个数组arr[]，在java语言中访问数组arr[i]的时候，是会先进行上下界范围检查的，即先检查i是否满足i &gt;= 0 &amp;&amp; i &lt; arr.length这个条件。如果不满足则会抛出相应的异常。这种安全检查策略可以避免<strong>溢出</strong>。但每次数组访问都会进行这样一次检查无疑在速度性能上造成一定的影响。</p>
+<p>实际上，对于这样一种情况，编译器也是可以帮助我们做出相应的优化的。例如对于数组的下标是一个常量的，如arr[2]，只要在编译期根据数据流分析来确定arr.length的值，并判断下标‘2’并没有越界，这样在执行的时候就无需在判断了。</p>
+<p>更常见的情况是数组访问发生在循环体中，并且使用循环变量来进行数组的访问，对于这样的情况，只要编译器通过数据流就可以判断循环变量的取值范围是否在[0, arr.length)之内，如果是，那么整个循环中就可以节省很多次数组边界检测判断的操劳了。</p>
+<p>对于这些安全检查所消耗的时间，实际上，我们还可以采用另外一种策略–<strong>隐式异常处理</strong>。例如当我们在访问一个对象arr的属性arr.value的时候，没有优化之前虚拟机是这样处理的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">if(arr != null)&#123;</span><br><span class="line">    return arr.value;</span><br><span class="line">&#125;else&#123;</span><br><span class="line">    throw new NollPointException();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>采用优化策略之后编程这样子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">try&#123;</span><br><span class="line">    return arr.value;</span><br><span class="line">&#125;catch(segment_fault)&#123;</span><br><span class="line">    uncommon_trap();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>就是说，虚拟机会注册一个Segment Fault信号的异常处理器(uncommon_trap())，这样当arr不为空的时候，对value的访问可以省去对arr的判断。代价就是当arr为空时，必须转入到异常处理器中恢复并抛出NullPointException异常，这个过程会从用户态转到内核态中处理，结束后在回到用户态，速度远比一次判断空检查慢。当arr极少为null的时候，这样做是值得的，但假如arr经常为null时，那么会得不偿失。</p>
+<p>不过，虚拟机还是挺聪明的，它会根据运行期收集到的信息来自动选择最优方案。</p>
+<p><strong>(3).方法内联</strong></p>
+<p>先看一段代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public static void f(Object obj)&#123;</span><br><span class="line">    if)(obj != null)&#123;</span><br><span class="line">        System.out.println(&quot;do something&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public static void test(String[] args)&#123;</span><br><span class="line">    Object obj = null;</span><br><span class="line">    f(obj);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>对于这段代码，如果把两个方法结合在一起看，我们可以发现test()方法里面都是一些无用的代码。因为f(obj)这个方法的调用，没啥卵用。但是如果不做内联优化，后续尽管进行了无用代码的消除，也是无法发现任何无用代码的，因为如果把f(Object obj)和test(String[] args)两个发放分开看的话，我们就无法得只f(obj)是否有用了。</p>
+<p>内联优化后的代码可以是这样：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public static void f(Object obj)&#123;</span><br><span class="line">    if)(obj != null)&#123;</span><br><span class="line">        System.out.println(&quot;do something&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public static void test(String[] args)&#123;</span><br><span class="line">    Object obj = null;</span><br><span class="line">    //该方法直接不执行了</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>(4).逃逸分析</strong></p>
+<p>逃逸分析是目前Java虚拟机比较前沿的优化技术，它并非是直接优化代码，而是为其他优化手段提供依据发分析技术。</p>
+<p>逃逸分析主要是对<strong>对象动态作用域</strong>进行分析：当一个对象在某个方法被定义后，它有可能被外部的其他方法所引用，例如作为参数传递给其他方法，称之为<strong>方法逃逸</strong>，也有可能被外部线程访问到，例如类变量，称之为<strong>线程逃逸</strong>。</p>
+<p>假如我们可以证明一个对象并不会发生逃逸的话，我们就可以通过一些方式对这个变量进行一些高效的优化了。如下所示：</p>
+<p><strong>1).栈上分配</strong></p>
+<p>我们都知道一个对象创建之后是放在<strong>堆</strong>上的，这个对象可以被其他线程所共享，并且我们知道在堆上的对象如果不再使用时，虚拟机的垃圾收集系统就会对它进行帅选并回收。但无论是<strong>回收</strong>还是<strong>帅选</strong>，都是需要花费时间的。</p>
+<p>但是假如我们知道这个对象不会逃逸的话，我们就可以直接在栈上对这个对象进行内存分配了，这样，这个对象所占用的内存空间就可以随进栈和出栈而自动被销毁了。这样，垃圾收集系统就可以省了很多帅选、销毁的时间了。</p>
+<p><strong>2).同步消除</strong></p>
+<p>线程同步本身是一个相对耗时的过程，如果我们能判断这个变量不会逃出线程的话，那么我们就可以对这个变量的同步措施进行消除了。</p>
+<p><strong>3).标量替换</strong></p>
+<p>什么是标量？</p>
+<p>当一个数据无法分解成更小的时候，我们称之为<strong>变量</strong>，例如像int,long,char等基本数据类型。相对地，如果一个变量可以分解成更小的，我们称之为<strong>聚合量</strong>，例如Java中的对象。</p>
+<p>假如这个对象不会发生逃逸。</p>
+<p>我们可以根据程序访问的情况，如果一个方法只是用到一个对象里面的若干个属性，我们在真正执行这个方法的时候，我们可以不创建这个对象，而是直接创建它那几个被使用到的变量来代替。这样，不仅可以节省内存以及时间，而且这些变量可以随出栈入栈而销毁。</p>
+<p>不过，对于编译器优化的技术还有很多，上面这几种算是比较典型的。</p>
+<p>本次讲解到这里。</p>
+<p><strong>完</strong></p>
+<p>参考书籍：深入Java虚拟机</p>
+<blockquote>
+<p>如果你习惯在微信公众号看技术文章<br>想要获取更多资源的同学<br>欢迎关注我的公众号：<strong>苦逼的码农</strong><br>每周不定时更新文章，同时更新自己算法刷题记录。</p>
+</blockquote>
+<p>煎熬了几分</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://iamshuaidi.github.io/2018/07/27/互联网协议/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="帅地">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="帅地">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/07/27/互联网协议/" itemprop="url">互联网协议</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-27T00:00:00+08:00">
+                2018-07-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/计算机网络/" itemprop="url" rel="index">
+                    <span itemprop="name">计算机网络</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="一文读懂一台计算机是如何把数据传送给另外一台计算机的"><a href="#一文读懂一台计算机是如何把数据传送给另外一台计算机的" class="headerlink" title="一文读懂一台计算机是如何把数据传送给另外一台计算机的"></a>一文读懂一台计算机是如何把数据传送给另外一台计算机的</h1><h1 id="题外话"><a href="#题外话" class="headerlink" title="题外话"></a>题外话</h1><p>好久没更新文章了，说真，写文章不难，但坚持原创写文章真的很难。主要是前阵子有其他事，一直没时间写。现在，又打了鸡血来坚持更新文章了，在此感谢那些一直关注着的读者。从今天起，我会每周坚持更新若干篇原创文章，当然，我说的“原创”文章并非所有东西都是原创的，是指参考了大量了资料之后，用自己的话描述总结出来，当然，会有一些总结性的话很类似，因此我觉得作者说的很清晰，才采用了这句话。虽然很花时间，但只要让你有所收获，那便是我坚持写下去动力。</p>
+<h1 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h1><p>上面说了一些题外话，哈哈。下面我们开始今天的知识点。</p>
+<p>互联网相隔n公里路的两台计算机，是如何进行数据的传送的呢？在成千上万台的计算机中，一台计算机是如何正确着找到另外一个计算机，并把数据传给它的呢？   </p>
+<p>学过计算机网络的同学可能知道，在这互联网中，计算机与计算机之间的数据传送，主要是基于各种“协议”串联起来的。不过今天要讲的，并不会详细去讲各种协议，而是通过各种简化之后，让你大概知道数据之间传送的原理。</p>
+<h1 id="模型"><a href="#模型" class="headerlink" title="模型"></a>模型</h1><p>互联网中数据的传送，其实分为好几层来处理数据的，每一层有它自己明确的功能。例如就像流水线生产一样，一部分人负责这部分的工作，处理完之后就把剩余的工作扔给另外一部分人来处理……</p>
+<p>对于互联网数据传送的分层模型，有分成七层的，有分成5层的，还有分成4层的。例如分成七层模型的如下(从上到下)：</p>
+<ul>
+<li>应用层</li>
+<li>表示层</li>
+<li>会话层</li>
+<li>传输层</li>
+<li>网络层</li>
+<li>数据链路层</li>
+<li>物理层</li>
+</ul>
+<p>七层中，越往下越靠近计算机底层，越往上越靠近用户。  </p>
+<p>不过，我们今天要讲的，是以分成五层的模型来讲。其分层如下图：</p>
+<p><img src="https://i.imgur.com/GOD8J29.png" alt=""></p>
+<p>相当于把应用层、表示层、会话层看成是一层的。接下来我们从下往上来一步一步讲，看看如何从一台计算机准确着传给另一台计算机的。 </p>
+<h1 id="一-物理层"><a href="#一-物理层" class="headerlink" title="一. 物理层"></a>一. 物理层</h1><p>一台计算机与另一台计算机要进行通信，第一件要做的事是什么？当然是要把这台计算机与另外的其他计算机连起来啊，例如可以通过光纤啊，电缆啊，双绞线啊等物体把他们联起来。然后才能进行通信，也就是说，，物理层负责把两台计算机连起来，然后在计算机之间传送0,1这样的电信号。</p>
+<h1 id="二-数据链路层"><a href="#二-数据链路层" class="headerlink" title="二. 数据链路层"></a>二. 数据链路层</h1><p>前面说了，物理层它只是单纯着负责在计算机之间传输0，1这样的电信号。假如这些0，1组合的传送毫无规则，计算机是解读不了的。因此，我们需要制定一套规则来进行0，1的传送。例如多少个电信号为一组啊，每一组信号应该如何标识才能让计算机读懂啊等。    </p>
+<p><strong>数据链路层</strong>工作在物理层之上，负责给这些0，1制定传送的规则，然后另一方再按照相应的规则来进行解读。</p>
+<h4 id="1-以太网协议"><a href="#1-以太网协议" class="headerlink" title="1. 以太网协议"></a>1. 以太网协议</h4><p>以太网协议规定，一组电信号构成一个数据包，把这个数据包称之为“桢”。每一个桢由<strong>标头(Head)</strong>和<strong>数据(Data)</strong>两部分组成。如下：</p>
+<p><img src="https://i.imgur.com/RIvRgcy.png" alt=""></p>
+<p>这个桢的最大长度是1518个字节，最小长度为64字节。假如需要传送的数据很大的话，就分成多个桢来进行传送。</p>
+<p>对于<strong>表头</strong>和<strong>数据</strong>这两个部分，他们存放的都是一些什么数据呢？我猜你眯着眼睛都能想到他们应该放什么数据。    毫无疑问，我们至少得知道这个桢是谁发送，发送给谁的等这些信息吧？所以<strong>标头</strong>部分主要是一些说明数据，例如发送者，接收者等信息。而<strong>数据</strong>部分则是这个数据包具体的，想给接受的内容。</p>
+<p>大家想一个问题，一个桢的长度是64~1518个字节，也就是说桢的长度不是固定的，那你觉得<strong>标头</strong>部分的字节长度是固定的吗？它当然是固定的啊，假如不是固定的，每个桢都是单独发的，那计算机怎么知道<strong>标头</strong>是几个字节，<strong>数据</strong>是几个字节。所以标头部分的字节是固定的，并且固定为18个字节。</p>
+<h4 id="2-MAC地址"><a href="#2-MAC地址" class="headerlink" title="2. MAC地址"></a>2. MAC地址</h4><p>把一台计算的的数据通过物理层和链路层发送给另一台计算机，究竟是谁发给谁的，计算机与计算机之间如何区分，，你总得给他们一个唯一的<strong>标识</strong>吧？</p>
+<p>这就是MAC地址，连入网络的每一个计算机都会有<strong>网卡</strong>接口，每一个网卡都会一个地址，这个地址就叫做<strong>MAC地址</strong>。计算机之间的数据传送，就是通过MAC地址来唯一寻找、传送的。MAC地址在网卡生产是就被唯一标识了。</p>
+<h4 id="3-广播与ARP协议"><a href="#3-广播与ARP协议" class="headerlink" title="3. 广播与ARP协议"></a>3. 广播与ARP协议</h4><p><img src="https://i.imgur.com/npyjWgp.png" alt=""></p>
+<p>如图，假如计算机A知道了计算机B的MAC地址，然后计算机A想要给计算机B传送数据，虽然计算机A知道了计算机B的MAC地址，可是它要怎么给它传送数据呢？计算机A不仅连着计算机B，而且计算机A也还连着其他的计算机。    虽然计算机A知道计算机B的MAC地址，可是计算机A是无法知道计算机B是分布在<strong>哪边路线</strong>上的。实际上，计算机A是通过<strong>广播</strong>的方式把数据发送给计算机B。在<strong>同一个子网中</strong>，计算机A要向计算机B发送一个数据包，这个数据包包含接收者的MAC地址。这个时候同一个子网中的计算机C,D也会收到这个数据包的，然后收到这个数据包的计算机，会把数据包的MAC地址取出来，与自身的MAC地址对比，如果两者相同，则接受这个数据包，否则就丢弃这个数据包。这种发送方式我们称之为<strong>广播</strong>,就像我们平时在广场上通过广播的形式呼叫某个人一样。  </p>
+<p>那么问题来了，计算机A是如何知道计算机B的MAC地址的呢？这个时候就得由<strong>ARP协议</strong>这个家伙来解决了，不过ARP协议会涉及到IP地址，不过我们下面才会扯到<strong>IP地址</strong>。因此我们先放着，就当作是有这么一个<strong>ARP协议</strong>，通过它我们可以知道子网中其他计算机的MAC地址。</p>
+<h1 id="三-网络层"><a href="#三-网络层" class="headerlink" title="三. 网络层"></a>三. 网络层</h1><p>上面我们有说到<strong>子网</strong>这个关键词，实际上我们所处的网络，是由无数个子网络构成的。广播的时候，也只有同一个子网里面的计算机能够收到。 假如没有子网这种划分的话，计算机A发一个数据包给计算机B,其他所有计算机也都能收到这个数据包，然后进行对比再舍弃。世界上有那么多它计算机，每一台计算机都能收到其他所有计算机的数据包，那就不得了了。那还不得奔溃。     因此产生了子网这么一个东西。</p>
+<p>那么问题来了，我们如何区分哪些MAC地址是属于同一个子网的呢？假如是同一个子网，那我们就用广播的形式把数据传送给对方，如果不是同一个子网的，我们就会把数据发给<strong>网关</strong>，让网关进行转发。</p>
+<p>为了解决这个问题我们引入了一套新的地址协议，这个地址协议能够帮助我们区分MAC地址是否处于同一个子网中。这也是<strong>网络层</strong>负责解决的问题。</p>
+<h4 id="1-IP协议"><a href="#1-IP协议" class="headerlink" title="1. IP协议"></a>1. IP协议</h4><p>这个协议就是IP协议，它所定义的地址，我们称之为IP地址。IP协议有两种版本，一种是IPv4,另一种是IPv6。不过我们目前大多数用的还是IPv4，我们现在也只讨论IPv4这个版本的协议。</p>
+<p>这个IP地址由32为的二进制数组成，我们一般把它分成4段的十进制表示，地址范围为0.0.0.0~255.255.255.255</p>
+<p>每一台想要联网的计算机都会有一个IP地址。这个IP地址被分为两部分，前面一部分代表<strong>网络部分</strong>，后面一部分代表<strong>主机部分</strong>。并且网络部分和主机部分的二进制位数是不固定的。</p>
+<p>假如两台计算机的网络部分是一模一样的，我们就说这两台计算机是<strong>处于同一个子网</strong>中。例如192.168.43.1和192.168.43.2,假如这两个IP地址的网络部分为24为，主机部分为8位。那么他们的网络部分都为192.168.43，所以他们处于同一个子网中。</p>
+<p>可是问题来了，你怎么知道网络部分是占几位。也就是说，单单从两台计算机的IP地址，我们是无法判断他们的是否处于同一个子网中的。</p>
+<p>这就引申出了另一个关键词————<strong>子码掩码</strong>。子码掩码和IP地址一样也是32位二进制数，不过它的网络部分规定全部为1，主机部分规定全部为0.也就是说，假如上面那两个IP地址的网络部分为24为，主机部分为8为的话，那他们的子码掩码都为11111111.11111111.11111111.00000000，即255.255.255.0。</p>
+<p>那有了子字码掩码，如何来判端IP地址是否处于同一个子网中呢。显然，知道了子码掩码，相当于我们知道了网络部分是几位，主机部分是几位。我们只需要把IP地址与它的子码掩码做<strong>与(and)</strong>运算，然后把各自的结果进行比较就行了，如果比较的结果相同，则代表是同一个子网，否则不是同一个子网。</p>
+<p>例如，192.168.43.1和192.168.43.2的子码掩码都为255.255.255.0，把IP与子码掩码相与，可以得到他们都为192.168.43.0，进而他们处于同一个子网中。</p>
+<h4 id="ARP协议"><a href="#ARP协议" class="headerlink" title="ARP协议"></a>ARP协议</h4><p>有了上面IP协议的知识，我们回来讲一下ARP协议。<br>有了两台计算机的IP地址，我们就可以判断出它们是否处于同一个子网之中。  假如他们处于同一个子网之中，计算机A要给计算机B发送数据时。我们可以通过ARP协议来得到计算机B的MAC地址。ARP协议也是通过广播的形式给同一个子网中的每台电脑发送一个数据包(当然，这个数据包会包含接收方的IP地址)。对方收到这个数据包之后，会取出IP地址与自身的对比，如果相同，则把自己的MAC地址回复给对方，否则就丢弃这个数据包。这样，计算机A就能知道计算机B的MAC地址了。</p>
+<p>可能有人会问，知道了MAC地址之后，发送数据是通过广播的形式发送，询问对方的MAC地址也是通过广播的形式来发送，那其他计算机怎么知道你是要传送数据还是要询问MAC地址呢？其实在询问MAC地址的数据包中，在对方的MAC地址这一栏中，填的是一个特殊的MAC地址，其他计算机看到这个特殊的MAC地址之后，就能知道广播想干嘛了。</p>
+<p>假如两台计算机的IP不是处于同一个子网之中，这个时候，我们就会把数据包发送给<strong>网关</strong>，然后让网关让我们进行转发传送 </p>
+<h4 id="DNS服务器"><a href="#DNS服务器" class="headerlink" title="DNS服务器"></a>DNS服务器</h4><p>这里再说一个问题，我们是如何知道对方计算机的IP地址的呢？这个问题可能有人会觉得很白痴，心想，当然是计算机的操作者来进行输入了。这没错，当我们想要访问某个网站的时候，我们可以输入IP来进行访问，但是我相信绝大多数人是输入一个<strong>网址域名</strong>的，例如访问百度是输入<a href="http://www.baidu.com这个域名。其实当我们输入这个域名时，会有一个叫做**DNS服务器**的家伙来帮我们解析这个域名，然后返回这个域名对应的IP给我们的。" target="_blank" rel="noopener">www.baidu.com这个域名。其实当我们输入这个域名时，会有一个叫做**DNS服务器**的家伙来帮我们解析这个域名，然后返回这个域名对应的IP给我们的。</a></p>
+<h1 id="四-传输层"><a href="#四-传输层" class="headerlink" title="四. 传输层"></a>四. 传输层</h1><p>虽然我们已经把数据成功从计算机A传送到计算机B了，可是，计算机B里面有各种各样的应用程序，计算机该如何知道这些数据是给谁的呢？</p>
+<p>这个时候，<strong>端口(Port)</strong>这个家伙就上场了，也就是说，我们在从计算机A传数据给计算表B的时候，还得指定一个端口，以供特定的应用程序来接受处理。<br>也就是说，传输层的功能就是建立<strong>端口到端口</strong>的通信。相比网络层的功能是建立<strong>主机到主机</strong>的通信。</p>
+<p>也就是说，有了IP和端口，我们就可以进行通信了。这个时候可能有人会说，我输入IP地址的时候并没有指定一个端口啊。其实呢，对于有些传输协议，已经有设定了一些默认端口了。例如http的传输默认端口是80，这些端口信息也会包含在数据包里的。</p>
+<p><strong>应用层</strong></p>
+<p>终于说到应用层了，应用层这一层最接近我们用户了。</p>
+<p>虽然我们收到了传输层传来的数据，可是这些传过来的数据五花八门，有html格式的，有mp4格式的，各种各样。你确定你能看的懂？</p>
+<p>因此我们需要指定这些数据的格式规则，收到后才好解读渲染。而<strong>应用层</strong>的功能，就是用来规定应用程序的数据格式的。</p>
+<p>五层模型至此讲到这里。对于有些层讲的比较简洁，就随便概况了一下。如果你想详细去了解，可以去买计算机网络相应的资料。希望我的讲解能让你对计算机之间数据的传输有个大概的了解。</p>
+<blockquote>
+</blockquote>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
   </section>
 
   
@@ -761,7 +1585,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-count">6</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -772,7 +1596,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-count">4</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -783,7 +1607,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-count">5</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

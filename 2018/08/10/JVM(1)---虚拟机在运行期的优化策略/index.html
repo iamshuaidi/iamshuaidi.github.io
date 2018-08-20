@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="java," />
+  <meta name="keywords" content="jvm," />
 
 
 
@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="在写之前我们先来看几个问题，假如你对这些问题已经很懂了的话，那大可不用看这篇文章，如果不大懂的话，那么可以看看我的想法。 问题1： 1234567891011public static void main(String[] args)&amp;#123;    String t1 = new String(&amp;quot;2&amp;quot;);    t1.intern();    String t2 = &amp;qu">
-<meta name="keywords" content="java">
+<meta name="description" content="1.解释器与JIT编译器首先我们先来了解一下运行在虚拟机之上的解释器与JIT编译器。 当我们的虚拟机在运行一个java程序的时候，它可以采用两种方式来运行这个java程序：  采用解释器的形式，也就是说，在运行.class运行的时候，解释器一边把.class文件翻译成本地机器码，一边执行。显然这种一边解释翻译一边执行发方式，可以使我们立即启动和执行程序，省去编译的时间。不过由于需要一遍解释翻译，会">
+<meta name="keywords" content="jvm">
 <meta property="og:type" content="article">
-<meta property="og:title" content="聊一聊让我蒙蔽一晚上的各种常量池">
-<meta property="og:url" content="https://iamshuaidi.github.io/2018/08/15/聊一聊让我蒙蔽一晚上的各种常量池/index.html">
+<meta property="og:title" content="JVM(1)---虚拟机在运行期的优化策略">
+<meta property="og:url" content="https://iamshuaidi.github.io/2018/08/10/JVM(1)---虚拟机在运行期的优化策略/index.html">
 <meta property="og:site_name" content="帅地">
-<meta property="og:description" content="在写之前我们先来看几个问题，假如你对这些问题已经很懂了的话，那大可不用看这篇文章，如果不大懂的话，那么可以看看我的想法。 问题1： 1234567891011public static void main(String[] args)&amp;#123;    String t1 = new String(&amp;quot;2&amp;quot;);    t1.intern();    String t2 = &amp;qu">
+<meta property="og:description" content="1.解释器与JIT编译器首先我们先来了解一下运行在虚拟机之上的解释器与JIT编译器。 当我们的虚拟机在运行一个java程序的时候，它可以采用两种方式来运行这个java程序：  采用解释器的形式，也就是说，在运行.class运行的时候，解释器一边把.class文件翻译成本地机器码，一边执行。显然这种一边解释翻译一边执行发方式，可以使我们立即启动和执行程序，省去编译的时间。不过由于需要一遍解释翻译，会">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-08-19T06:15:57.842Z">
+<meta property="og:updated_time" content="2018-08-20T07:31:19.988Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="聊一聊让我蒙蔽一晚上的各种常量池">
-<meta name="twitter:description" content="在写之前我们先来看几个问题，假如你对这些问题已经很懂了的话，那大可不用看这篇文章，如果不大懂的话，那么可以看看我的想法。 问题1： 1234567891011public static void main(String[] args)&amp;#123;    String t1 = new String(&amp;quot;2&amp;quot;);    t1.intern();    String t2 = &amp;qu">
+<meta name="twitter:title" content="JVM(1)---虚拟机在运行期的优化策略">
+<meta name="twitter:description" content="1.解释器与JIT编译器首先我们先来了解一下运行在虚拟机之上的解释器与JIT编译器。 当我们的虚拟机在运行一个java程序的时候，它可以采用两种方式来运行这个java程序：  采用解释器的形式，也就是说，在运行.class运行的时候，解释器一边把.class文件翻译成本地机器码，一边执行。显然这种一边解释翻译一边执行发方式，可以使我们立即启动和执行程序，省去编译的时间。不过由于需要一遍解释翻译，会">
 
 
 
@@ -120,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="https://iamshuaidi.github.io/2018/08/15/聊一聊让我蒙蔽一晚上的各种常量池/"/>
+  <link rel="canonical" href="https://iamshuaidi.github.io/2018/08/10/JVM(1)---虚拟机在运行期的优化策略/"/>
 
 
 
 
 
-  <title>聊一聊让我蒙蔽一晚上的各种常量池 | 帅地</title>
+  <title>JVM(1)---虚拟机在运行期的优化策略 | 帅地</title>
   
 
 
@@ -297,7 +297,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://iamshuaidi.github.io/2018/08/15/聊一聊让我蒙蔽一晚上的各种常量池/">
+    <link itemprop="mainEntityOfPage" href="https://iamshuaidi.github.io/2018/08/10/JVM(1)---虚拟机在运行期的优化策略/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="帅地">
@@ -314,7 +314,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">聊一聊让我蒙蔽一晚上的各种常量池</h1>
+          <h1 class="post-title" itemprop="name headline">JVM(1)---虚拟机在运行期的优化策略</h1>
         
 
         <div class="post-meta">
@@ -326,8 +326,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-08-15T00:00:00+08:00">
-                2018-08-15
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-08-10T00:00:00+08:00">
+                2018-08-10
               </time>
             
 
@@ -349,8 +349,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/" itemprop="url" rel="index">
-                    <span itemprop="name">java</span>
+                  <a href="/categories/jvm/" itemprop="url" rel="index">
+                    <span itemprop="name">jvm</span>
                   </a>
                 </span>
 
@@ -386,126 +386,98 @@
       
 
       
-        <p>在写之前我们先来看几个问题，假如你对这些问题已经很懂了的话，那大可不用看这篇文章，如果不大懂的话，那么可以看看我的想法。</p>
-<p>问题1：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] args)&#123;</span><br><span class="line">    String t1 = new String(&quot;2&quot;);</span><br><span class="line">    t1.intern();</span><br><span class="line">    String t2 = &quot;2&quot;;</span><br><span class="line">    System.out.println(t1 == t2);</span><br><span class="line">    </span><br><span class="line">    String t3 = new String(&quot;2&quot;) + new String(&quot;2&quot;);</span><br><span class="line">    t3.intern();</span><br><span class="line">    String t4 = &quot;22&quot;;</span><br><span class="line">    System.out.println(t3 == t4);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>答案输出：</p>
-<p>JDK1.6是 false false</p>
-<p>JDK1.7是 false true;</p>
-<p>问题2(把问题1的语句调换一下位置)</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] args)&#123;</span><br><span class="line">    String t1 = new String(&quot;2&quot;);</span><br><span class="line">    String t2 = &quot;2&quot;;</span><br><span class="line">    t1.intern();</span><br><span class="line">    System.out.println(t1 == t2);</span><br><span class="line">    </span><br><span class="line">    String t3 = new String(&quot;2&quot;) + new String(&quot;2&quot;);</span><br><span class="line">    String t4 = &quot;22&quot;;</span><br><span class="line">    t3.intern();</span><br><span class="line">    System.out.println(t3 == t4);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>答案输出：<br>false false</p>
-<p>对于这两个问题，看了几个人的博客，可谓百花齐放，越看越懵逼</p>
-<p>问题3</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] args)&#123;</span><br><span class="line">    Integer a = 1;</span><br><span class="line">    Integer b = 2;</span><br><span class="line">    Integer c = 3;</span><br><span class="line">    Integer d = 3;</span><br><span class="line">    Integer e = 321;</span><br><span class="line">    Integer f = 321;</span><br><span class="line">    Long g = 3L;</span><br><span class="line">    </span><br><span class="line">    System.out.println(c == d);</span><br><span class="line">    System.out.Println(e == f);</span><br><span class="line">    System.out.println(c == (a + b));</span><br><span class="line">    System.out.println(c.equals(a+b));</span><br><span class="line">    System.out.println(g == (a + b));</span><br><span class="line">    System.out.println(g.equals(a + b));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>答案输出：</p>
-<p>true</p>
-<p>false</p>
-<p>true</p>
-<p>true</p>
-<p>true</p>
-<p>false</p>
-<p>问题4：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">运行时常量池与字符串常量池是什么关系？包含？</span><br></pre></td></tr></table></figure>
-<p>在解决问题之前，我们先来简单了解一些常量池的一些知识点(大部分来源于周志明的深入Java虚拟机这本书)。</p>
-<h3 id="JVM中的几种常量池"><a href="#JVM中的几种常量池" class="headerlink" title="JVM中的几种常量池"></a>JVM中的几种常量池</h3><h4 id="1-class文件常量池"><a href="#1-class文件常量池" class="headerlink" title="1.class文件常量池"></a>1.class文件常量池</h4><p>在Class文件中除了有类的版本、字段、方法、接口等描述信息外，还有一项信息是<strong>常量池(Constant Pool Table)</strong>，用于存放编译期生成的各种字面量和符号引用。</p>
-<p>这里简单解释下字面量和符号引用</p>
-<p><strong>字面量</strong></p>
-<p>字面量类似与我们平常说的常量，主要包括：</p>
+        <h3 id="1-解释器与JIT编译器"><a href="#1-解释器与JIT编译器" class="headerlink" title="1.解释器与JIT编译器"></a>1.解释器与JIT编译器</h3><p>首先我们先来了解一下运行在虚拟机之上的<strong>解释器</strong>与<strong>JIT编译器</strong>。</p>
+<p>当我们的虚拟机在运行一个java程序的时候，它可以采用两种方式来运行这个java程序：</p>
 <ol>
-<li>文本字符串：就是我们在代码中能够看到的字符串，例如String a = “aa”。其中”aa”就是字面量。</li>
-<li>被final修饰的变量。</li>
+<li>采用解释器的形式，也就是说，在运行.class运行的时候，解释器一边把.class文件翻译成<strong>本地机器码</strong>，一边执行。显然这种一边解释翻译一边执行发方式，可以使我们立即启动和执行程序，省去编译的时间。不过由于需要一遍解释翻译，会让程序的执行速度比较慢。</li>
+<li>采用JIT编译器的方式：注意，JIT编译器是把.class文件翻译成<strong>本地机器码</strong>，而javac编译器是把.java源文件编译成.class文件。如果采用JIT编译器的方式则是在启动运行一个程序的时候，先把.class文件全部翻译成<strong>本地机器码</strong>，然后再来执行，显然，这种方式在执行的时候由于不用对.clasa文件进行翻译，所以执行的速度会比较快。当然，代价就是我们需要花销一定的时间来把字节码翻译成<strong>本地机器码</strong>。这样，程序在启动的时候，会有更多的延迟。</li>
 </ol>
-<p><strong>符号引用</strong></p>
-<p>主要包括以下常量：</p>
+<p>这两种方式可以说是各有优势，虚拟机(特指HotSpot虚拟机)在执行的时候，一般会采用两种方式结合的策略。</p>
+<p>也就是说，在程序执行的时候，有些代码采用<strong>解释器</strong>的方式，有些代码采用<strong>编译器</strong>，称之为<strong>即时编译</strong>。一般我们会对<strong>热点代码</strong>采用编译器的方式。</p>
+<h3 id="2-编译对象与触发条件"><a href="#2-编译对象与触发条件" class="headerlink" title="2.编译对象与触发条件"></a>2.编译对象与触发条件</h3><p>上面已经说了，运行过程中，如果遇到<strong>热点代码</strong>就会触发对该代码进行编译，编译成本地机器码。</p>
+<p>什么是热点代码？</p>
+<p><strong>热点代码</strong>主要有一下两类：</p>
 <ol>
-<li>类和接口和全限定名：例如对于String这个类，它的全限定名就是java/lang/String。</li>
-<li>字段的名称和描述符：所谓字段就是类或者接口中声明的变量，包括类级别变量（static)和实例级的变量。</li>
-<li>方法的名称和描述符。所谓描述符就相当于方法的<strong>参数类型+返回值类型</strong>。</li>
+<li>被多次调用的方法。</li>
+<li>被多次执行的循环体。</li>
 </ol>
-<h4 id="2-运行时常量池"><a href="#2-运行时常量池" class="headerlink" title="2.运行时常量池"></a>2.运行时常量池</h4><p>我们上面说的class文件中的常量池，它会在类加载后进入<strong>方法区</strong>中的运行时常量池。并且需要的注意的是，运行时常量池是全局共享的，多个类共用一个运行时常量池。并且class文件中常量池多个相同的字符串在运行时常量池只会存在一份。</p>
-<p>注意运行时常量池存在于<strong>方法区</strong>中。</p>
-<h4 id="3-字符串常量池"><a href="#3-字符串常量池" class="headerlink" title="3.字符串常量池"></a>3.字符串常量池</h4><p>看名字我们就可以知道字符串常量池会用来存放<strong>字符串</strong>，也就是说常量池中的文本字符串会在类加载时进入字符串常量池。</p>
-<p>那字符串常量池和运行时常量池是什么关系呢？上面我们说常量池中的字面量会在类加载后进入运行时常量池，其中字面量中有包括文本字符串，显然从这段文字我们可以知道字符串常量池存在于运行时常量池中。也就存在于<strong>方法区</strong>中。</p>
-<p>不过在周志明那本深入java虚拟机中有说到，到了JDK1.7时，字符串常量池就被移出了方法区，转移到了<strong>堆</strong>里了。</p>
-<p>那么我们可以推断，到了JDK1.7以及之后的版本中，运行时常量池并没有包含字符串常量池，运行时常量池存在于方法区中，而字符串常量池存在于<strong>堆</strong>中。</p>
-<p>说了这么多，现在我们开始来解决上面提出了问题。</p>
-<h4 id="解决问题"><a href="#解决问题" class="headerlink" title="解决问题"></a>解决问题</h4><p>问题1：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] args)&#123;</span><br><span class="line">    String t1 = new String(&quot;1&quot;);</span><br><span class="line">    t1.intern();</span><br><span class="line">    String t2 = &quot;1&quot;;</span><br><span class="line">    System.out.println(t1 == t2);</span><br><span class="line">    </span><br><span class="line">    String t3 = new String(&quot;2&quot;) + new String(&quot;2&quot;);</span><br><span class="line">    t3.intern();</span><br><span class="line">    String t4 = &quot;22&quot;;</span><br><span class="line">    System.out.println(t3 == t4);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>答案输出：</p>
-<p>JDK1.6是 false false。</p>
-<p>JDK1.7是 false true;</p>
-<p>在解决这个问题之前，我们先来看另外一道面试中经常会问到的问题。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">String t = new String(&quot;tt&quot;);</span><br></pre></td></tr></table></figure>
-<p>假如程序中只有这样一行代码，那么这行代码创建了几个对象？</p>
-<p>我们上面说过，”tt”属于字面量，那么它会在类加载之后存在于字符串常量池中，也就是说，在 String t = new String(“tt”)这句代码执行之前，字符串常量池就已经创建了”tt”这个字符串对象了，我们都知道，new这个关键字会在堆中创建一个对象。</p>
-<p>所以，这段代码创建了两个对象。一个在堆中，一个在字符串常量池中。</p>
-<p>那么下面这段代码又是创建了几个对象呢？</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">String t1 = new String(&quot;tt&quot;);</span><br><span class="line">String t2 = new String(&quot;tt&quot;);</span><br></pre></td></tr></table></figure>
-<p>答是这段代码创建了三个对象，我们上面说了，字符串常量池只会保存一份内容相同的字符串。也就是说，在这两句代码执行之前，字符串常量池就已经创建了内容为”tt”的对象了。这两句代码执行之后，又在堆中创建了两个，所以一共创建了三个。</p>
-<p>那么下面这段代码又是创建了几个对象？</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">String t = &quot;tt&quot;;</span><br></pre></td></tr></table></figure>
-<p>答是1个，在这段代码执行之前，字符串常量池已经创建了一个”tt”的对象，但由于这行代码并非用new的方法，所以虚拟机会在字符串常量池中寻找是否有内容为”tt”的字符串对象，如果有，则直接返回这个字符串的引用，所以最终结果只创建了一个对象。</p>
-<p>回到我们的问题，在这里我们先<strong>解释下String 的intern方法</strong>。</p>
-<p>例如我们调用了t.intern()。</p>
-<p>在JDK1.6的时候，调用了这个方法之后，虚拟机会在字符串常量池在查找是否有内容与”tt”相等的对象，如果有，则返回这个对象，如果没有，则会在字符串常量池中<strong>添加</strong>这个对象。注意，是把这个对象添加到字符串常量池。</p>
-<p>到了JDK1.7之后，如果调用了intern这个方法，虚拟机会在字符串常量池在查找是否有内容与”tt”相等的对象，如果有，则返回这个对象，如果没有。则会在堆中把这个对象的<strong>引用</strong>复制添加到字符串常量池中。注意，这个时候添加的是对象在堆中的引用。</p>
-<p><strong>现在开始来分析问题中的代码</strong></p>
-<p>t1 = new String(“1”)。</p>
-<p>这句代码执行之前，字符串常量池中已经有”t”这个对象，执行之后会在堆中也创建一个”t”的对象，<strong>此时t1指向的是堆中的对象</strong>。</p>
-<p>t1.intern();</p>
-<p>这句代码执行之后，会在字符串常量池寻早内容为”t”的对象，字符串常量池已经存在这个对象了，把这个对象返回(不过返回之后并没有变量来接收)。</p>
-<p>t2 = “1”。</p>
-<p>这句执行后会在字符串常量池查找内容为”t”的对象，字符串常量池已经有这个对象了，返回给t2，<strong>此时t2指向的是常量池中的对象</strong>。</p>
-<p>一个是常量池中的对象，一个是在堆中的对象，两者能相等吗？因此</p>
-<p>t1 与 t2不相等。</p>
-<p><strong>接着下面</strong></p>
-<p>t3 = new String(“2”) + new String(“2”);</p>
-<p>这段代码调用之前，字符串常量池有一个”2”的对象，执行之后，实际上会调用StringBuilder的append()方法类进行拼接，最后在堆中创建一个”22”的对象，注意，此时<strong>字面量</strong>并没有”22”这个字符串，也就是说在字符串常量池并没有”22”这个对象。<strong>此时t3指向堆中”22”这个对象</strong></p>
-<p>t3.intern();</p>
-<p>执行这个方法之后</p>
-<p><strong>在JDK1.6的时候</strong>，它在字符串常量池中并没有找到内容为”22”的对象，所以这个时候会把这个<strong>对象添加到字符串常量池</strong>，并把这个对象返回(此时并没有变量来接收这个返回的对象)。注意添加的是对象，而并非引用。</p>
-<p>t4 = “22”。</p>
-<p>这句代码执行后，会返回字符串常量池中内容为”22”对象，<strong>此时t4指向的是字符串常量池中的对象</strong>。</p>
-<p>显然，一个对象在字符串常量池，一个在堆中，两个对象并非是同一个对象，因此在JDK1.6的时候，t3与t4不相等。</p>
-<p><strong>但是在JDK1.7的时候</strong></p>
-<p>t3.intern()执行之后，由于在字符串常量池在并没有内容为”22”的对象，所以会把堆中该对象的引用赋值到字符串常量池。注意此时字符串常量池保存的是<strong>堆中这个对象的引用</strong>。</p>
-<p>t4 = “22”。</p>
-<p>执行这句代码之后，从字符串常量池返回给t4的是<strong>堆中对象的引用</strong>。此时t4指向的实际上是堆中对象的引用，也就是说，t3和t4指向的是同一个对象。</p>
-<p>因此t3与t4相等。</p>
-<p>不知道你明白了没有？反正我是搞了好久才明白…</p>
-<h4 id="问题2"><a href="#问题2" class="headerlink" title="问题2"></a>问题2</h4><p>至于问题2，我就只讲下半部分的代码，上半部分如果你看懂了问题1，那么问题2也差不多自然懂了。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">String t3 = new String(&quot;2&quot;) + new String(&quot;2&quot;);</span><br><span class="line">String t4 = &quot;22&quot;;</span><br><span class="line">t3.intern();</span><br><span class="line">System.out.println(t3 == t4);</span><br></pre></td></tr></table></figure>
-<p>t3 = new String(“2”) + new String(“2”)。</p>
-<p>这段代码调用之前，字符串常量池有一个”2”的对象，执行之后，实际上会调用StringBuilder的append()方法类进行拼接，最后在堆中创建一个”22”的对象。<strong>此时t3指向堆中”22”这个对象</strong></p>
-<p>t4 = “22”。</p>
-<p>这句代码执行之前，字符串常量池已经存在”22”这个对象了，所有直接把这个对象返回给t4，<strong>此时t4指向的是字符串常量池中的对象</strong>.</p>
-<p>所以t3和t4肯定不是同一个对象啊，t3.intern这句几乎可以忽略，不会给t3和t4造成任何影响。</p>
-<h4 id="问题3"><a href="#问题3" class="headerlink" title="问题3"></a>问题3</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] args)&#123;</span><br><span class="line">    Integer a = 1;</span><br><span class="line">    Integer b = 2;</span><br><span class="line">    Integer c = 3;</span><br><span class="line">    Integer d = 3;</span><br><span class="line">    Integer e = 321;</span><br><span class="line">    Integer f = 321;</span><br><span class="line">    Long g = 3L;</span><br><span class="line">    </span><br><span class="line">    System.out.println(c == d);</span><br><span class="line">    System.out.Println(e == f);</span><br><span class="line">    System.out.println(c == (a + b));</span><br><span class="line">    System.out.println(c.equals(a+b));</span><br><span class="line">    System.out.println(g == (a + b));</span><br><span class="line">    System.out.println(g.equals(a + b));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>对于这个问题，我简单说一下可能你就懂了。</p>
-<p>(1). 内存中有一个java基本类型封装类的常量池。这些类包括<br>Byte, Short, Integer, Long, Character, Boolean。需要注意的是，Float和Double这两个类并没有对应的常量池。</p>
-<p>(2).上面5种整型的包装类也只是在对象数值在-128~127才可以使用这些常量池。</p>
-<p>(3). 在周志明的那本虚拟机中有这样一句话：包装类的<br>“\==”运行符在不遇到算术运算的情况下不会自动<strong>拆箱</strong>，以及他们的equals()方法不处理数据类型的关系，可以推断出如果遇到“==”两边有算术运算是话就会自动拆箱和进行数据类型转换处理。</p>
-<p>(4).Long的equals方法会先判断是否是Long类型。</p>
-<p>(5).无论是Integer还是Long，他们的equals方法比较的是数值。</p>
-<p>所以：</p>
-<p>System.out.println(c == d)。</p>
-<p>由于常量池的作用，c与d指向的是同一个对象(注意此时的==比较的是对象，也就是地址，而不是数值)。因此为true</p>
-<p>System.out.println(e == f)。</p>
-<p>由于321超过了127，因此常量池失去了作用，所以e和f数值虽然相同，但不是同一个对象，以此为false。</p>
-<p>System.out.println(c == (a+b))。</p>
-<p>此时==两边有算术运算，会进行拆箱，因此此时比较的是数值，而并非对象。因此为true。</p>
-<p>System.out.println(c.equals(a+b))</p>
-<p>c与a+b的数值相等，为true。</p>
-<p>System.out.pirnln(g == (a + b))</p>
-<p>由于==两边有算术运算，所以比较的是数值，因此为true。</p>
-<p>System.out.println(g.equals(a+b))。</p>
-<p>Long类型的equal在比较是时候，会先判断a+b是否为Long类型，显然a+b不是，因此false</p>
-<p>问题到此就结束了，以上便是自己的理解，以上如果有不对劲的地方，非常欢迎你的指点。</p>
-<p><strong>完</strong>。</p>
+<p>不过这里需要注意的是，由于循环体是存在方法之中的，尽管编译动作是由循环体触发的，但编译器仍然会以这个方法来作为编译的对象。</p>
+<h3 id="3-热点探测"><a href="#3-热点探测" class="headerlink" title="3.热点探测"></a>3.热点探测</h3><p>判断一段代码是不是热点代码，是不是需要触发即时编译，这样的行为我们称之为<strong>热点探测</strong>。热点探测判定有以下两种方式：</p>
+<ol>
+<li>基于采样的热点探测：这种方式虚拟机会周期性着检查各个线程的栈顶，如果发现某个方法经常出现在栈顶，那么这个方法就是<strong>热点方法</strong>。可能有人会问，所谓<strong>经常</strong>，那什么样才算经常，对于这个我只能告诉你，这个取决于你自己的设置，如果自己没有进行相应的设置的话，就采用虚拟机的默认设置。</li>
+<li>基于计数器的热点探测：这种方法我们会为每个方法设置一个<strong>计数器</strong>，统计方法被调用的次数，如果到达一定的次数，我们就把它当作是<strong>热点方法</strong>。</li>
+</ol>
+<p><strong>两种方法的优缺点</strong>：</p>
+<p>显然第一种方法在实现上是比较简单、高效的，但是缺点也很明显，精确度不高，容易受到线程阻塞等别的外界因素的干扰。</p>
+<p>第二种方式的统计结果会很精确，但需要为每个方法建立并维护一个计数器。实现上会相对复杂一点并且开销也会大点。</p>
+<p>不过，这里需要指出的是，我们的HotSpot虚拟机采用的是<strong>基于计数器</strong>的方式。</p>
 <blockquote>
-<p>关注公众号「苦逼的码农」，获取更多原创文章，后台回复「礼包」送你一份特别的大礼包</p>
+<p>说明：虚拟机在执行方法的时候，会先判断该方法是否存在已经编译好的版本，如果存在，则执行编译好的<strong>本地机器码</strong>，否则，采用一边解释一边编译的方式。</p>
 </blockquote>
+<h3 id="4-编译优化技术"><a href="#4-编译优化技术" class="headerlink" title="4.编译优化技术"></a>4.编译优化技术</h3><p>先看一段代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">int a = 1;</span><br><span class="line">if(false)&#123;</span><br><span class="line">    System.out.println(&quot;无用代码&quot;);</span><br><span class="line">&#125;</span><br><span class="line">int b = 2;</span><br></pre></td></tr></table></figure>
+<p>对于这段代码，我们都知道是if语句体里面的代码是一定不可能会被执行到的，也就是说，这实际上是一段一点用处也没有的代码，在执行时只能浪费判断时间。</p>
+<p>实际上，对于我们书写的代码，编译器在编译的时候是会进行优化的。对于上面的代码，编译优化之后会变成这样：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">int a = 1;</span><br><span class="line">int b = 2;</span><br></pre></td></tr></table></figure>
+<p>那段无用的代码会被消除掉。</p>
+<h4 id="各种编译优化策略"><a href="#各种编译优化策略" class="headerlink" title="各种编译优化策略"></a>各种编译优化策略</h4><p>我们刚才已经说了，对于有些被多次调用的方法或者循环体，虚拟机会先把他们编译成本地机器码。由于这些<strong>热点代码</strong>都是一些会被多次重复执行的代码，为了使得编译好的代码更加完美，运行的更快。编译器做了很多的编译优化策略，例如上面的无用代码消除就是其中的一种。</p>
+<p>下面我们来讲讲大概都有那些优化策略：</p>
+<p>大概预览一波：</p>
+<ol>
+<li>公共子表达式消除。</li>
+<li>数组范围检查消除。</li>
+<li>方法内联。</li>
+<li>逃逸分析。</li>
+</ol>
+<p><strong>(1).公共子表达式消除</strong></p>
+<p>含义：如果一个表达式 E 已经计算过了，并且从先前的计算到现在 E 中的所有变量的值都没有发生变化，那个 E 的这次出现就成为了公共子表达式。对于这样的表示式，没有必要对它再次进行计算了，直接沿用之前的结果就可以了。</p>
+<p>我们来举个例子。例如</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">int d = (c * b) * 10 + a + (a + b * c);</span><br></pre></td></tr></table></figure>
+<p>这段代码到了即时编译器的手里，它会进行如下优化：</p>
+<p>表达式中有两个 b * c的表达式，并且在计算期间b与c的值并不会变。所以这条表达式可能会被视为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">int d = E * 10 + a+ (a + E);</span><br></pre></td></tr></table></figure>
+<p>接着继续优化成</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">int d = E * 11 + a + a;</span><br></pre></td></tr></table></figure>
+<p>接着<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">int d = E * 11 + 2a;</span><br></pre></td></tr></table></figure></p>
+<p>这样，代码在执行的时候，就会节省了一些时间了。</p>
+<p><strong>(2).数组范围检查消除</strong></p>
+<p>我们知道，java是一门动态安全的语言，对数组的访问不像c/c++那样，可以采用指针指向一块可能不存在的区域。例如假如有一个数组arr[]，在java语言中访问数组arr[i]的时候，是会先进行上下界范围检查的，即先检查i是否满足i &gt;= 0 &amp;&amp; i &lt; arr.length这个条件。如果不满足则会抛出相应的异常。这种安全检查策略可以避免<strong>溢出</strong>。但每次数组访问都会进行这样一次检查无疑在速度性能上造成一定的影响。</p>
+<p>实际上，对于这样一种情况，编译器也是可以帮助我们做出相应的优化的。例如对于数组的下标是一个常量的，如arr[2]，只要在编译期根据数据流分析来确定arr.length的值，并判断下标‘2’并没有越界，这样在执行的时候就无需在判断了。</p>
+<p>更常见的情况是数组访问发生在循环体中，并且使用循环变量来进行数组的访问，对于这样的情况，只要编译器通过数据流就可以判断循环变量的取值范围是否在[0, arr.length)之内，如果是，那么整个循环中就可以节省很多次数组边界检测判断的操劳了。</p>
+<p>对于这些安全检查所消耗的时间，实际上，我们还可以采用另外一种策略–<strong>隐式异常处理</strong>。例如当我们在访问一个对象arr的属性arr.value的时候，没有优化之前虚拟机是这样处理的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">if(arr != null)&#123;</span><br><span class="line">    return arr.value;</span><br><span class="line">&#125;else&#123;</span><br><span class="line">    throw new NollPointException();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>采用优化策略之后编程这样子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">try&#123;</span><br><span class="line">    return arr.value;</span><br><span class="line">&#125;catch(segment_fault)&#123;</span><br><span class="line">    uncommon_trap();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>就是说，虚拟机会注册一个Segment Fault信号的异常处理器(uncommon_trap())，这样当arr不为空的时候，对value的访问可以省去对arr的判断。代价就是当arr为空时，必须转入到异常处理器中恢复并抛出NullPointException异常，这个过程会从用户态转到内核态中处理，结束后在回到用户态，速度远比一次判断空检查慢。当arr极少为null的时候，这样做是值得的，但假如arr经常为null时，那么会得不偿失。</p>
+<p>不过，虚拟机还是挺聪明的，它会根据运行期收集到的信息来自动选择最优方案。</p>
+<p><strong>(3).方法内联</strong></p>
+<p>先看一段代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public static void f(Object obj)&#123;</span><br><span class="line">    if)(obj != null)&#123;</span><br><span class="line">        System.out.println(&quot;do something&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public static void test(String[] args)&#123;</span><br><span class="line">    Object obj = null;</span><br><span class="line">    f(obj);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>对于这段代码，如果把两个方法结合在一起看，我们可以发现test()方法里面都是一些无用的代码。因为f(obj)这个方法的调用，没啥卵用。但是如果不做内联优化，后续尽管进行了无用代码的消除，也是无法发现任何无用代码的，因为如果把f(Object obj)和test(String[] args)两个发放分开看的话，我们就无法得只f(obj)是否有用了。</p>
+<p>内联优化后的代码可以是这样：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public static void f(Object obj)&#123;</span><br><span class="line">    if)(obj != null)&#123;</span><br><span class="line">        System.out.println(&quot;do something&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public static void test(String[] args)&#123;</span><br><span class="line">    Object obj = null;</span><br><span class="line">    //该方法直接不执行了</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>(4).逃逸分析</strong></p>
+<p>逃逸分析是目前Java虚拟机比较前沿的优化技术，它并非是直接优化代码，而是为其他优化手段提供依据发分析技术。</p>
+<p>逃逸分析主要是对<strong>对象动态作用域</strong>进行分析：当一个对象在某个方法被定义后，它有可能被外部的其他方法所引用，例如作为参数传递给其他方法，称之为<strong>方法逃逸</strong>，也有可能被外部线程访问到，例如类变量，称之为<strong>线程逃逸</strong>。</p>
+<p>假如我们可以证明一个对象并不会发生逃逸的话，我们就可以通过一些方式对这个变量进行一些高效的优化了。如下所示：</p>
+<p><strong>1).栈上分配</strong></p>
+<p>我们都知道一个对象创建之后是放在<strong>堆</strong>上的，这个对象可以被其他线程所共享，并且我们知道在堆上的对象如果不再使用时，虚拟机的垃圾收集系统就会对它进行帅选并回收。但无论是<strong>回收</strong>还是<strong>帅选</strong>，都是需要花费时间的。</p>
+<p>但是假如我们知道这个对象不会逃逸的话，我们就可以直接在栈上对这个对象进行内存分配了，这样，这个对象所占用的内存空间就可以随进栈和出栈而自动被销毁了。这样，垃圾收集系统就可以省了很多帅选、销毁的时间了。</p>
+<p><strong>2).同步消除</strong></p>
+<p>线程同步本身是一个相对耗时的过程，如果我们能判断这个变量不会逃出线程的话，那么我们就可以对这个变量的同步措施进行消除了。</p>
+<p><strong>3).标量替换</strong></p>
+<p>什么是标量？</p>
+<p>当一个数据无法分解成更小的时候，我们称之为<strong>变量</strong>，例如像int,long,char等基本数据类型。相对地，如果一个变量可以分解成更小的，我们称之为<strong>聚合量</strong>，例如Java中的对象。</p>
+<p>假如这个对象不会发生逃逸。</p>
+<p>我们可以根据程序访问的情况，如果一个方法只是用到一个对象里面的若干个属性，我们在真正执行这个方法的时候，我们可以不创建这个对象，而是直接创建它那几个被使用到的变量来代替。这样，不仅可以节省内存以及时间，而且这些变量可以随出栈入栈而销毁。</p>
+<p>不过，对于编译器优化的技术还有很多，上面这几种算是比较典型的。</p>
+<p>本次讲解到这里。</p>
+<p><strong>完</strong></p>
+<p>参考书籍：深入Java虚拟机</p>
+<blockquote>
+<p>如果你习惯在微信公众号看技术文章<br>想要获取更多资源的同学<br>欢迎关注我的公众号：<strong>苦逼的码农</strong><br>每周不定时更新文章，同时更新自己算法刷题记录。</p>
+</blockquote>
+<p>煎熬了几分</p>
 
       
     </div>
@@ -523,7 +495,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/java/" rel="tag"># java</a>
+            <a href="/tags/jvm/" rel="tag"># jvm</a>
           
         </div>
       
@@ -536,8 +508,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/08/10/JVM(1)---虚拟机在运行期的优化策略/" rel="next" title="JVM(1)---虚拟机在运行期的优化策略">
-                <i class="fa fa-chevron-left"></i> JVM(1)---虚拟机在运行期的优化策略
+              <a href="/2018/07/27/互联网协议/" rel="next" title="互联网协议">
+                <i class="fa fa-chevron-left"></i> 互联网协议
               </a>
             
           </div>
@@ -546,8 +518,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2018/08/19/关于我：一名双非的小混混/" rel="prev" title="关于我：一名来自双非学校的小混混">
-                关于我：一名来自双非学校的小混混 <i class="fa fa-chevron-right"></i>
+              <a href="/2018/08/15/聊一聊让我蒙蔽一晚上的各种常量池/" rel="prev" title="聊一聊让我蒙蔽一晚上的各种常量池">
+                聊一聊让我蒙蔽一晚上的各种常量池 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -680,7 +652,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#JVM中的几种常量池"><span class="nav-number">1.</span> <span class="nav-text">JVM中的几种常量池</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-class文件常量池"><span class="nav-number">1.1.</span> <span class="nav-text">1.class文件常量池</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-运行时常量池"><span class="nav-number">1.2.</span> <span class="nav-text">2.运行时常量池</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-字符串常量池"><span class="nav-number">1.3.</span> <span class="nav-text">3.字符串常量池</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#解决问题"><span class="nav-number">1.4.</span> <span class="nav-text">解决问题</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#问题2"><span class="nav-number">1.5.</span> <span class="nav-text">问题2</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#问题3"><span class="nav-number">1.6.</span> <span class="nav-text">问题3</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-解释器与JIT编译器"><span class="nav-number">1.</span> <span class="nav-text">1.解释器与JIT编译器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-编译对象与触发条件"><span class="nav-number">2.</span> <span class="nav-text">2.编译对象与触发条件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-热点探测"><span class="nav-number">3.</span> <span class="nav-text">3.热点探测</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-编译优化技术"><span class="nav-number">4.</span> <span class="nav-text">4.编译优化技术</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#各种编译优化策略"><span class="nav-number">4.1.</span> <span class="nav-text">各种编译优化策略</span></a></li></ol></li></ol></div>
             
 
           </div>

@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="java," />
+  <meta name="keywords" content="线程安全," />
 
 
 
@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="在写之前我们先来看几个问题，假如你对这些问题已经很懂了的话，那大可不用看这篇文章，如果不大懂的话，那么可以看看我的想法。 问题1： 1234567891011public static void main(String[] args)&amp;#123;    String t1 = new String(&amp;quot;2&amp;quot;);    t1.intern();    String t2 = &amp;qu">
-<meta name="keywords" content="java">
+<meta name="description" content="对于volatile这个关键字，相信很多朋友都听说过，甚至使用过，这个关键字虽然字面上理解起来比较简单，但是要用好起来却不是一件容易的事。 这篇文章将从多个方面来讲解volatile，让你对它更加理解。 计算机中为什么会出现线程不安全的问题volatile既然是与线程安全有关的问题，那我们先来了解一下计算机在处理数据的过程中为什么会出现线程不安全的问题。 大家都知道，计算机在执行程序时，每条指令都">
+<meta name="keywords" content="线程安全">
 <meta property="og:type" content="article">
-<meta property="og:title" content="聊一聊让我蒙蔽一晚上的各种常量池">
-<meta property="og:url" content="https://iamshuaidi.github.io/2018/08/15/聊一聊让我蒙蔽一晚上的各种常量池/index.html">
+<meta property="og:title" content="线程安全(上)--彻底搞懂volatile关键字">
+<meta property="og:url" content="https://iamshuaidi.github.io/2018/08/20/线程安全(上)--彻底搞懂volatile关键字/index.html">
 <meta property="og:site_name" content="帅地">
-<meta property="og:description" content="在写之前我们先来看几个问题，假如你对这些问题已经很懂了的话，那大可不用看这篇文章，如果不大懂的话，那么可以看看我的想法。 问题1： 1234567891011public static void main(String[] args)&amp;#123;    String t1 = new String(&amp;quot;2&amp;quot;);    t1.intern();    String t2 = &amp;qu">
+<meta property="og:description" content="对于volatile这个关键字，相信很多朋友都听说过，甚至使用过，这个关键字虽然字面上理解起来比较简单，但是要用好起来却不是一件容易的事。 这篇文章将从多个方面来讲解volatile，让你对它更加理解。 计算机中为什么会出现线程不安全的问题volatile既然是与线程安全有关的问题，那我们先来了解一下计算机在处理数据的过程中为什么会出现线程不安全的问题。 大家都知道，计算机在执行程序时，每条指令都">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-08-19T06:15:57.842Z">
+<meta property="og:updated_time" content="2018-08-20T07:23:21.984Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="聊一聊让我蒙蔽一晚上的各种常量池">
-<meta name="twitter:description" content="在写之前我们先来看几个问题，假如你对这些问题已经很懂了的话，那大可不用看这篇文章，如果不大懂的话，那么可以看看我的想法。 问题1： 1234567891011public static void main(String[] args)&amp;#123;    String t1 = new String(&amp;quot;2&amp;quot;);    t1.intern();    String t2 = &amp;qu">
+<meta name="twitter:title" content="线程安全(上)--彻底搞懂volatile关键字">
+<meta name="twitter:description" content="对于volatile这个关键字，相信很多朋友都听说过，甚至使用过，这个关键字虽然字面上理解起来比较简单，但是要用好起来却不是一件容易的事。 这篇文章将从多个方面来讲解volatile，让你对它更加理解。 计算机中为什么会出现线程不安全的问题volatile既然是与线程安全有关的问题，那我们先来了解一下计算机在处理数据的过程中为什么会出现线程不安全的问题。 大家都知道，计算机在执行程序时，每条指令都">
 
 
 
@@ -120,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="https://iamshuaidi.github.io/2018/08/15/聊一聊让我蒙蔽一晚上的各种常量池/"/>
+  <link rel="canonical" href="https://iamshuaidi.github.io/2018/08/20/线程安全(上)--彻底搞懂volatile关键字/"/>
 
 
 
 
 
-  <title>聊一聊让我蒙蔽一晚上的各种常量池 | 帅地</title>
+  <title>线程安全(上)--彻底搞懂volatile关键字 | 帅地</title>
   
 
 
@@ -297,7 +297,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://iamshuaidi.github.io/2018/08/15/聊一聊让我蒙蔽一晚上的各种常量池/">
+    <link itemprop="mainEntityOfPage" href="https://iamshuaidi.github.io/2018/08/20/线程安全(上)--彻底搞懂volatile关键字/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="帅地">
@@ -314,7 +314,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">聊一聊让我蒙蔽一晚上的各种常量池</h1>
+          <h1 class="post-title" itemprop="name headline">线程安全(上)--彻底搞懂volatile关键字</h1>
         
 
         <div class="post-meta">
@@ -326,8 +326,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-08-15T00:00:00+08:00">
-                2018-08-15
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-08-20T00:00:00+08:00">
+                2018-08-20
               </time>
             
 
@@ -386,125 +386,97 @@
       
 
       
-        <p>在写之前我们先来看几个问题，假如你对这些问题已经很懂了的话，那大可不用看这篇文章，如果不大懂的话，那么可以看看我的想法。</p>
-<p>问题1：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] args)&#123;</span><br><span class="line">    String t1 = new String(&quot;2&quot;);</span><br><span class="line">    t1.intern();</span><br><span class="line">    String t2 = &quot;2&quot;;</span><br><span class="line">    System.out.println(t1 == t2);</span><br><span class="line">    </span><br><span class="line">    String t3 = new String(&quot;2&quot;) + new String(&quot;2&quot;);</span><br><span class="line">    t3.intern();</span><br><span class="line">    String t4 = &quot;22&quot;;</span><br><span class="line">    System.out.println(t3 == t4);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>答案输出：</p>
-<p>JDK1.6是 false false</p>
-<p>JDK1.7是 false true;</p>
-<p>问题2(把问题1的语句调换一下位置)</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] args)&#123;</span><br><span class="line">    String t1 = new String(&quot;2&quot;);</span><br><span class="line">    String t2 = &quot;2&quot;;</span><br><span class="line">    t1.intern();</span><br><span class="line">    System.out.println(t1 == t2);</span><br><span class="line">    </span><br><span class="line">    String t3 = new String(&quot;2&quot;) + new String(&quot;2&quot;);</span><br><span class="line">    String t4 = &quot;22&quot;;</span><br><span class="line">    t3.intern();</span><br><span class="line">    System.out.println(t3 == t4);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>答案输出：<br>false false</p>
-<p>对于这两个问题，看了几个人的博客，可谓百花齐放，越看越懵逼</p>
-<p>问题3</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] args)&#123;</span><br><span class="line">    Integer a = 1;</span><br><span class="line">    Integer b = 2;</span><br><span class="line">    Integer c = 3;</span><br><span class="line">    Integer d = 3;</span><br><span class="line">    Integer e = 321;</span><br><span class="line">    Integer f = 321;</span><br><span class="line">    Long g = 3L;</span><br><span class="line">    </span><br><span class="line">    System.out.println(c == d);</span><br><span class="line">    System.out.Println(e == f);</span><br><span class="line">    System.out.println(c == (a + b));</span><br><span class="line">    System.out.println(c.equals(a+b));</span><br><span class="line">    System.out.println(g == (a + b));</span><br><span class="line">    System.out.println(g.equals(a + b));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>答案输出：</p>
-<p>true</p>
-<p>false</p>
-<p>true</p>
-<p>true</p>
-<p>true</p>
-<p>false</p>
-<p>问题4：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">运行时常量池与字符串常量池是什么关系？包含？</span><br></pre></td></tr></table></figure>
-<p>在解决问题之前，我们先来简单了解一些常量池的一些知识点(大部分来源于周志明的深入Java虚拟机这本书)。</p>
-<h3 id="JVM中的几种常量池"><a href="#JVM中的几种常量池" class="headerlink" title="JVM中的几种常量池"></a>JVM中的几种常量池</h3><h4 id="1-class文件常量池"><a href="#1-class文件常量池" class="headerlink" title="1.class文件常量池"></a>1.class文件常量池</h4><p>在Class文件中除了有类的版本、字段、方法、接口等描述信息外，还有一项信息是<strong>常量池(Constant Pool Table)</strong>，用于存放编译期生成的各种字面量和符号引用。</p>
-<p>这里简单解释下字面量和符号引用</p>
-<p><strong>字面量</strong></p>
-<p>字面量类似与我们平常说的常量，主要包括：</p>
-<ol>
-<li>文本字符串：就是我们在代码中能够看到的字符串，例如String a = “aa”。其中”aa”就是字面量。</li>
-<li>被final修饰的变量。</li>
-</ol>
-<p><strong>符号引用</strong></p>
-<p>主要包括以下常量：</p>
-<ol>
-<li>类和接口和全限定名：例如对于String这个类，它的全限定名就是java/lang/String。</li>
-<li>字段的名称和描述符：所谓字段就是类或者接口中声明的变量，包括类级别变量（static)和实例级的变量。</li>
-<li>方法的名称和描述符。所谓描述符就相当于方法的<strong>参数类型+返回值类型</strong>。</li>
-</ol>
-<h4 id="2-运行时常量池"><a href="#2-运行时常量池" class="headerlink" title="2.运行时常量池"></a>2.运行时常量池</h4><p>我们上面说的class文件中的常量池，它会在类加载后进入<strong>方法区</strong>中的运行时常量池。并且需要的注意的是，运行时常量池是全局共享的，多个类共用一个运行时常量池。并且class文件中常量池多个相同的字符串在运行时常量池只会存在一份。</p>
-<p>注意运行时常量池存在于<strong>方法区</strong>中。</p>
-<h4 id="3-字符串常量池"><a href="#3-字符串常量池" class="headerlink" title="3.字符串常量池"></a>3.字符串常量池</h4><p>看名字我们就可以知道字符串常量池会用来存放<strong>字符串</strong>，也就是说常量池中的文本字符串会在类加载时进入字符串常量池。</p>
-<p>那字符串常量池和运行时常量池是什么关系呢？上面我们说常量池中的字面量会在类加载后进入运行时常量池，其中字面量中有包括文本字符串，显然从这段文字我们可以知道字符串常量池存在于运行时常量池中。也就存在于<strong>方法区</strong>中。</p>
-<p>不过在周志明那本深入java虚拟机中有说到，到了JDK1.7时，字符串常量池就被移出了方法区，转移到了<strong>堆</strong>里了。</p>
-<p>那么我们可以推断，到了JDK1.7以及之后的版本中，运行时常量池并没有包含字符串常量池，运行时常量池存在于方法区中，而字符串常量池存在于<strong>堆</strong>中。</p>
-<p>说了这么多，现在我们开始来解决上面提出了问题。</p>
-<h4 id="解决问题"><a href="#解决问题" class="headerlink" title="解决问题"></a>解决问题</h4><p>问题1：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] args)&#123;</span><br><span class="line">    String t1 = new String(&quot;1&quot;);</span><br><span class="line">    t1.intern();</span><br><span class="line">    String t2 = &quot;1&quot;;</span><br><span class="line">    System.out.println(t1 == t2);</span><br><span class="line">    </span><br><span class="line">    String t3 = new String(&quot;2&quot;) + new String(&quot;2&quot;);</span><br><span class="line">    t3.intern();</span><br><span class="line">    String t4 = &quot;22&quot;;</span><br><span class="line">    System.out.println(t3 == t4);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>答案输出：</p>
-<p>JDK1.6是 false false。</p>
-<p>JDK1.7是 false true;</p>
-<p>在解决这个问题之前，我们先来看另外一道面试中经常会问到的问题。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">String t = new String(&quot;tt&quot;);</span><br></pre></td></tr></table></figure>
-<p>假如程序中只有这样一行代码，那么这行代码创建了几个对象？</p>
-<p>我们上面说过，”tt”属于字面量，那么它会在类加载之后存在于字符串常量池中，也就是说，在 String t = new String(“tt”)这句代码执行之前，字符串常量池就已经创建了”tt”这个字符串对象了，我们都知道，new这个关键字会在堆中创建一个对象。</p>
-<p>所以，这段代码创建了两个对象。一个在堆中，一个在字符串常量池中。</p>
-<p>那么下面这段代码又是创建了几个对象呢？</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">String t1 = new String(&quot;tt&quot;);</span><br><span class="line">String t2 = new String(&quot;tt&quot;);</span><br></pre></td></tr></table></figure>
-<p>答是这段代码创建了三个对象，我们上面说了，字符串常量池只会保存一份内容相同的字符串。也就是说，在这两句代码执行之前，字符串常量池就已经创建了内容为”tt”的对象了。这两句代码执行之后，又在堆中创建了两个，所以一共创建了三个。</p>
-<p>那么下面这段代码又是创建了几个对象？</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">String t = &quot;tt&quot;;</span><br></pre></td></tr></table></figure>
-<p>答是1个，在这段代码执行之前，字符串常量池已经创建了一个”tt”的对象，但由于这行代码并非用new的方法，所以虚拟机会在字符串常量池中寻找是否有内容为”tt”的字符串对象，如果有，则直接返回这个字符串的引用，所以最终结果只创建了一个对象。</p>
-<p>回到我们的问题，在这里我们先<strong>解释下String 的intern方法</strong>。</p>
-<p>例如我们调用了t.intern()。</p>
-<p>在JDK1.6的时候，调用了这个方法之后，虚拟机会在字符串常量池在查找是否有内容与”tt”相等的对象，如果有，则返回这个对象，如果没有，则会在字符串常量池中<strong>添加</strong>这个对象。注意，是把这个对象添加到字符串常量池。</p>
-<p>到了JDK1.7之后，如果调用了intern这个方法，虚拟机会在字符串常量池在查找是否有内容与”tt”相等的对象，如果有，则返回这个对象，如果没有。则会在堆中把这个对象的<strong>引用</strong>复制添加到字符串常量池中。注意，这个时候添加的是对象在堆中的引用。</p>
-<p><strong>现在开始来分析问题中的代码</strong></p>
-<p>t1 = new String(“1”)。</p>
-<p>这句代码执行之前，字符串常量池中已经有”t”这个对象，执行之后会在堆中也创建一个”t”的对象，<strong>此时t1指向的是堆中的对象</strong>。</p>
-<p>t1.intern();</p>
-<p>这句代码执行之后，会在字符串常量池寻早内容为”t”的对象，字符串常量池已经存在这个对象了，把这个对象返回(不过返回之后并没有变量来接收)。</p>
-<p>t2 = “1”。</p>
-<p>这句执行后会在字符串常量池查找内容为”t”的对象，字符串常量池已经有这个对象了，返回给t2，<strong>此时t2指向的是常量池中的对象</strong>。</p>
-<p>一个是常量池中的对象，一个是在堆中的对象，两者能相等吗？因此</p>
-<p>t1 与 t2不相等。</p>
-<p><strong>接着下面</strong></p>
-<p>t3 = new String(“2”) + new String(“2”);</p>
-<p>这段代码调用之前，字符串常量池有一个”2”的对象，执行之后，实际上会调用StringBuilder的append()方法类进行拼接，最后在堆中创建一个”22”的对象，注意，此时<strong>字面量</strong>并没有”22”这个字符串，也就是说在字符串常量池并没有”22”这个对象。<strong>此时t3指向堆中”22”这个对象</strong></p>
-<p>t3.intern();</p>
-<p>执行这个方法之后</p>
-<p><strong>在JDK1.6的时候</strong>，它在字符串常量池中并没有找到内容为”22”的对象，所以这个时候会把这个<strong>对象添加到字符串常量池</strong>，并把这个对象返回(此时并没有变量来接收这个返回的对象)。注意添加的是对象，而并非引用。</p>
-<p>t4 = “22”。</p>
-<p>这句代码执行后，会返回字符串常量池中内容为”22”对象，<strong>此时t4指向的是字符串常量池中的对象</strong>。</p>
-<p>显然，一个对象在字符串常量池，一个在堆中，两个对象并非是同一个对象，因此在JDK1.6的时候，t3与t4不相等。</p>
-<p><strong>但是在JDK1.7的时候</strong></p>
-<p>t3.intern()执行之后，由于在字符串常量池在并没有内容为”22”的对象，所以会把堆中该对象的引用赋值到字符串常量池。注意此时字符串常量池保存的是<strong>堆中这个对象的引用</strong>。</p>
-<p>t4 = “22”。</p>
-<p>执行这句代码之后，从字符串常量池返回给t4的是<strong>堆中对象的引用</strong>。此时t4指向的实际上是堆中对象的引用，也就是说，t3和t4指向的是同一个对象。</p>
-<p>因此t3与t4相等。</p>
-<p>不知道你明白了没有？反正我是搞了好久才明白…</p>
-<h4 id="问题2"><a href="#问题2" class="headerlink" title="问题2"></a>问题2</h4><p>至于问题2，我就只讲下半部分的代码，上半部分如果你看懂了问题1，那么问题2也差不多自然懂了。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">String t3 = new String(&quot;2&quot;) + new String(&quot;2&quot;);</span><br><span class="line">String t4 = &quot;22&quot;;</span><br><span class="line">t3.intern();</span><br><span class="line">System.out.println(t3 == t4);</span><br></pre></td></tr></table></figure>
-<p>t3 = new String(“2”) + new String(“2”)。</p>
-<p>这段代码调用之前，字符串常量池有一个”2”的对象，执行之后，实际上会调用StringBuilder的append()方法类进行拼接，最后在堆中创建一个”22”的对象。<strong>此时t3指向堆中”22”这个对象</strong></p>
-<p>t4 = “22”。</p>
-<p>这句代码执行之前，字符串常量池已经存在”22”这个对象了，所有直接把这个对象返回给t4，<strong>此时t4指向的是字符串常量池中的对象</strong>.</p>
-<p>所以t3和t4肯定不是同一个对象啊，t3.intern这句几乎可以忽略，不会给t3和t4造成任何影响。</p>
-<h4 id="问题3"><a href="#问题3" class="headerlink" title="问题3"></a>问题3</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] args)&#123;</span><br><span class="line">    Integer a = 1;</span><br><span class="line">    Integer b = 2;</span><br><span class="line">    Integer c = 3;</span><br><span class="line">    Integer d = 3;</span><br><span class="line">    Integer e = 321;</span><br><span class="line">    Integer f = 321;</span><br><span class="line">    Long g = 3L;</span><br><span class="line">    </span><br><span class="line">    System.out.println(c == d);</span><br><span class="line">    System.out.Println(e == f);</span><br><span class="line">    System.out.println(c == (a + b));</span><br><span class="line">    System.out.println(c.equals(a+b));</span><br><span class="line">    System.out.println(g == (a + b));</span><br><span class="line">    System.out.println(g.equals(a + b));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>对于这个问题，我简单说一下可能你就懂了。</p>
-<p>(1). 内存中有一个java基本类型封装类的常量池。这些类包括<br>Byte, Short, Integer, Long, Character, Boolean。需要注意的是，Float和Double这两个类并没有对应的常量池。</p>
-<p>(2).上面5种整型的包装类也只是在对象数值在-128~127才可以使用这些常量池。</p>
-<p>(3). 在周志明的那本虚拟机中有这样一句话：包装类的<br>“\==”运行符在不遇到算术运算的情况下不会自动<strong>拆箱</strong>，以及他们的equals()方法不处理数据类型的关系，可以推断出如果遇到“==”两边有算术运算是话就会自动拆箱和进行数据类型转换处理。</p>
-<p>(4).Long的equals方法会先判断是否是Long类型。</p>
-<p>(5).无论是Integer还是Long，他们的equals方法比较的是数值。</p>
-<p>所以：</p>
-<p>System.out.println(c == d)。</p>
-<p>由于常量池的作用，c与d指向的是同一个对象(注意此时的==比较的是对象，也就是地址，而不是数值)。因此为true</p>
-<p>System.out.println(e == f)。</p>
-<p>由于321超过了127，因此常量池失去了作用，所以e和f数值虽然相同，但不是同一个对象，以此为false。</p>
-<p>System.out.println(c == (a+b))。</p>
-<p>此时==两边有算术运算，会进行拆箱，因此此时比较的是数值，而并非对象。因此为true。</p>
-<p>System.out.println(c.equals(a+b))</p>
-<p>c与a+b的数值相等，为true。</p>
-<p>System.out.pirnln(g == (a + b))</p>
-<p>由于==两边有算术运算，所以比较的是数值，因此为true。</p>
-<p>System.out.println(g.equals(a+b))。</p>
-<p>Long类型的equal在比较是时候，会先判断a+b是否为Long类型，显然a+b不是，因此false</p>
-<p>问题到此就结束了，以上便是自己的理解，以上如果有不对劲的地方，非常欢迎你的指点。</p>
-<p><strong>完</strong>。</p>
+        <p>对于volatile这个关键字，相信很多朋友都听说过，甚至使用过，这个关键字虽然字面上理解起来比较简单，但是要用好起来却不是一件容易的事。</p>
+<p>这篇文章将从多个方面来讲解volatile，让你对它更加理解。</p>
+<h2 id="计算机中为什么会出现线程不安全的问题"><a href="#计算机中为什么会出现线程不安全的问题" class="headerlink" title="计算机中为什么会出现线程不安全的问题"></a>计算机中为什么会出现线程不安全的问题</h2><p>volatile既然是与线程安全有关的问题，那我们先来了解一下计算机在处理数据的过程中为什么会出现线程不安全的问题。</p>
+<p>大家都知道，计算机在执行程序时，每条指令都是在CPU中执行的，而执行指令过程中会涉及到数据的读取和写入。由于程序运行过程中的临时数据是存放在主存（物理内存）当中的，这时就存在一个问题，由于CPU执行速度很快，而从内存读取数据和向内存写入数据的过程跟CPU执行指令的速度比起来要慢的多，因此如果任何时候对数据的操作都要通过和内存的交互来进行，会大大降低指令执行的速度。</p>
+<p>为了处理这个问题，在CPU里面就有了高速缓存(Cache)的概念。当程序在运行过程中，会将运算需要的数据从主存复制一份到CPU的高速缓存当中，那么CPU进行计算时就可以直接从它的高速缓存读取数据和向其中写入数据，当运算结束之后，再将高速缓存中的数据刷新到主存当中。</p>
+<p>我举个简单的例子，比如cpu在执行下面这段代码的时候,</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">t = t + 1;</span><br></pre></td></tr></table></figure>
+<p>会先从高速缓存中查看是否有t的值，如果有，则直接拿来使用，如果没有，则会从主存中读取，读取之后会复制一份存放在高速缓存中方便下次使用。之后cup进行对t加1操作，然后把数据写入高速缓存，最后会把高速缓存中的数据刷新到主存中。</p>
+<p>这一过程在单线程运行是没有问题的，但是在多线程中运行就会有问题了。在多核CPU中，每条线程可能运行于不同的CPU中，因此每个线程运行时有自己的高速缓存（对单核CPU来说，其实也会出现这种问题，只不过是以线程调度的形式来分别执行的，本次讲解以多核cup为主）。这时就会出现同一个变量在两个高速缓存中的<strong>值</strong>不一致问题了。</p>
+<p>例如：</p>
+<p>两个线程分别读取了t的值，假设此时t的值为0，并且把t的值存到了各自的高速缓存中，然后线程1对t进行了加1操作，此时t的值为1，并且把t的值写回到主存中。但是线程2中高速缓存的值还是0，进行加1操作之后，t的值还是为1，然后再把t的值写回主存。</p>
+<p>此时，就出现了线程不安全问题了。</p>
+<h2 id="Java中的线程安全问题"><a href="#Java中的线程安全问题" class="headerlink" title="Java中的线程安全问题"></a>Java中的线程安全问题</h2><p>上面那种线程安全问题，可能对于不同的操作系统会有不同的处理机制，例如Windows操作系统和Linux的操作系统的处理方法可能会不同。</p>
+<p>我们都知道，Java是一种夸平台的语言，因此Java这种语言在处理线程安全问题的时候，会有自己的处理机制，例如volatile关键字，synchronized关键字，并且这种机制适用于各种平台。</p>
+<p>Java内存模型规定所有的变量都是存在主存当中（类似于前面说的物理内存），每个线程都有自己的工作内存（类似于前面的高速缓存）。线程对变量的所有操作都必须在工作内存中进行，而不能直接对主存进行操作。并且每个线程不能访问其他线程的工作内存。</p>
+<p>由于java中的每个线程有自己的工作空间，这种工作空间相当于上面所说的高速缓存，因此多个线程在处理一个<strong>共享变量</strong>的时候，就会出现线程安全问题。</p>
 <blockquote>
-<p>关注公众号「苦逼的码农」，获取更多原创文章，后台回复「礼包」送你一份特别的大礼包</p>
+<p>这里简单解释下<strong>共享变量</strong>，上面我们所说的t就是一个共享变量，也就是说，能够被多个线程访问到的变量，我们称之为共享变量。在java中共享变量包括实例变量，静态变量，数组元素。他们都被存放在堆内存中。</p>
+</blockquote>
+<h2 id="volatile关键字"><a href="#volatile关键字" class="headerlink" title="volatile关键字"></a>volatile关键字</h2><p>上面扯了一大堆，都没提到volatile关键字的作用，下面开始讲解volatile关键字是如何保证线程安全问题的。</p>
+<h4 id="可见性"><a href="#可见性" class="headerlink" title="可见性"></a>可见性</h4><h5 id="什么是可见性？"><a href="#什么是可见性？" class="headerlink" title="什么是可见性？"></a>什么是可见性？</h5><p>意思就是说，在多线程环境下，某个共享变量如果被其中一个线程给修改了，其他线程能够立即知道这个共享变量已经被修改了，当其他线程要读取这个变量的时候，最终会去内存中读取，而不是从自己的<strong>工作空间</strong>中读取</p>
+<p>例如我们上面说的，当线程1对t进行了加1操作并把数据写回到主存之后，线程2就会知道它自己工作空间内的t已经被修改了，当它要执行加1操作之后，就会去主存中读取。这样，两边的数据就能一致了。</p>
+<p>假如一个变量被声明为volatile，那么这个变量就具有了<strong>可见性</strong>的性质了。这就是volatile关键的作用之一了。</p>
+<h5 id="volatile保证变量可见性的原理"><a href="#volatile保证变量可见性的原理" class="headerlink" title="volatile保证变量可见性的原理"></a>volatile保证变量可见性的原理</h5><p>当一个变量被声明为volatile时，在编译成会变指令的时候，会多出下面一行：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0x00bbacde: lock add1 $0x0,(%esp);</span><br></pre></td></tr></table></figure>
+<p>这句指令的意思就是在寄存器执行一个加0的空操作。不过这条指令的前面有一个lock(锁)前缀。</p>
+<p>当处理器在处理拥有lock前缀的指令时：</p>
+<p>在之前的处理中，lock会导致传输数据的总线被锁定，其他处理器都不能访问总线，从而保证处理lock指令的处理器能够独享操作数据所在的内存区域，而不会被其他处理所干扰。</p>
+<p>但由于总线被锁住，其他处理器都会被堵住，从而影响了多处理器的执行效率。为了解决这个问题，在后来的处理器中，处理器遇到lock指令时不会再锁住总线，而是会检查数据所在的内存区域，如果该数据是在处理器的内部缓存中，则会锁定此缓存区域，处理完后把缓存写回到主存中，并且会利用<strong>缓存一致性协议</strong>来保证其他处理器中的缓存数据的一致性。</p>
+<h5 id="缓存一致性协议"><a href="#缓存一致性协议" class="headerlink" title="缓存一致性协议"></a>缓存一致性协议</h5><p>刚才我在说可见性的时候，说“如果一个共享变量被一个线程修改了之后，当其他线程要读取这个变量的时候，最终会去内存中读取，而不是从自己的<strong>工作空间</strong>中读取”，实际上是这样的：</p>
+<p>线程中的处理器会一直在总线上嗅探其内部缓存中的内存地址在其他处理器的操作情况，一旦嗅探到某处处理器打算修改其内存地址中的值，而该内存地址刚好也在自己的内部缓存中，那么处理器就会强制让自己对该缓存地址的无效。所以当该处理器要访问该数据的时候，由于发现自己缓存的数据无效了，就会去主存中访问。</p>
+<h4 id="有序性"><a href="#有序性" class="headerlink" title="有序性"></a>有序性</h4><p>实际上，当我们把代码写好之后，虚拟机不一定会按照我们写的代码的顺序来执行。例如对于下面的两句代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">int a = 1;</span><br><span class="line">int b = 2;</span><br></pre></td></tr></table></figure>
+<p>对于这两句代码，你会发现无论是先执行a = 1还是执行b = 2，都不会对a,b最终的值造成影响。所以虚拟机在编译的时候，是有可能把他们进行<strong>重排序</strong>的。</p>
+<p>为什么要进行重排序呢？</p>
+<p>你想啊，假如执行 int a = 1这句代码需要100ms的时间，但执行int b = 2这句代码需要1ms的时间，并且先执行哪句代码并不会对a,b最终的值造成影响。那当然是先执行int b = 2这句代码了。</p>
+<p>所以，虚拟机在进行代码编译优化的时候，对于那些改变顺序之后不会对最终变量的值造成影响的代码，是有可能将他们进行重排序的。</p>
+<p>更多代码编译优化可以看我写的另一篇文章：<br><a href="https://mp.weixin.qq.com/s/NHBSv6AmpsKTZPmhj_sU6A" target="_blank" rel="noopener">虚拟机在运行期对代码的优化策略</a></p>
+<p>那么重排序之后真的不会对代码造成影响吗？</p>
+<p>实际上，对于有些代码进行重排序之后，虽然对变量的值没有造成影响，但有可能会出现线程安全问题的。具体请看下面的代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">public class NoVisibility&#123;</span><br><span class="line">    private static boolean ready;</span><br><span class="line">    private static int number;</span><br><span class="line">    </span><br><span class="line">    private static class Reader extends Thread&#123;</span><br><span class="line">        public void run()&#123;</span><br><span class="line">        while(!ready)&#123;</span><br><span class="line">            Thread.yield();</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(number);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">    public static void main(String[] args)&#123;</span><br><span class="line">        new Reader().start();</span><br><span class="line">        number = 42;</span><br><span class="line">        ready = true;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这段代码最终打印的一定是42吗？如果没有重排序的话，打印的确实会是42，但如果number = 42和ready = true被进行了重排序，颠倒了顺序，那么就有可能打印出0了，而不是42。（因为number的初始值会是0).</p>
+<p>因此，重排序是有可能导致线程安全问题的。</p>
+<p>如果一个变量被声明volatile的话，那么这个变量不会被进行重排序，也就是说，虚拟机会保证这个变量之前的代码一定会比它先执行，而之后的代码一定会比它慢执行。</p>
+<p>例如把上面中的number声明为volatile，那么number = 42一定会比ready = true先执行。</p>
+<blockquote>
+<p>不过这里需要注意的是，虚拟机只是保证这个变量之前的代码一定比它先执行，但并没有保证这个变量之前的代码不可以重排序。之后的也一样。</p>
+</blockquote>
+<p>volatile关键字能够保证代码的<strong>有序性</strong>，这个也是volatile关键字的作用。</p>
+<p>总结一下，一个被volatile声明的变量主要有以下两种特性保证保证线程安全。</p>
+<ol>
+<li>可见性。</li>
+<li>有序性。</li>
+</ol>
+<h4 id="volatile真的能完全保证一个变量的线程安全吗？"><a href="#volatile真的能完全保证一个变量的线程安全吗？" class="headerlink" title="volatile真的能完全保证一个变量的线程安全吗？"></a>volatile真的能完全保证一个变量的线程安全吗？</h4><p>我们通过上面的讲解，发现volatile关键字还是挺有用的，不但能够保证变量的可见性，还能保证代码的有序性。</p>
+<p>那么，它真的能够保证一个变量在多线程环境下都能被正确的使用吗？</p>
+<p>答案是否定的。原因是因为Java里面的运算并非是<strong>原子操作</strong>。</p>
+<h5 id="原子操作"><a href="#原子操作" class="headerlink" title="原子操作"></a>原子操作</h5><p><strong>原子操作</strong>：即一个操作或者多个操作 要么全部执行并且执行的过程不会被任何因素打断，要么就都不执行。</p>
+<p>也就是说，处理器要嘛把这组操作全部执行完，中间不允许被其他操作所打断，要嘛这组操作不要执行。</p>
+<p>刚才说Java里面的运行并非是原子操作。我举个例子，例如这句代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">int a = b + 1;</span><br></pre></td></tr></table></figure>
+<p>处理器在处理代码的时候，需要处理以下三个操作：</p>
+<ol>
+<li>从内存中读取b的值。</li>
+<li>进行a = b + 1这个运算</li>
+<li>把a的值写回到内存中</li>
+</ol>
+<p>而这三个操作处理器是不一定就会连续执行的，有可能执行了第一个操作之后，处理器就跑去执行别的操作的。</p>
+<h5 id="证明volatile无法保证线程安全的例子"><a href="#证明volatile无法保证线程安全的例子" class="headerlink" title="证明volatile无法保证线程安全的例子"></a>证明volatile无法保证线程安全的例子</h5><p>由于Java中的运算并非是原子操作，所以导致volatile声明的变量无法保证线程安全。</p>
+<p>对于这句话，我给大家举个例子。代码如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">public class Test&#123;</span><br><span class="line">    public static volatile int t = 0;</span><br><span class="line">    </span><br><span class="line">    public static void main(String[] args)&#123;</span><br><span class="line">    </span><br><span class="line">        Thread[] threads = new Thread[10];</span><br><span class="line">        for(int i = 0; i &lt; 10; i++)&#123;</span><br><span class="line">            //每个线程对t进行1000次加1的操作</span><br><span class="line">            threads[i] new Thread(new Runnable()&#123;</span><br><span class="line">                @Override</span><br><span class="line">                public void run()&#123;</span><br><span class="line">                    for(int j = 0; j &lt; 1000; j++)&#123;</span><br><span class="line">                        t = t + 1;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;);</span><br><span class="line">            threads[i].start();</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        //等待所有累加线程都结束</span><br><span class="line">        while(Thread.activeCount() &gt; 1)&#123;</span><br><span class="line">            Thread.yield();</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        //打印t的值</span><br><span class="line">        System.out.println(t);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>最终的打印结果会是1000 * 10 = 10000吗？答案是否定的。</p>
+<p>问题就出现在t = t + 1这句代码中。我们来分析一下</p>
+<p>例如：</p>
+<p>线程1读取了t的值，假如t = 0。之后线程2读取了t的值，此时t = 0。</p>
+<p>然后线程1执行了加1的操作，此时t = 1。但是这个时候，处理器还没有把t = 1的值写回主存中。这个时候处理器跑去执行线程2，注意，刚才线程2已经读取了t的值，所以这个时候并不会再去读取t的值了，所以此时t的值还是0，然后线程2执行了对t的加1操作，此时t =1 。</p>
+<p>这个时候，就出现了线程安全问题了，两个线程都对t执行了加1操作，但t的值却是1。所以说，volatile关键字并不一定能够保证变量的安全性。</p>
+<h4 id="什么情况下volatile能够保证线程安全"><a href="#什么情况下volatile能够保证线程安全" class="headerlink" title="什么情况下volatile能够保证线程安全"></a>什么情况下volatile能够保证线程安全</h4><p>刚才虽然说，volatile关键字不一定能够保证线程安全的问题，其实，在大多数情况下volatile还是可以保证变量的线程安全问题的。所以，在满足以下两个条件的情况下，volatile就能保证变量的线程安全问题：</p>
+<ol>
+<li>运算结果并不依赖变量的当前值，或者能够确保只有单一的线程修改变量的值。</li>
+<li>变量不需要与其他状态变量共同参与不变约束。</li>
+</ol>
+<p>讲到这里，关于volatile关键字的就算讲完了。如果有哪里讲的不对的地方，非常欢迎你的指点。下篇应该会讲synchronize关键字。</p>
+<p><strong>完</strong></p>
+<p>参考书籍：</p>
+<ol>
+<li>深入理解Java虚拟机(JVM高级特性与最佳实践)。</li>
+<li>Java并非编程实战</li>
+</ol>
+<blockquote>
+<p>关注公众号：<strong>苦逼的码农</strong>，获取更多原创文章，后台回复”礼包”送你一份资源大礼包。</p>
 </blockquote>
 
       
@@ -523,7 +495,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/java/" rel="tag"># java</a>
+            <a href="/tags/线程安全/" rel="tag"># 线程安全</a>
           
         </div>
       
@@ -536,8 +508,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/08/10/JVM(1)---虚拟机在运行期的优化策略/" rel="next" title="JVM(1)---虚拟机在运行期的优化策略">
-                <i class="fa fa-chevron-left"></i> JVM(1)---虚拟机在运行期的优化策略
+              <a href="/2018/08/19/关于我：一名双非的小混混/" rel="next" title="关于我：一名来自双非学校的小混混">
+                <i class="fa fa-chevron-left"></i> 关于我：一名来自双非学校的小混混
               </a>
             
           </div>
@@ -546,8 +518,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2018/08/19/关于我：一名双非的小混混/" rel="prev" title="关于我：一名来自双非学校的小混混">
-                关于我：一名来自双非学校的小混混 <i class="fa fa-chevron-right"></i>
+              <a href="/2018/08/20/https的安全保卫战/" rel="prev" title="">
+                 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -680,7 +652,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#JVM中的几种常量池"><span class="nav-number">1.</span> <span class="nav-text">JVM中的几种常量池</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-class文件常量池"><span class="nav-number">1.1.</span> <span class="nav-text">1.class文件常量池</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-运行时常量池"><span class="nav-number">1.2.</span> <span class="nav-text">2.运行时常量池</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-字符串常量池"><span class="nav-number">1.3.</span> <span class="nav-text">3.字符串常量池</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#解决问题"><span class="nav-number">1.4.</span> <span class="nav-text">解决问题</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#问题2"><span class="nav-number">1.5.</span> <span class="nav-text">问题2</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#问题3"><span class="nav-number">1.6.</span> <span class="nav-text">问题3</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#计算机中为什么会出现线程不安全的问题"><span class="nav-number">1.</span> <span class="nav-text">计算机中为什么会出现线程不安全的问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Java中的线程安全问题"><span class="nav-number">2.</span> <span class="nav-text">Java中的线程安全问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#volatile关键字"><span class="nav-number">3.</span> <span class="nav-text">volatile关键字</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#可见性"><span class="nav-number">3.0.1.</span> <span class="nav-text">可见性</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#什么是可见性？"><span class="nav-number">3.0.1.1.</span> <span class="nav-text">什么是可见性？</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#volatile保证变量可见性的原理"><span class="nav-number">3.0.1.2.</span> <span class="nav-text">volatile保证变量可见性的原理</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#缓存一致性协议"><span class="nav-number">3.0.1.3.</span> <span class="nav-text">缓存一致性协议</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#有序性"><span class="nav-number">3.0.2.</span> <span class="nav-text">有序性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#volatile真的能完全保证一个变量的线程安全吗？"><span class="nav-number">3.0.3.</span> <span class="nav-text">volatile真的能完全保证一个变量的线程安全吗？</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#原子操作"><span class="nav-number">3.0.3.1.</span> <span class="nav-text">原子操作</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#证明volatile无法保证线程安全的例子"><span class="nav-number">3.0.3.2.</span> <span class="nav-text">证明volatile无法保证线程安全的例子</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#什么情况下volatile能够保证线程安全"><span class="nav-number">3.0.4.</span> <span class="nav-text">什么情况下volatile能够保证线程安全</span></a></li></ol></li></ol></li></ol></div>
             
 
           </div>
