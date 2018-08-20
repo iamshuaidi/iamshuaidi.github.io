@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="java," />
+  <meta name="keywords" content="jvm," />
 
 
 
@@ -79,18 +79,25 @@
 
 
 
-<meta name="description" content="在写之前我们先来看几个问题，假如你对这些问题已经很懂了的话，那大可不用看这篇文章，如果不大懂的话，那么可以看看我的想法。 问题1： 1234567891011public static void main(String[] args)&amp;#123;    String t1 = new String(&amp;quot;2&amp;quot;);    t1.intern();    String t2 = &amp;qu">
-<meta name="keywords" content="java">
+<meta name="description" content="与其他语言相比，例如c/c++，我们都知道，java虚拟机对于程序中产生的垃圾，虚拟机是会自动帮我们进行清除管理的，而像c/c++这些语言平台则需要程序员自己手动对内存进行释放。 虽然这种自动帮我们回收垃圾的策略少了一定的灵活性，但却让代码编写者省去了很多工作，同时也提高了很多安全性。(因为像C/C++假如你创建了大量的对象，但却由于自己的疏忽忘了将他们进行释放，可能会造成内存溢出)。 何为垃圾？">
+<meta name="keywords" content="jvm">
 <meta property="og:type" content="article">
-<meta property="og:title" content="聊一聊让我蒙蔽一晚上的各种常量池">
-<meta property="og:url" content="https://iamshuaidi.github.io/2018/08/15/聊一聊让我蒙蔽一晚上的各种常量池/index.html">
+<meta property="og:title" content="JVM(2)--一文读懂垃圾回收">
+<meta property="og:url" content="https://iamshuaidi.github.io/2018/08/12/JVM(2)--一文读懂垃圾回收/index.html">
 <meta property="og:site_name" content="帅地">
-<meta property="og:description" content="在写之前我们先来看几个问题，假如你对这些问题已经很懂了的话，那大可不用看这篇文章，如果不大懂的话，那么可以看看我的想法。 问题1： 1234567891011public static void main(String[] args)&amp;#123;    String t1 = new String(&amp;quot;2&amp;quot;);    t1.intern();    String t2 = &amp;qu">
+<meta property="og:description" content="与其他语言相比，例如c/c++，我们都知道，java虚拟机对于程序中产生的垃圾，虚拟机是会自动帮我们进行清除管理的，而像c/c++这些语言平台则需要程序员自己手动对内存进行释放。 虽然这种自动帮我们回收垃圾的策略少了一定的灵活性，但却让代码编写者省去了很多工作，同时也提高了很多安全性。(因为像C/C++假如你创建了大量的对象，但却由于自己的疏忽忘了将他们进行释放，可能会造成内存溢出)。 何为垃圾？">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-08-19T06:15:57.842Z">
+<meta property="og:image" content="https://user-gold-cdn.xitu.io/2018/8/12/16529ca3f6a90edd?w=710&h=380&f=png&s=46373">
+<meta property="og:image" content="https://user-gold-cdn.xitu.io/2018/8/12/16529ca9ce11d978?w=472&h=223&f=png&s=78973">
+<meta property="og:image" content="https://user-gold-cdn.xitu.io/2018/8/12/16529cace210a415?w=458&h=245&f=png&s=81608">
+<meta property="og:image" content="https://user-gold-cdn.xitu.io/2018/8/12/16529cb073097129?w=458&h=245&f=png&s=81608">
+<meta property="og:image" content="https://user-gold-cdn.xitu.io/2018/8/12/16529cb4c17c197b?w=477&h=234&f=png&s=90727">
+<meta property="og:image" content="https://user-gold-cdn.xitu.io/2018/8/12/16529cb849b14484?w=645&h=224&f=png&s=25815">
+<meta property="og:updated_time" content="2018-08-20T07:58:37.063Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="聊一聊让我蒙蔽一晚上的各种常量池">
-<meta name="twitter:description" content="在写之前我们先来看几个问题，假如你对这些问题已经很懂了的话，那大可不用看这篇文章，如果不大懂的话，那么可以看看我的想法。 问题1： 1234567891011public static void main(String[] args)&amp;#123;    String t1 = new String(&amp;quot;2&amp;quot;);    t1.intern();    String t2 = &amp;qu">
+<meta name="twitter:title" content="JVM(2)--一文读懂垃圾回收">
+<meta name="twitter:description" content="与其他语言相比，例如c/c++，我们都知道，java虚拟机对于程序中产生的垃圾，虚拟机是会自动帮我们进行清除管理的，而像c/c++这些语言平台则需要程序员自己手动对内存进行释放。 虽然这种自动帮我们回收垃圾的策略少了一定的灵活性，但却让代码编写者省去了很多工作，同时也提高了很多安全性。(因为像C/C++假如你创建了大量的对象，但却由于自己的疏忽忘了将他们进行释放，可能会造成内存溢出)。 何为垃圾？">
+<meta name="twitter:image" content="https://user-gold-cdn.xitu.io/2018/8/12/16529ca3f6a90edd?w=710&h=380&f=png&s=46373">
 
 
 
@@ -120,13 +127,13 @@
 
 
 
-  <link rel="canonical" href="https://iamshuaidi.github.io/2018/08/15/聊一聊让我蒙蔽一晚上的各种常量池/"/>
+  <link rel="canonical" href="https://iamshuaidi.github.io/2018/08/12/JVM(2)--一文读懂垃圾回收/"/>
 
 
 
 
 
-  <title>聊一聊让我蒙蔽一晚上的各种常量池 | 帅地</title>
+  <title>JVM(2)--一文读懂垃圾回收 | 帅地</title>
   
 
 
@@ -297,7 +304,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://iamshuaidi.github.io/2018/08/15/聊一聊让我蒙蔽一晚上的各种常量池/">
+    <link itemprop="mainEntityOfPage" href="https://iamshuaidi.github.io/2018/08/12/JVM(2)--一文读懂垃圾回收/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="帅地">
@@ -314,7 +321,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">聊一聊让我蒙蔽一晚上的各种常量池</h1>
+          <h1 class="post-title" itemprop="name headline">JVM(2)--一文读懂垃圾回收</h1>
         
 
         <div class="post-meta">
@@ -326,8 +333,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-08-15T00:00:00+08:00">
-                2018-08-15
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-08-12T00:00:00+08:00">
+                2018-08-12
               </time>
             
 
@@ -349,8 +356,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/" itemprop="url" rel="index">
-                    <span itemprop="name">java</span>
+                  <a href="/categories/jvm/" itemprop="url" rel="index">
+                    <span itemprop="name">jvm</span>
                   </a>
                 </span>
 
@@ -386,126 +393,132 @@
       
 
       
-        <p>在写之前我们先来看几个问题，假如你对这些问题已经很懂了的话，那大可不用看这篇文章，如果不大懂的话，那么可以看看我的想法。</p>
-<p>问题1：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] args)&#123;</span><br><span class="line">    String t1 = new String(&quot;2&quot;);</span><br><span class="line">    t1.intern();</span><br><span class="line">    String t2 = &quot;2&quot;;</span><br><span class="line">    System.out.println(t1 == t2);</span><br><span class="line">    </span><br><span class="line">    String t3 = new String(&quot;2&quot;) + new String(&quot;2&quot;);</span><br><span class="line">    t3.intern();</span><br><span class="line">    String t4 = &quot;22&quot;;</span><br><span class="line">    System.out.println(t3 == t4);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>答案输出：</p>
-<p>JDK1.6是 false false</p>
-<p>JDK1.7是 false true;</p>
-<p>问题2(把问题1的语句调换一下位置)</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] args)&#123;</span><br><span class="line">    String t1 = new String(&quot;2&quot;);</span><br><span class="line">    String t2 = &quot;2&quot;;</span><br><span class="line">    t1.intern();</span><br><span class="line">    System.out.println(t1 == t2);</span><br><span class="line">    </span><br><span class="line">    String t3 = new String(&quot;2&quot;) + new String(&quot;2&quot;);</span><br><span class="line">    String t4 = &quot;22&quot;;</span><br><span class="line">    t3.intern();</span><br><span class="line">    System.out.println(t3 == t4);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>答案输出：<br>false false</p>
-<p>对于这两个问题，看了几个人的博客，可谓百花齐放，越看越懵逼</p>
-<p>问题3</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] args)&#123;</span><br><span class="line">    Integer a = 1;</span><br><span class="line">    Integer b = 2;</span><br><span class="line">    Integer c = 3;</span><br><span class="line">    Integer d = 3;</span><br><span class="line">    Integer e = 321;</span><br><span class="line">    Integer f = 321;</span><br><span class="line">    Long g = 3L;</span><br><span class="line">    </span><br><span class="line">    System.out.println(c == d);</span><br><span class="line">    System.out.Println(e == f);</span><br><span class="line">    System.out.println(c == (a + b));</span><br><span class="line">    System.out.println(c.equals(a+b));</span><br><span class="line">    System.out.println(g == (a + b));</span><br><span class="line">    System.out.println(g.equals(a + b));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>答案输出：</p>
-<p>true</p>
-<p>false</p>
-<p>true</p>
-<p>true</p>
-<p>true</p>
-<p>false</p>
-<p>问题4：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">运行时常量池与字符串常量池是什么关系？包含？</span><br></pre></td></tr></table></figure>
-<p>在解决问题之前，我们先来简单了解一些常量池的一些知识点(大部分来源于周志明的深入Java虚拟机这本书)。</p>
-<h3 id="JVM中的几种常量池"><a href="#JVM中的几种常量池" class="headerlink" title="JVM中的几种常量池"></a>JVM中的几种常量池</h3><h4 id="1-class文件常量池"><a href="#1-class文件常量池" class="headerlink" title="1.class文件常量池"></a>1.class文件常量池</h4><p>在Class文件中除了有类的版本、字段、方法、接口等描述信息外，还有一项信息是<strong>常量池(Constant Pool Table)</strong>，用于存放编译期生成的各种字面量和符号引用。</p>
-<p>这里简单解释下字面量和符号引用</p>
-<p><strong>字面量</strong></p>
-<p>字面量类似与我们平常说的常量，主要包括：</p>
+        <p>与其他语言相比，例如c/c++，我们都知道，java虚拟机对于程序中产生的垃圾，虚拟机是会自动帮我们进行清除管理的，而像c/c++这些语言平台则需要程序员自己手动对内存进行释放。</p>
+<p>虽然这种自动帮我们回收垃圾的策略少了一定的灵活性，但却让代码编写者省去了很多工作，同时也提高了很多安全性。(因为像C/C++假如你创建了大量的对象，但却由于自己的疏忽忘了将他们进行释放，可能会造成内存溢出)。</p>
+<h3 id="何为垃圾？"><a href="#何为垃圾？" class="headerlink" title="何为垃圾？"></a>何为垃圾？</h3><p>刚才说了，虚拟机会自动帮助我们进行垃圾的清除，那什么样的对象我们才可以称为是垃圾对象呢？</p>
+<p>假如你创建了一个对象</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Man m = new Man();</span><br></pre></td></tr></table></figure>
+<p>你用一个变量指向了这个对象，显然对于这个对象，你可以用变量m对这个对象进行利用，但过了一段时间，你执行了</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">m = null;</span><br></pre></td></tr></table></figure>
+<p>并且也并没有新的变量来指向刚才创建的对象。此时对于这个没有任何变量指向的对象，你觉得它还有用处吗？</p>
+<p>显然，对于这种没有被变量指向的对象，它是一点卵用也没有的，它只能在<strong>堆</strong>随风漂流。</p>
+<p>因此，对于这样的对象，我们就可以把它称为垃圾了，它早晚会被垃圾回收器给干掉。</p>
+<h3 id="怎么知道它已经是垃圾对象了"><a href="#怎么知道它已经是垃圾对象了" class="headerlink" title="怎么知道它已经是垃圾对象了?"></a>怎么知道它已经是垃圾对象了?</h3><p>假如代码是你自己编写的，你可能知道这个对象啥时候应该被抛弃，你可以随时让它成为垃圾对象。</p>
+<p>但是，你毕竟是你，虚拟机则没那么智能。那虚拟机是如何知道的呢？</p>
+<p>上面已经说了，没有变量引用这个对象时，它就是垃圾对象了，基于这个原理，我们可以这样做啊：</p>
+<p>我们可以为这个对象设置一个计数器，初始值为0，假如有一个变量指向它，那么计数器就加1，如果这个变量不在指向它了，计数器就减1。那么我们就可以判断，如果这个计数器为0的话，那它就是垃圾对象了，否则就是有用的对象。</p>
+<p>对于这种方法，我们称之为<strong>引用计数法</strong>。</p>
+<p>好吧，我们先来夸一夸<strong>引用计数法</strong>这种方法：</p>
 <ol>
-<li>文本字符串：就是我们在代码中能够看到的字符串，例如String a = “aa”。其中”aa”就是字面量。</li>
-<li>被final修饰的变量。</li>
+<li>实现简单。</li>
+<li>效率高(一个if语句就能解决的问题想不高效都难)。</li>
 </ol>
-<p><strong>符号引用</strong></p>
-<p>主要包括以下常量：</p>
+<p><strong>不好意思，接下来得说说它那个致命的缺点</strong>。</p>
+<p>实际上，对于这种引用计数的方法，假如它遇到<strong>对象互相引用</strong>的话，是很难解决的。</p>
+<p>先看一段代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Man m1 = new Man();</span><br><span class="line">Man m2 = new Man();</span><br><span class="line">//互相引用</span><br><span class="line">m1.instance = m2;//假设Man有instance这个属性</span><br><span class="line">m2.instance = m1;</span><br><span class="line"></span><br><span class="line">m1 = null;</span><br><span class="line">m2 = null;</span><br><span class="line">System.gc();//按道理对象应该被回收</span><br></pre></td></tr></table></figure>
+<p>这段代码m1和m2都指向null了，按道理两个对象已经是无用对象，应该被回收，但是，两个对象之间彼此有一个instance的属性互相牵引的对方，导致两个对象并没有被回收。</p>
+<p>这个缺点够致命吧？</p>
+<p>所以，虚拟机并没有采用这种<strong>引用计数</strong>的方法。</p>
+<h4 id="可达性分析"><a href="#可达性分析" class="headerlink" title="可达性分析"></a>可达性分析</h4><p>除了这种方法，我们还有其他的方法吗？</p>
+<p>答案是有的，必须得有啊。这种方法就是传说中的<strong>可达性分析</strong>，(我靠，听名字是真的高级啊)。它的<strong>工作原理</strong>是这样的：</p>
+<p>在程序开始时，会建立一个引用根节点(GC Roots)，并构建一个引用图。当需要判断谁是垃圾时，我们可以从这个根节点进行遍历，如果没有被遍历到的节点则是<strong>垃圾对象</strong>，否则就是有用对象。如下图:</p>
+<p><img src="https://user-gold-cdn.xitu.io/2018/8/12/16529ca3f6a90edd?w=710&amp;h=380&amp;f=png&amp;s=46373" alt=""></p>
+<p>这个方法可以解决循环相互引用的问题，但是这个方法并没有<strong>引用计数法</strong>高效，毕竟要遍历图啊。</p>
+<p><strong>总结下判断是否为垃圾对象的算法：</strong></p>
 <ol>
-<li>类和接口和全限定名：例如对于String这个类，它的全限定名就是java/lang/String。</li>
-<li>字段的名称和描述符：所谓字段就是类或者接口中声明的变量，包括类级别变量（static)和实例级的变量。</li>
-<li>方法的名称和描述符。所谓描述符就相当于方法的<strong>参数类型+返回值类型</strong>。</li>
+<li>引用计数法。</li>
+<li>可达性分析。</li>
 </ol>
-<h4 id="2-运行时常量池"><a href="#2-运行时常量池" class="headerlink" title="2.运行时常量池"></a>2.运行时常量池</h4><p>我们上面说的class文件中的常量池，它会在类加载后进入<strong>方法区</strong>中的运行时常量池。并且需要的注意的是，运行时常量池是全局共享的，多个类共用一个运行时常量池。并且class文件中常量池多个相同的字符串在运行时常量池只会存在一份。</p>
-<p>注意运行时常量池存在于<strong>方法区</strong>中。</p>
-<h4 id="3-字符串常量池"><a href="#3-字符串常量池" class="headerlink" title="3.字符串常量池"></a>3.字符串常量池</h4><p>看名字我们就可以知道字符串常量池会用来存放<strong>字符串</strong>，也就是说常量池中的文本字符串会在类加载时进入字符串常量池。</p>
-<p>那字符串常量池和运行时常量池是什么关系呢？上面我们说常量池中的字面量会在类加载后进入运行时常量池，其中字面量中有包括文本字符串，显然从这段文字我们可以知道字符串常量池存在于运行时常量池中。也就存在于<strong>方法区</strong>中。</p>
-<p>不过在周志明那本深入java虚拟机中有说到，到了JDK1.7时，字符串常量池就被移出了方法区，转移到了<strong>堆</strong>里了。</p>
-<p>那么我们可以推断，到了JDK1.7以及之后的版本中，运行时常量池并没有包含字符串常量池，运行时常量池存在于方法区中，而字符串常量池存在于<strong>堆</strong>中。</p>
-<p>说了这么多，现在我们开始来解决上面提出了问题。</p>
-<h4 id="解决问题"><a href="#解决问题" class="headerlink" title="解决问题"></a>解决问题</h4><p>问题1：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] args)&#123;</span><br><span class="line">    String t1 = new String(&quot;1&quot;);</span><br><span class="line">    t1.intern();</span><br><span class="line">    String t2 = &quot;1&quot;;</span><br><span class="line">    System.out.println(t1 == t2);</span><br><span class="line">    </span><br><span class="line">    String t3 = new String(&quot;2&quot;) + new String(&quot;2&quot;);</span><br><span class="line">    t3.intern();</span><br><span class="line">    String t4 = &quot;22&quot;;</span><br><span class="line">    System.out.println(t3 == t4);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>答案输出：</p>
-<p>JDK1.6是 false false。</p>
-<p>JDK1.7是 false true;</p>
-<p>在解决这个问题之前，我们先来看另外一道面试中经常会问到的问题。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">String t = new String(&quot;tt&quot;);</span><br></pre></td></tr></table></figure>
-<p>假如程序中只有这样一行代码，那么这行代码创建了几个对象？</p>
-<p>我们上面说过，”tt”属于字面量，那么它会在类加载之后存在于字符串常量池中，也就是说，在 String t = new String(“tt”)这句代码执行之前，字符串常量池就已经创建了”tt”这个字符串对象了，我们都知道，new这个关键字会在堆中创建一个对象。</p>
-<p>所以，这段代码创建了两个对象。一个在堆中，一个在字符串常量池中。</p>
-<p>那么下面这段代码又是创建了几个对象呢？</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">String t1 = new String(&quot;tt&quot;);</span><br><span class="line">String t2 = new String(&quot;tt&quot;);</span><br></pre></td></tr></table></figure>
-<p>答是这段代码创建了三个对象，我们上面说了，字符串常量池只会保存一份内容相同的字符串。也就是说，在这两句代码执行之前，字符串常量池就已经创建了内容为”tt”的对象了。这两句代码执行之后，又在堆中创建了两个，所以一共创建了三个。</p>
-<p>那么下面这段代码又是创建了几个对象？</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">String t = &quot;tt&quot;;</span><br></pre></td></tr></table></figure>
-<p>答是1个，在这段代码执行之前，字符串常量池已经创建了一个”tt”的对象，但由于这行代码并非用new的方法，所以虚拟机会在字符串常量池中寻找是否有内容为”tt”的字符串对象，如果有，则直接返回这个字符串的引用，所以最终结果只创建了一个对象。</p>
-<p>回到我们的问题，在这里我们先<strong>解释下String 的intern方法</strong>。</p>
-<p>例如我们调用了t.intern()。</p>
-<p>在JDK1.6的时候，调用了这个方法之后，虚拟机会在字符串常量池在查找是否有内容与”tt”相等的对象，如果有，则返回这个对象，如果没有，则会在字符串常量池中<strong>添加</strong>这个对象。注意，是把这个对象添加到字符串常量池。</p>
-<p>到了JDK1.7之后，如果调用了intern这个方法，虚拟机会在字符串常量池在查找是否有内容与”tt”相等的对象，如果有，则返回这个对象，如果没有。则会在堆中把这个对象的<strong>引用</strong>复制添加到字符串常量池中。注意，这个时候添加的是对象在堆中的引用。</p>
-<p><strong>现在开始来分析问题中的代码</strong></p>
-<p>t1 = new String(“1”)。</p>
-<p>这句代码执行之前，字符串常量池中已经有”t”这个对象，执行之后会在堆中也创建一个”t”的对象，<strong>此时t1指向的是堆中的对象</strong>。</p>
-<p>t1.intern();</p>
-<p>这句代码执行之后，会在字符串常量池寻早内容为”t”的对象，字符串常量池已经存在这个对象了，把这个对象返回(不过返回之后并没有变量来接收)。</p>
-<p>t2 = “1”。</p>
-<p>这句执行后会在字符串常量池查找内容为”t”的对象，字符串常量池已经有这个对象了，返回给t2，<strong>此时t2指向的是常量池中的对象</strong>。</p>
-<p>一个是常量池中的对象，一个是在堆中的对象，两者能相等吗？因此</p>
-<p>t1 与 t2不相等。</p>
-<p><strong>接着下面</strong></p>
-<p>t3 = new String(“2”) + new String(“2”);</p>
-<p>这段代码调用之前，字符串常量池有一个”2”的对象，执行之后，实际上会调用StringBuilder的append()方法类进行拼接，最后在堆中创建一个”22”的对象，注意，此时<strong>字面量</strong>并没有”22”这个字符串，也就是说在字符串常量池并没有”22”这个对象。<strong>此时t3指向堆中”22”这个对象</strong></p>
-<p>t3.intern();</p>
-<p>执行这个方法之后</p>
-<p><strong>在JDK1.6的时候</strong>，它在字符串常量池中并没有找到内容为”22”的对象，所以这个时候会把这个<strong>对象添加到字符串常量池</strong>，并把这个对象返回(此时并没有变量来接收这个返回的对象)。注意添加的是对象，而并非引用。</p>
-<p>t4 = “22”。</p>
-<p>这句代码执行后，会返回字符串常量池中内容为”22”对象，<strong>此时t4指向的是字符串常量池中的对象</strong>。</p>
-<p>显然，一个对象在字符串常量池，一个在堆中，两个对象并非是同一个对象，因此在JDK1.6的时候，t3与t4不相等。</p>
-<p><strong>但是在JDK1.7的时候</strong></p>
-<p>t3.intern()执行之后，由于在字符串常量池在并没有内容为”22”的对象，所以会把堆中该对象的引用赋值到字符串常量池。注意此时字符串常量池保存的是<strong>堆中这个对象的引用</strong>。</p>
-<p>t4 = “22”。</p>
-<p>执行这句代码之后，从字符串常量池返回给t4的是<strong>堆中对象的引用</strong>。此时t4指向的实际上是堆中对象的引用，也就是说，t3和t4指向的是同一个对象。</p>
-<p>因此t3与t4相等。</p>
-<p>不知道你明白了没有？反正我是搞了好久才明白…</p>
-<h4 id="问题2"><a href="#问题2" class="headerlink" title="问题2"></a>问题2</h4><p>至于问题2，我就只讲下半部分的代码，上半部分如果你看懂了问题1，那么问题2也差不多自然懂了。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">String t3 = new String(&quot;2&quot;) + new String(&quot;2&quot;);</span><br><span class="line">String t4 = &quot;22&quot;;</span><br><span class="line">t3.intern();</span><br><span class="line">System.out.println(t3 == t4);</span><br></pre></td></tr></table></figure>
-<p>t3 = new String(“2”) + new String(“2”)。</p>
-<p>这段代码调用之前，字符串常量池有一个”2”的对象，执行之后，实际上会调用StringBuilder的append()方法类进行拼接，最后在堆中创建一个”22”的对象。<strong>此时t3指向堆中”22”这个对象</strong></p>
-<p>t4 = “22”。</p>
-<p>这句代码执行之前，字符串常量池已经存在”22”这个对象了，所有直接把这个对象返回给t4，<strong>此时t4指向的是字符串常量池中的对象</strong>.</p>
-<p>所以t3和t4肯定不是同一个对象啊，t3.intern这句几乎可以忽略，不会给t3和t4造成任何影响。</p>
-<h4 id="问题3"><a href="#问题3" class="headerlink" title="问题3"></a>问题3</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] args)&#123;</span><br><span class="line">    Integer a = 1;</span><br><span class="line">    Integer b = 2;</span><br><span class="line">    Integer c = 3;</span><br><span class="line">    Integer d = 3;</span><br><span class="line">    Integer e = 321;</span><br><span class="line">    Integer f = 321;</span><br><span class="line">    Long g = 3L;</span><br><span class="line">    </span><br><span class="line">    System.out.println(c == d);</span><br><span class="line">    System.out.Println(e == f);</span><br><span class="line">    System.out.println(c == (a + b));</span><br><span class="line">    System.out.println(c.equals(a+b));</span><br><span class="line">    System.out.println(g == (a + b));</span><br><span class="line">    System.out.println(g.equals(a + b));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>对于这个问题，我简单说一下可能你就懂了。</p>
-<p>(1). 内存中有一个java基本类型封装类的常量池。这些类包括<br>Byte, Short, Integer, Long, Character, Boolean。需要注意的是，Float和Double这两个类并没有对应的常量池。</p>
-<p>(2).上面5种整型的包装类也只是在对象数值在-128~127才可以使用这些常量池。</p>
-<p>(3). 在周志明的那本虚拟机中有这样一句话：包装类的<br>“\==”运行符在不遇到算术运算的情况下不会自动<strong>拆箱</strong>，以及他们的equals()方法不处理数据类型的关系，可以推断出如果遇到“==”两边有算术运算是话就会自动拆箱和进行数据类型转换处理。</p>
-<p>(4).Long的equals方法会先判断是否是Long类型。</p>
-<p>(5).无论是Integer还是Long，他们的equals方法比较的是数值。</p>
-<p>所以：</p>
-<p>System.out.println(c == d)。</p>
-<p>由于常量池的作用，c与d指向的是同一个对象(注意此时的==比较的是对象，也就是地址，而不是数值)。因此为true</p>
-<p>System.out.println(e == f)。</p>
-<p>由于321超过了127，因此常量池失去了作用，所以e和f数值虽然相同，但不是同一个对象，以此为false。</p>
-<p>System.out.println(c == (a+b))。</p>
-<p>此时==两边有算术运算，会进行拆箱，因此此时比较的是数值，而并非对象。因此为true。</p>
-<p>System.out.println(c.equals(a+b))</p>
-<p>c与a+b的数值相等，为true。</p>
-<p>System.out.pirnln(g == (a + b))</p>
-<p>由于==两边有算术运算，所以比较的是数值，因此为true。</p>
-<p>System.out.println(g.equals(a+b))。</p>
-<p>Long类型的equal在比较是时候，会先判断a+b是否为Long类型，显然a+b不是，因此false</p>
-<p>问题到此就结束了，以上便是自己的理解，以上如果有不对劲的地方，非常欢迎你的指点。</p>
-<p><strong>完</strong>。</p>
+<h3 id="何时进行垃圾回收"><a href="#何时进行垃圾回收" class="headerlink" title="何时进行垃圾回收"></a>何时进行垃圾回收</h3><p>可能有人会觉得这个问题很奇怪，觉得<strong>看到垃圾就回收</strong>不是很好。对于这个我只能说：</p>
+<ol>
+<li>看到房间有一点垃圾你会马上扫？还是等到某个时间点或者当垃圾积累到一定的数量再扫？</li>
+<li>虚拟机可没那么智能可以马上识别这个对象是垃圾对象，它还得遍历所有对象才能知道有哪些是垃圾对象。</li>
+</ol>
+<p>所以说，你总不能几秒(我们假设几秒是贼短的时间）就让虚拟机遍历一下所有对象吧？</p>
 <blockquote>
-<p>关注公众号「苦逼的码农」，获取更多原创文章，后台回复「礼包」送你一份特别的大礼包</p>
+<p>这里先说明一下，当垃圾回收器在进行垃圾回收的时候，为了保证垃圾回收不受干扰，是会暂停所有线程的，此时程序无法对外部的请求进行响应。(因为你想啊，当你在可达性分析的时候，那些引用关系还在不断着变化，那不很难受)。</p>
 </blockquote>
+<p>而且频繁的垃圾回收，对于有一些程序，是很影响用户体验的，例如你在玩游戏，系统动不动就停顿一下，怕你是要把这游戏给删了。</p>
+<p>所以说，垃圾回收是会等到内存被使用了一定的比例的时候，才会触发垃圾回收。至于这个比例是多少，这可能就是人为规定的了。</p>
+<h3 id="怎么回收？"><a href="#怎么回收？" class="headerlink" title="怎么回收？"></a>怎么回收？</h3><p>当我们标记好了哪些是垃圾，想要进行回收的时候，该怎么回收比较好呢？</p>
+<p>可能有一些人就觉得奇怪，这还不简单，看见它是垃圾，直接回收不就得了。</p>
+<p>其实这也不无道理，简单粗暴，直接回收。</p>
+<p>是的，确实有这样的算法，看哪些是被我们标记的垃圾，看见了就直接回收。这种算法我们称之为<strong>标记–清除算法</strong>。</p>
+<p><strong>标记-清除算法</strong>工作原理：就是先标记出所有需要回收的对象，然后在统一回收所有被标记过的对象。</p>
+<p>不过，<strong>那些人</strong>你可别得意啊，因为这种方法虽然简单暴力，但它有个致命的缺点就是：</p>
+<p>标记清除过后，会产生大量的<strong>不连续内存碎片</strong>，如果不连续的碎片过多的话，，可能会导致有一些<strong>大的对象</strong>存不进去。这样，会导致下面两个问题：</p>
+<ol>
+<li>有些内存浪费了。</li>
+<li>对象存不进去，会又一次触发垃圾回收。</li>
+</ol>
+<p><strong>复制算法</strong></p>
+<p>为了解决这种问题，另外一种算法出现了—<strong>复制算法</strong>。就是说，它会将可用的内存按容量划分成两块。然后每次只使用其中的一块，当这一块快用完的时候，就会触发垃圾回收，它会把还存活的对象全部复制到另外一块内存中去，然后把这块内存全部清理了。</p>
+<p>这样，就不会出现碎片问题了。</p>
+<p>居然帮我们解决了我们必须夸一下它：不仅帮我们解决了问题，而且实现上也简单、运行也高效。</p>
+<p>但是(凡事都有个但是的)，它也是有缺点的，缺点很明显，发现了没有。假如每次存活的对象都很少很少，那另外一块内存不是几乎没有用到？所以说，这种方法有可能导致另外一半内存几乎没用了。内存那么宝贵，这可是很严重的问题。</p>
+<p><strong>优化策略</strong>：可以告诉你，有研究显示，其实有98%的对象都是<strong>朝生夕死</strong>的，也就是说，每次存活的对象确实很少很少。既然我们都知道存活的对象很少很少了，那我们干嘛还1：1的比例来分配？所以说，HotShot虚拟机是默认按8:1的比例来分配的。这样，就不会出现很多内存没用到的问题了。</p>
+<p>可能有人会说，万一占比为1/9的内存不够用了怎么办？不就没地方存那些活的对象？实际上，当内存不够用时，可以向其他地方借些内存来使用，例如<strong>老年代</strong>里的内存。</p>
+<blockquote>
+<p>这里说明一下新生代和老年代：说白了，新生代就是刚刚创建不久的对象，而老年代是已经活了挺久的对象。也就是说，有一些对象是确实活的比较久的，对于这种对象，我们另外给它分配内存来养老，而且垃圾回收时，我们不用每次都来这里查找有没垃圾对象，因为这些对象是垃圾的几率会比较小。</p>
+</blockquote>
+<p><strong>下面在简单介绍另外两种算法：</strong></p>
+<ol>
+<li>标记-整理算法：这种算法和<strong>标记-清除算法</strong>类似，不过它把垃圾清除了之后，会让存活的对象往一个方向靠拢，以此来整理碎片。</li>
+<li>分代收集算法：所谓分代就是把对象分成类似上面说的老年代和新生代，在新手代一般每次垃圾回收时死的对象一般都会比较多，而老年代会比较少，基于这种关系，我们就可以采取不同的算法来针对了。</li>
+</ol>
+<p><strong>总结下垃圾回收的几种算法：</strong></p>
+<ol>
+<li>标记-清除算法。</li>
+<li>复制算法。</li>
+<li>标记-整理算法。</li>
+<li>分代收集算法。</li>
+</ol>
+<h3 id="最后给大家几种垃圾回收器"><a href="#最后给大家几种垃圾回收器" class="headerlink" title="最后给大家几种垃圾回收器"></a>最后给大家几种垃圾回收器</h3><p>对于垃圾的回收，你是想一边运行程序其他代码一边进行垃圾回收？还是想把垃圾全收好再来执行程序的其他代码？虽然说最终使用cpu的时间是一样，但两种方式还是有区别的。</p>
+<p>下面简单介绍几种垃圾回收器，看看他们都使用哪种方。</p>
+<p><strong>(1).Serial收集器</strong></p>
+<p>serial(串行),看这个英文单词就知道这是一个单线程收集器。也就是说，它在进行垃圾回收时，必须暂停其他所有线程。显然，有时垃圾回收停顿的比较久的话，这对于用户来说是很难受的。</p>
+<p><img src="https://user-gold-cdn.xitu.io/2018/8/12/16529ca9ce11d978?w=472&amp;h=223&amp;f=png&amp;s=78973" alt=""></p>
+<p><strong>(2).ParNew</strong></p>
+<p>这个收集器和Serial很类似，进行垃圾回收的时候，也是得暂停其他所有线程，不过，它可以多条线程工作进行垃圾回收。</p>
+<p><img src="https://user-gold-cdn.xitu.io/2018/8/12/16529cace210a415?w=458&amp;h=245&amp;f=png&amp;s=81608" alt=""></p>
+<p><strong>(3).Parallel Scavenge收集器</strong></p>
+<p>parallel,并行的意思。也是可以多线程进行垃圾回收处理，但是它与ParNew不同。它会严格控制垃圾回收的时间与执行其他代码的时间之间的比例。我们来看一个名词：<strong>吞吐量</strong>。</p>
+<p>吞吐量 = 运行用户代码时间 / (运行用户代码时间 + 垃圾收集时间)。</p>
+<p>也就是说，Parallet Scavenge收集器会严格控制吞吐量，至于这个吞吐量是多少，这个可以人为设置。</p>
+<p><img src="https://user-gold-cdn.xitu.io/2018/8/12/16529cb073097129?w=458&amp;h=245&amp;f=png&amp;s=81608" alt=""></p>
+<h4 id="下面两个收集器重点介绍下"><a href="#下面两个收集器重点介绍下" class="headerlink" title="下面两个收集器重点介绍下"></a>下面两个收集器重点介绍下</h4><p><strong> (4).CMS（Concurrent Mark Sweep）收集器</strong></p>
+<p>CMS收集器是基于“标记-清除”算法实现的，它的运作过程相对于前面几种收集器来说要更复杂一些，整个过程分为4个步骤，包括：</p>
+<ol>
+<li>初始标记（CMS initial mark）</li>
+<li>并发标记（CMS concurrent mark）</li>
+<li>重新标记（CMS remark）</li>
+<li>并发清除（CMS concurrent sweep）</li>
+</ol>
+<p>其中初始标记、重新标记这两个步骤仍然需要<strong>暂停其他线程</strong>。但另外两个步骤可以和其他线程<strong>并发执行</strong>。初始标记仅仅只是标记一下GCRoots能直接关联到的对象，速度很快，并发标记阶段就是进行GC Roots Tracing的过程 <strong>(说白了就是把整个图都遍历了，找出没有的对象)</strong>，</p>
+<p>而重新标记阶段则是为了修正并发标记期间，因用户程序继续运作而导致标记产生变动的那一部分对象的标记记录，这个阶段的停顿时间一般会比初始标记阶段稍长一些，但远比并发标记的时间短。</p>
+<p>由于整个过程中耗时最长的并发标记和并发清除过程中，收集器线程都可以与用户线程一起工作，所以总体上来说，CMS收集器的内存回收过程几乎是与与用户线程一起并发地执行。</p>
+<p><img src="https://user-gold-cdn.xitu.io/2018/8/12/16529cb4c17c197b?w=477&amp;h=234&amp;f=png&amp;s=90727" alt=""></p>
+<p><strong>(5).G1收集器</strong></p>
+<p>这个估计是最牛的收集器了。该收集器具有如下特点：</p>
+<ol>
+<li>并行与并发：G1能充分利用现代计算器多CPU,多核的硬件优势，可以使用并发或并行的方式来缩短让其他线程暂停的优势。</li>
+<li>分代收集：就是类似像分出新生代和老年代那样处理。</li>
+<li>空间整合：采用了<strong>复制算法</strong>+<strong>标记-整合算法</strong>的特点来回收垃圾。就是整体采用<strong>标记-整理算法</strong>，局部采用<strong>复制算法</strong>。</li>
+<li>可预测停顿：这个就牛了，就是说，它能让使用者明确指定在一个长度为M毫秒的时间片段内，消耗在垃圾收集上的时间不超过N毫秒。</li>
+</ol>
+<p>它的执行过程大体如下：</p>
+<ol>
+<li>初始标记。</li>
+<li>并发标记。</li>
+<li>最终标记。</li>
+<li>筛选回收。</li>
+</ol>
+<p>这个流程和CMS很相似，它也是在<strong>初始标记</strong>和<strong>最终标记</strong>需要暂停其他线程，但其他两个过程就可以和其他线程并发执行。</p>
+<p>刚才我们说了G1收集器哪些优点，例如<strong>可预测停顿</strong>，这也使得<strong>筛选回收</strong>，是可以预测停顿垃圾回收的时间的，也就是说，停顿的时间是用户自己可以控制的，这也使得一般情况下，在<strong>筛选回收</strong>的时候，我们会暂停其他线程的执行，把所有时间都用到<strong>筛选回收</strong>上。</p>
+<p><img src="https://user-gold-cdn.xitu.io/2018/8/12/16529cb849b14484?w=645&amp;h=224&amp;f=png&amp;s=25815" alt=""></p>
+<p>本次讲解到这里。</p>
+<p><strong>完</strong></p>
 
       
     </div>
@@ -523,7 +536,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/java/" rel="tag"># java</a>
+            <a href="/tags/jvm/" rel="tag"># jvm</a>
           
         </div>
       
@@ -536,8 +549,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/08/12/JVM(2)--一文读懂垃圾回收/" rel="next" title="JVM(2)--一文读懂垃圾回收">
-                <i class="fa fa-chevron-left"></i> JVM(2)--一文读懂垃圾回收
+              <a href="/2018/08/10/JVM(1)---虚拟机在运行期的优化策略/" rel="next" title="JVM(1)---虚拟机在运行期的优化策略">
+                <i class="fa fa-chevron-left"></i> JVM(1)---虚拟机在运行期的优化策略
               </a>
             
           </div>
@@ -546,8 +559,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2018/08/19/关于我：一名双非的小混混/" rel="prev" title="关于我：一名来自双非学校的小混混">
-                关于我：一名来自双非学校的小混混 <i class="fa fa-chevron-right"></i>
+              <a href="/2018/08/15/聊一聊让我蒙蔽一晚上的各种常量池/" rel="prev" title="聊一聊让我蒙蔽一晚上的各种常量池">
+                聊一聊让我蒙蔽一晚上的各种常量池 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -680,7 +693,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#JVM中的几种常量池"><span class="nav-number">1.</span> <span class="nav-text">JVM中的几种常量池</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-class文件常量池"><span class="nav-number">1.1.</span> <span class="nav-text">1.class文件常量池</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-运行时常量池"><span class="nav-number">1.2.</span> <span class="nav-text">2.运行时常量池</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-字符串常量池"><span class="nav-number">1.3.</span> <span class="nav-text">3.字符串常量池</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#解决问题"><span class="nav-number">1.4.</span> <span class="nav-text">解决问题</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#问题2"><span class="nav-number">1.5.</span> <span class="nav-text">问题2</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#问题3"><span class="nav-number">1.6.</span> <span class="nav-text">问题3</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#何为垃圾？"><span class="nav-number">1.</span> <span class="nav-text">何为垃圾？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#怎么知道它已经是垃圾对象了"><span class="nav-number">2.</span> <span class="nav-text">怎么知道它已经是垃圾对象了?</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#可达性分析"><span class="nav-number">2.1.</span> <span class="nav-text">可达性分析</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#何时进行垃圾回收"><span class="nav-number">3.</span> <span class="nav-text">何时进行垃圾回收</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#怎么回收？"><span class="nav-number">4.</span> <span class="nav-text">怎么回收？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#最后给大家几种垃圾回收器"><span class="nav-number">5.</span> <span class="nav-text">最后给大家几种垃圾回收器</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#下面两个收集器重点介绍下"><span class="nav-number">5.1.</span> <span class="nav-text">下面两个收集器重点介绍下</span></a></li></ol></li></ol></div>
             
 
           </div>

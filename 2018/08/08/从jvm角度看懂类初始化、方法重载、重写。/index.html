@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="java," />
+  <meta name="keywords" content="java基础.jvm," />
 
 
 
@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="在写之前我们先来看几个问题，假如你对这些问题已经很懂了的话，那大可不用看这篇文章，如果不大懂的话，那么可以看看我的想法。 问题1： 1234567891011public static void main(String[] args)&amp;#123;    String t1 = new String(&amp;quot;2&amp;quot;);    t1.intern();    String t2 = &amp;qu">
-<meta name="keywords" content="java">
+<meta name="description" content="类初始化在讲类的初始化之前，我们先来大概了解一下类的声明周期。如下图 类的声明周期可以分为7个阶段，但今天我们只讲初始化阶段。我们我觉得出来使用和卸载阶段外，初始化阶段是最贴近我们平时学的，也是笔试做题过程中最容易遇到的，假如你想了解每一个阶段的话，可以看看深入理解Java虚拟机这本书。 下面开始讲解初始化过程。 大家先想一个问题，当我们在运行一个java程序时，每个类都会被初始化吗？假如并非每个">
+<meta name="keywords" content="java基础.jvm">
 <meta property="og:type" content="article">
-<meta property="og:title" content="聊一聊让我蒙蔽一晚上的各种常量池">
-<meta property="og:url" content="https://iamshuaidi.github.io/2018/08/15/聊一聊让我蒙蔽一晚上的各种常量池/index.html">
+<meta property="og:title" content="从jvm角度看懂类初始化、方法重载、重写。">
+<meta property="og:url" content="https://iamshuaidi.github.io/2018/08/08/从jvm角度看懂类初始化、方法重载、重写。/index.html">
 <meta property="og:site_name" content="帅地">
-<meta property="og:description" content="在写之前我们先来看几个问题，假如你对这些问题已经很懂了的话，那大可不用看这篇文章，如果不大懂的话，那么可以看看我的想法。 问题1： 1234567891011public static void main(String[] args)&amp;#123;    String t1 = new String(&amp;quot;2&amp;quot;);    t1.intern();    String t2 = &amp;qu">
+<meta property="og:description" content="类初始化在讲类的初始化之前，我们先来大概了解一下类的声明周期。如下图 类的声明周期可以分为7个阶段，但今天我们只讲初始化阶段。我们我觉得出来使用和卸载阶段外，初始化阶段是最贴近我们平时学的，也是笔试做题过程中最容易遇到的，假如你想了解每一个阶段的话，可以看看深入理解Java虚拟机这本书。 下面开始讲解初始化过程。 大家先想一个问题，当我们在运行一个java程序时，每个类都会被初始化吗？假如并非每个">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-08-19T06:15:57.842Z">
+<meta property="og:updated_time" content="2018-08-20T07:59:41.502Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="聊一聊让我蒙蔽一晚上的各种常量池">
-<meta name="twitter:description" content="在写之前我们先来看几个问题，假如你对这些问题已经很懂了的话，那大可不用看这篇文章，如果不大懂的话，那么可以看看我的想法。 问题1： 1234567891011public static void main(String[] args)&amp;#123;    String t1 = new String(&amp;quot;2&amp;quot;);    t1.intern();    String t2 = &amp;qu">
+<meta name="twitter:title" content="从jvm角度看懂类初始化、方法重载、重写。">
+<meta name="twitter:description" content="类初始化在讲类的初始化之前，我们先来大概了解一下类的声明周期。如下图 类的声明周期可以分为7个阶段，但今天我们只讲初始化阶段。我们我觉得出来使用和卸载阶段外，初始化阶段是最贴近我们平时学的，也是笔试做题过程中最容易遇到的，假如你想了解每一个阶段的话，可以看看深入理解Java虚拟机这本书。 下面开始讲解初始化过程。 大家先想一个问题，当我们在运行一个java程序时，每个类都会被初始化吗？假如并非每个">
 
 
 
@@ -120,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="https://iamshuaidi.github.io/2018/08/15/聊一聊让我蒙蔽一晚上的各种常量池/"/>
+  <link rel="canonical" href="https://iamshuaidi.github.io/2018/08/08/从jvm角度看懂类初始化、方法重载、重写。/"/>
 
 
 
 
 
-  <title>聊一聊让我蒙蔽一晚上的各种常量池 | 帅地</title>
+  <title>从jvm角度看懂类初始化、方法重载、重写。 | 帅地</title>
   
 
 
@@ -297,7 +297,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://iamshuaidi.github.io/2018/08/15/聊一聊让我蒙蔽一晚上的各种常量池/">
+    <link itemprop="mainEntityOfPage" href="https://iamshuaidi.github.io/2018/08/08/从jvm角度看懂类初始化、方法重载、重写。/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="帅地">
@@ -314,7 +314,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">聊一聊让我蒙蔽一晚上的各种常量池</h1>
+          <h1 class="post-title" itemprop="name headline">从jvm角度看懂类初始化、方法重载、重写。</h1>
         
 
         <div class="post-meta">
@@ -326,8 +326,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-08-15T00:00:00+08:00">
-                2018-08-15
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-08-08T00:00:00+08:00">
+                2018-08-08
               </time>
             
 
@@ -386,126 +386,65 @@
       
 
       
-        <p>在写之前我们先来看几个问题，假如你对这些问题已经很懂了的话，那大可不用看这篇文章，如果不大懂的话，那么可以看看我的想法。</p>
-<p>问题1：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] args)&#123;</span><br><span class="line">    String t1 = new String(&quot;2&quot;);</span><br><span class="line">    t1.intern();</span><br><span class="line">    String t2 = &quot;2&quot;;</span><br><span class="line">    System.out.println(t1 == t2);</span><br><span class="line">    </span><br><span class="line">    String t3 = new String(&quot;2&quot;) + new String(&quot;2&quot;);</span><br><span class="line">    t3.intern();</span><br><span class="line">    String t4 = &quot;22&quot;;</span><br><span class="line">    System.out.println(t3 == t4);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>答案输出：</p>
-<p>JDK1.6是 false false</p>
-<p>JDK1.7是 false true;</p>
-<p>问题2(把问题1的语句调换一下位置)</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] args)&#123;</span><br><span class="line">    String t1 = new String(&quot;2&quot;);</span><br><span class="line">    String t2 = &quot;2&quot;;</span><br><span class="line">    t1.intern();</span><br><span class="line">    System.out.println(t1 == t2);</span><br><span class="line">    </span><br><span class="line">    String t3 = new String(&quot;2&quot;) + new String(&quot;2&quot;);</span><br><span class="line">    String t4 = &quot;22&quot;;</span><br><span class="line">    t3.intern();</span><br><span class="line">    System.out.println(t3 == t4);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>答案输出：<br>false false</p>
-<p>对于这两个问题，看了几个人的博客，可谓百花齐放，越看越懵逼</p>
-<p>问题3</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] args)&#123;</span><br><span class="line">    Integer a = 1;</span><br><span class="line">    Integer b = 2;</span><br><span class="line">    Integer c = 3;</span><br><span class="line">    Integer d = 3;</span><br><span class="line">    Integer e = 321;</span><br><span class="line">    Integer f = 321;</span><br><span class="line">    Long g = 3L;</span><br><span class="line">    </span><br><span class="line">    System.out.println(c == d);</span><br><span class="line">    System.out.Println(e == f);</span><br><span class="line">    System.out.println(c == (a + b));</span><br><span class="line">    System.out.println(c.equals(a+b));</span><br><span class="line">    System.out.println(g == (a + b));</span><br><span class="line">    System.out.println(g.equals(a + b));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>答案输出：</p>
-<p>true</p>
-<p>false</p>
-<p>true</p>
-<p>true</p>
-<p>true</p>
-<p>false</p>
-<p>问题4：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">运行时常量池与字符串常量池是什么关系？包含？</span><br></pre></td></tr></table></figure>
-<p>在解决问题之前，我们先来简单了解一些常量池的一些知识点(大部分来源于周志明的深入Java虚拟机这本书)。</p>
-<h3 id="JVM中的几种常量池"><a href="#JVM中的几种常量池" class="headerlink" title="JVM中的几种常量池"></a>JVM中的几种常量池</h3><h4 id="1-class文件常量池"><a href="#1-class文件常量池" class="headerlink" title="1.class文件常量池"></a>1.class文件常量池</h4><p>在Class文件中除了有类的版本、字段、方法、接口等描述信息外，还有一项信息是<strong>常量池(Constant Pool Table)</strong>，用于存放编译期生成的各种字面量和符号引用。</p>
-<p>这里简单解释下字面量和符号引用</p>
-<p><strong>字面量</strong></p>
-<p>字面量类似与我们平常说的常量，主要包括：</p>
+        <h1 id="类初始化"><a href="#类初始化" class="headerlink" title="类初始化"></a>类初始化</h1><p>在讲类的初始化之前，我们先来大概了解一下类的声明周期。如下图</p>
+<p>类的声明周期可以分为7个阶段，但今天我们只讲<strong>初始化</strong>阶段。我们我觉得出来<strong>使用</strong>和<strong>卸载</strong>阶段外，<strong>初始化</strong>阶段是最贴近我们平时学的，也是笔试做题过程中最容易遇到的，假如你想了解每一个阶段的话，可以看看<strong>深入理解Java虚拟机</strong>这本书。</p>
+<p>下面开始讲解初始化过程。</p>
+<p>大家先想一个问题，当我们在运行一个java程序时，每个类都会被初始化吗？假如并非每个类都会执行初始化过程，那什么时候一个类会执行初始化过程呢？</p>
+<p>答案是并非每个类都会执行初始化过程，你想啊，如果这个类根本就不用用到，那初始化它干嘛，占用空间。</p>
+<p>至于何时执行初始化过程，虚拟机规范则是严格规定了<strong>有且只有</strong>5中情况会马上对类进行<strong>初始化</strong>。</p>
 <ol>
-<li>文本字符串：就是我们在代码中能够看到的字符串，例如String a = “aa”。其中”aa”就是字面量。</li>
-<li>被final修饰的变量。</li>
+<li>当使用<strong>new</strong>这个关键字实例化对象、读取或者设置一个类的<strong>静态字段</strong>，以及调用一个类的静态方法时会触发类的初始化(注意，被final修饰的静态字段除外)。</li>
+<li>使用java.lang.reflect包的方法对类进行反射调用时，如果这个类还没有进行过初始化，则会触发该类的初始化。</li>
+<li>当初始化一个类时，如果其父类还没有进行过初始化，则会先触发其父类。</li>
+<li>当虚拟机启动时，用户需要指定一个要执行的主类(包含main()方法的那个类)，虚拟机会先初始化这个主类。</li>
+<li>当使用JDK 1.7的动态语言支持时，如果一个…..(省略，说了也看不懂，哈哈)。</li>
 </ol>
-<p><strong>符号引用</strong></p>
-<p>主要包括以下常量：</p>
+<p>注意是<strong>有且只有</strong>。这5种行为我们称为对一个类的<strong>主动引用</strong>。</p>
+<h3 id="初始化过程"><a href="#初始化过程" class="headerlink" title="初始化过程"></a>初始化过程</h3><p>类的初始化过程都干了些什么呢？</p>
+<p>在类的初始化过程中，说白了就是执行了一个<strong>类构造器<clinit>()方法</clinit></strong>过程。</p>
+<p>至于clinit()方法都包含了哪些内容？</p>
+<p>实际上，clinit()方法是由编辑器自动收集类中的所有<strong>类变量</strong>的赋值动作和静态语句块(static{}块)中的语句合并产生的，编辑器收集的顺序则是由语句在源文件中出现的顺序来决定的。并且<strong>静态语句块中只能访问到定义在静态语句块之前的变量，定义在它之后的变量，在前面的静态语句块可以赋值，但不能访问</strong>。如下面的程序。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test1</span> </span>&#123;</span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        t = <span class="number">10</span>;<span class="comment">//编译可以正常通过</span></span><br><span class="line">        System.out.println(t);<span class="comment">//提示illegal forward reference错误</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">int</span> t = <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>给大家抛个练习</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">public class Father &#123;</span><br><span class="line">    public static int t1 = 10;</span><br><span class="line">    static &#123;</span><br><span class="line">        t1 = 20;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">class Son extends Father&#123;</span><br><span class="line">    public static int t2 = t1;</span><br><span class="line">&#125;</span><br><span class="line">//测试调用</span><br><span class="line">class Test2&#123;</span><br><span class="line">    public static void main(String[] args)&#123;</span><br><span class="line">        System.out.println(Son.t2);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>输出结果是什么呢？</p>
+<p>答案是20。我相信大家都知道为啥。因为会先初始化父类啊。</p>
+<p>不过这里需要注意的是，对于类来说，执行该类的clinit()方法时，会先执行父类的clinit()方法，但对于接口来说，执行接口的clinit()方法并不会执行父接口的clinit()方法。只有当用到父类接口中定义的变量时，才会执行父接口的clinit()方法。</p>
+<h4 id="被动引用"><a href="#被动引用" class="headerlink" title="被动引用"></a>被动引用</h4><p>上面说了类初始化的五种情况，且称之为主动引用。居然存在主动，也意味着存在所谓的<strong>被动</strong>引用。这里需要提出的是，被动引用并不会触发类的初始化。下面，我们举例几个被动引用的例子：</p>
 <ol>
-<li>类和接口和全限定名：例如对于String这个类，它的全限定名就是java/lang/String。</li>
-<li>字段的名称和描述符：所谓字段就是类或者接口中声明的变量，包括类级别变量（static)和实例级的变量。</li>
-<li>方法的名称和描述符。所谓描述符就相当于方法的<strong>参数类型+返回值类型</strong>。</li>
+<li>通过子类引用父类的静态字段，不会触发子类的初始化</li>
 </ol>
-<h4 id="2-运行时常量池"><a href="#2-运行时常量池" class="headerlink" title="2.运行时常量池"></a>2.运行时常量池</h4><p>我们上面说的class文件中的常量池，它会在类加载后进入<strong>方法区</strong>中的运行时常量池。并且需要的注意的是，运行时常量池是全局共享的，多个类共用一个运行时常量池。并且class文件中常量池多个相同的字符串在运行时常量池只会存在一份。</p>
-<p>注意运行时常量池存在于<strong>方法区</strong>中。</p>
-<h4 id="3-字符串常量池"><a href="#3-字符串常量池" class="headerlink" title="3.字符串常量池"></a>3.字符串常量池</h4><p>看名字我们就可以知道字符串常量池会用来存放<strong>字符串</strong>，也就是说常量池中的文本字符串会在类加载时进入字符串常量池。</p>
-<p>那字符串常量池和运行时常量池是什么关系呢？上面我们说常量池中的字面量会在类加载后进入运行时常量池，其中字面量中有包括文本字符串，显然从这段文字我们可以知道字符串常量池存在于运行时常量池中。也就存在于<strong>方法区</strong>中。</p>
-<p>不过在周志明那本深入java虚拟机中有说到，到了JDK1.7时，字符串常量池就被移出了方法区，转移到了<strong>堆</strong>里了。</p>
-<p>那么我们可以推断，到了JDK1.7以及之后的版本中，运行时常量池并没有包含字符串常量池，运行时常量池存在于方法区中，而字符串常量池存在于<strong>堆</strong>中。</p>
-<p>说了这么多，现在我们开始来解决上面提出了问题。</p>
-<h4 id="解决问题"><a href="#解决问题" class="headerlink" title="解决问题"></a>解决问题</h4><p>问题1：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] args)&#123;</span><br><span class="line">    String t1 = new String(&quot;1&quot;);</span><br><span class="line">    t1.intern();</span><br><span class="line">    String t2 = &quot;1&quot;;</span><br><span class="line">    System.out.println(t1 == t2);</span><br><span class="line">    </span><br><span class="line">    String t3 = new String(&quot;2&quot;) + new String(&quot;2&quot;);</span><br><span class="line">    t3.intern();</span><br><span class="line">    String t4 = &quot;22&quot;;</span><br><span class="line">    System.out.println(t3 == t4);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>答案输出：</p>
-<p>JDK1.6是 false false。</p>
-<p>JDK1.7是 false true;</p>
-<p>在解决这个问题之前，我们先来看另外一道面试中经常会问到的问题。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">String t = new String(&quot;tt&quot;);</span><br></pre></td></tr></table></figure>
-<p>假如程序中只有这样一行代码，那么这行代码创建了几个对象？</p>
-<p>我们上面说过，”tt”属于字面量，那么它会在类加载之后存在于字符串常量池中，也就是说，在 String t = new String(“tt”)这句代码执行之前，字符串常量池就已经创建了”tt”这个字符串对象了，我们都知道，new这个关键字会在堆中创建一个对象。</p>
-<p>所以，这段代码创建了两个对象。一个在堆中，一个在字符串常量池中。</p>
-<p>那么下面这段代码又是创建了几个对象呢？</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">String t1 = new String(&quot;tt&quot;);</span><br><span class="line">String t2 = new String(&quot;tt&quot;);</span><br></pre></td></tr></table></figure>
-<p>答是这段代码创建了三个对象，我们上面说了，字符串常量池只会保存一份内容相同的字符串。也就是说，在这两句代码执行之前，字符串常量池就已经创建了内容为”tt”的对象了。这两句代码执行之后，又在堆中创建了两个，所以一共创建了三个。</p>
-<p>那么下面这段代码又是创建了几个对象？</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">String t = &quot;tt&quot;;</span><br></pre></td></tr></table></figure>
-<p>答是1个，在这段代码执行之前，字符串常量池已经创建了一个”tt”的对象，但由于这行代码并非用new的方法，所以虚拟机会在字符串常量池中寻找是否有内容为”tt”的字符串对象，如果有，则直接返回这个字符串的引用，所以最终结果只创建了一个对象。</p>
-<p>回到我们的问题，在这里我们先<strong>解释下String 的intern方法</strong>。</p>
-<p>例如我们调用了t.intern()。</p>
-<p>在JDK1.6的时候，调用了这个方法之后，虚拟机会在字符串常量池在查找是否有内容与”tt”相等的对象，如果有，则返回这个对象，如果没有，则会在字符串常量池中<strong>添加</strong>这个对象。注意，是把这个对象添加到字符串常量池。</p>
-<p>到了JDK1.7之后，如果调用了intern这个方法，虚拟机会在字符串常量池在查找是否有内容与”tt”相等的对象，如果有，则返回这个对象，如果没有。则会在堆中把这个对象的<strong>引用</strong>复制添加到字符串常量池中。注意，这个时候添加的是对象在堆中的引用。</p>
-<p><strong>现在开始来分析问题中的代码</strong></p>
-<p>t1 = new String(“1”)。</p>
-<p>这句代码执行之前，字符串常量池中已经有”t”这个对象，执行之后会在堆中也创建一个”t”的对象，<strong>此时t1指向的是堆中的对象</strong>。</p>
-<p>t1.intern();</p>
-<p>这句代码执行之后，会在字符串常量池寻早内容为”t”的对象，字符串常量池已经存在这个对象了，把这个对象返回(不过返回之后并没有变量来接收)。</p>
-<p>t2 = “1”。</p>
-<p>这句执行后会在字符串常量池查找内容为”t”的对象，字符串常量池已经有这个对象了，返回给t2，<strong>此时t2指向的是常量池中的对象</strong>。</p>
-<p>一个是常量池中的对象，一个是在堆中的对象，两者能相等吗？因此</p>
-<p>t1 与 t2不相等。</p>
-<p><strong>接着下面</strong></p>
-<p>t3 = new String(“2”) + new String(“2”);</p>
-<p>这段代码调用之前，字符串常量池有一个”2”的对象，执行之后，实际上会调用StringBuilder的append()方法类进行拼接，最后在堆中创建一个”22”的对象，注意，此时<strong>字面量</strong>并没有”22”这个字符串，也就是说在字符串常量池并没有”22”这个对象。<strong>此时t3指向堆中”22”这个对象</strong></p>
-<p>t3.intern();</p>
-<p>执行这个方法之后</p>
-<p><strong>在JDK1.6的时候</strong>，它在字符串常量池中并没有找到内容为”22”的对象，所以这个时候会把这个<strong>对象添加到字符串常量池</strong>，并把这个对象返回(此时并没有变量来接收这个返回的对象)。注意添加的是对象，而并非引用。</p>
-<p>t4 = “22”。</p>
-<p>这句代码执行后，会返回字符串常量池中内容为”22”对象，<strong>此时t4指向的是字符串常量池中的对象</strong>。</p>
-<p>显然，一个对象在字符串常量池，一个在堆中，两个对象并非是同一个对象，因此在JDK1.6的时候，t3与t4不相等。</p>
-<p><strong>但是在JDK1.7的时候</strong></p>
-<p>t3.intern()执行之后，由于在字符串常量池在并没有内容为”22”的对象，所以会把堆中该对象的引用赋值到字符串常量池。注意此时字符串常量池保存的是<strong>堆中这个对象的引用</strong>。</p>
-<p>t4 = “22”。</p>
-<p>执行这句代码之后，从字符串常量池返回给t4的是<strong>堆中对象的引用</strong>。此时t4指向的实际上是堆中对象的引用，也就是说，t3和t4指向的是同一个对象。</p>
-<p>因此t3与t4相等。</p>
-<p>不知道你明白了没有？反正我是搞了好久才明白…</p>
-<h4 id="问题2"><a href="#问题2" class="headerlink" title="问题2"></a>问题2</h4><p>至于问题2，我就只讲下半部分的代码，上半部分如果你看懂了问题1，那么问题2也差不多自然懂了。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">String t3 = new String(&quot;2&quot;) + new String(&quot;2&quot;);</span><br><span class="line">String t4 = &quot;22&quot;;</span><br><span class="line">t3.intern();</span><br><span class="line">System.out.println(t3 == t4);</span><br></pre></td></tr></table></figure>
-<p>t3 = new String(“2”) + new String(“2”)。</p>
-<p>这段代码调用之前，字符串常量池有一个”2”的对象，执行之后，实际上会调用StringBuilder的append()方法类进行拼接，最后在堆中创建一个”22”的对象。<strong>此时t3指向堆中”22”这个对象</strong></p>
-<p>t4 = “22”。</p>
-<p>这句代码执行之前，字符串常量池已经存在”22”这个对象了，所有直接把这个对象返回给t4，<strong>此时t4指向的是字符串常量池中的对象</strong>.</p>
-<p>所以t3和t4肯定不是同一个对象啊，t3.intern这句几乎可以忽略，不会给t3和t4造成任何影响。</p>
-<h4 id="问题3"><a href="#问题3" class="headerlink" title="问题3"></a>问题3</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] args)&#123;</span><br><span class="line">    Integer a = 1;</span><br><span class="line">    Integer b = 2;</span><br><span class="line">    Integer c = 3;</span><br><span class="line">    Integer d = 3;</span><br><span class="line">    Integer e = 321;</span><br><span class="line">    Integer f = 321;</span><br><span class="line">    Long g = 3L;</span><br><span class="line">    </span><br><span class="line">    System.out.println(c == d);</span><br><span class="line">    System.out.Println(e == f);</span><br><span class="line">    System.out.println(c == (a + b));</span><br><span class="line">    System.out.println(c.equals(a+b));</span><br><span class="line">    System.out.println(g == (a + b));</span><br><span class="line">    System.out.println(g.equals(a + b));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>对于这个问题，我简单说一下可能你就懂了。</p>
-<p>(1). 内存中有一个java基本类型封装类的常量池。这些类包括<br>Byte, Short, Integer, Long, Character, Boolean。需要注意的是，Float和Double这两个类并没有对应的常量池。</p>
-<p>(2).上面5种整型的包装类也只是在对象数值在-128~127才可以使用这些常量池。</p>
-<p>(3). 在周志明的那本虚拟机中有这样一句话：包装类的<br>“\==”运行符在不遇到算术运算的情况下不会自动<strong>拆箱</strong>，以及他们的equals()方法不处理数据类型的关系，可以推断出如果遇到“==”两边有算术运算是话就会自动拆箱和进行数据类型转换处理。</p>
-<p>(4).Long的equals方法会先判断是否是Long类型。</p>
-<p>(5).无论是Integer还是Long，他们的equals方法比较的是数值。</p>
-<p>所以：</p>
-<p>System.out.println(c == d)。</p>
-<p>由于常量池的作用，c与d指向的是同一个对象(注意此时的==比较的是对象，也就是地址，而不是数值)。因此为true</p>
-<p>System.out.println(e == f)。</p>
-<p>由于321超过了127，因此常量池失去了作用，所以e和f数值虽然相同，但不是同一个对象，以此为false。</p>
-<p>System.out.println(c == (a+b))。</p>
-<p>此时==两边有算术运算，会进行拆箱，因此此时比较的是数值，而并非对象。因此为true。</p>
-<p>System.out.println(c.equals(a+b))</p>
-<p>c与a+b的数值相等，为true。</p>
-<p>System.out.pirnln(g == (a + b))</p>
-<p>由于==两边有算术运算，所以比较的是数值，因此为true。</p>
-<p>System.out.println(g.equals(a+b))。</p>
-<p>Long类型的equal在比较是时候，会先判断a+b是否为Long类型，显然a+b不是，因此false</p>
-<p>问题到此就结束了，以上便是自己的理解，以上如果有不对劲的地方，非常欢迎你的指点。</p>
-<p><strong>完</strong>。</p>
-<blockquote>
-<p>关注公众号「苦逼的码农」，获取更多原创文章，后台回复「礼包」送你一份特别的大礼包</p>
-</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * 1.通过子类引用父类的静态字段，不会触发子类的初始化</span><br><span class="line"> */</span><br><span class="line">public class FatherClass &#123;</span><br><span class="line">    //静态块</span><br><span class="line">    static &#123;</span><br><span class="line">        System.out.println(&quot;FatherClass init&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">    public static int value = 10;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class SonClass extends FatherClass &#123;</span><br><span class="line">    static &#123;</span><br><span class="line">        System.out.println(&quot;SonClass init&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"> class Test3&#123;</span><br><span class="line">    public static void main(String[] args)&#123;</span><br><span class="line">        System.out.println(SonClass.value);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>输出结果<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">FatherClass init</span><br></pre></td></tr></table></figure></p>
+<p>说明并没有触发子类的初始化</p>
+<ol start="2">
+<li>通过数组定义来引用类，不会触发此类的初始化。</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">class Test3&#123;</span><br><span class="line">   public static void main(String[] args)&#123;</span><br><span class="line">       SonClass[] sonClass = new SonClass[10];//引用上面的SonClass类。</span><br><span class="line">   &#125;      </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p> 输出结果是啥也没输出。</p>
+<ol start="3">
+<li>引用其他类的<strong>常量</strong>并不会触发那个类的初始化</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">public class FatherClass &#123;</span><br><span class="line">    //静态块</span><br><span class="line">    static &#123;</span><br><span class="line">        System.out.println(&quot;FatherClass init&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">    public static final String value = &quot;hello&quot;;//常量</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class Test3&#123;</span><br><span class="line">    public static void main(String[] args)&#123;</span><br><span class="line">        System.out.println(FatherClass.value);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>输出结果:hello</p>
+<p>实际上，之所以没有输出”FatherClass init”,是因为在编译阶段就已经对这个常量进行了一些优化处理，例如，由于Test3这个类用到了这个常量”hello”，在编译阶段就已经将”hello”这个常量储存到了Test3类的常量池中了，以后对FatherClass.value的引用实际上都被转化为Test3类对自身常量池的引用了。也就是说，在编译成class文件之后，两个class已经没啥毛关系了。</p>
+<hr>
+<h1 id="重载"><a href="#重载" class="headerlink" title="重载"></a>重载</h1><p>对于重载，我想学过java的都懂，但是今天我们中虚拟机的角度来看看重载是怎么回视。</p>
+<p>首先我们先来看一段代码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">//定义几个类</span><br><span class="line">public abstract class Animal &#123;</span><br><span class="line">&#125;</span><br><span class="line">class Dog extends Animal&#123;</span><br><span class="line">&#125;</span><br><span class="line">class Lion extends Animal&#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class Test4&#123;</span><br><span class="line">    public void run(Animal animal)&#123;</span><br><span class="line">        System.out.println(&quot;动物跑啊跑&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">    public void run(Dog dog)&#123;</span><br><span class="line">        System.out.println(&quot;小狗跑啊跑&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">    public void run(Lion lion)&#123;</span><br><span class="line">        System.out.println(&quot;狮子跑啊跑&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">    //测试</span><br><span class="line">    public static void main(String[] args)&#123;</span><br><span class="line">        Animal dog = new Dog();</span><br><span class="line">        Animal lion = new Lion();;</span><br><span class="line">        Test4 test4 = new Test4();</span><br><span class="line">        test4.run(dog);</span><br><span class="line">        test4.run(lion);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>运行结果：</p>
+<p>动物跑啊跑</p>
+<p>动物跑啊跑</p>
+<p>相信大家学过重载的都能猜到是这个结果。但是，为什么会选择这个方法进行重载呢？虚拟机是如何选择的呢？</p>
+<p>在此之前我们先来了解两个概念。</p>
+<p>先来看一行代码：</p>
+<p>Animal dog = new Dog();</p>
+<p>对于这一行代码，我们把Animal成为变量dong<strong>的静态类型</strong>，而后面的Dog称为变量dog的<strong>实际类型</strong>。</p>
+<p>所谓静态类型也就是说，在代码的编译期就可以判断出来了，也就是说在编译期就可以判断dog的静态类型是啥了。但在编译器无法知道变量dog的<strong>实际类型</strong>是什么。</p>
+<p>现在我们再来看看虚拟机是根据什么来<strong>重载</strong>选择哪个方法的。</p>
+<p>对于静态类型相同，但实际类型不同的变量，虚拟机在重载的时候是根据参数的静态类型而不是实际类型作为判断选择的。并且静态类型在编译器就是已知的了，这也代表在编译阶段，就已经决定好了选择哪一个重载方法。</p>
+<p>由于dog和lion的静态类型都是Animal,所以选择了run(Animal animal)这个方法。</p>
+<p>不过需要注意的是，有时候是可以有多个重载版本的，也就是说，重载版本并非是唯一的。我们不妨来看下面的代码。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">public class Test &#123;</span><br><span class="line">    public static void sayHello(Object arg)&#123;</span><br><span class="line">        System.out.println(&quot;hello Object&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">    public static void sayHello(int arg)&#123;</span><br><span class="line">        System.out.println(&quot;hello int&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">    public static void sayHello(long arg)&#123;</span><br><span class="line">        System.out.println(&quot;hello long&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">    public static void sayHello(Character arg)&#123;</span><br><span class="line">        System.out.println(&quot;hello Character&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">    public static void sayHello(char arg)&#123;</span><br><span class="line">        System.out.println(&quot;hello char&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">    public static void sayHello(char... arg)&#123;</span><br><span class="line">        System.out.println(&quot;hello char...&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">    public static void sayHello(Serializable arg)&#123;</span><br><span class="line">        System.out.println(&quot;hello Serializable&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    //测试</span><br><span class="line">    public static void main(String[] args)&#123;</span><br><span class="line">        sayHello(&apos;a&apos;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
       
     </div>
@@ -523,7 +462,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/java/" rel="tag"># java</a>
+            <a href="/tags/java基础-jvm/" rel="tag"># java基础.jvm</a>
           
         </div>
       
@@ -536,8 +475,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/08/12/JVM(2)--一文读懂垃圾回收/" rel="next" title="JVM(2)--一文读懂垃圾回收">
-                <i class="fa fa-chevron-left"></i> JVM(2)--一文读懂垃圾回收
+              <a href="/2018/07/27/互联网协议/" rel="next" title="互联网协议">
+                <i class="fa fa-chevron-left"></i> 互联网协议
               </a>
             
           </div>
@@ -546,8 +485,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2018/08/19/关于我：一名双非的小混混/" rel="prev" title="关于我：一名来自双非学校的小混混">
-                关于我：一名来自双非学校的小混混 <i class="fa fa-chevron-right"></i>
+              <a href="/2018/08/10/JVM(1)---虚拟机在运行期的优化策略/" rel="prev" title="JVM(1)---虚拟机在运行期的优化策略">
+                JVM(1)---虚拟机在运行期的优化策略 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -680,7 +619,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#JVM中的几种常量池"><span class="nav-number">1.</span> <span class="nav-text">JVM中的几种常量池</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-class文件常量池"><span class="nav-number">1.1.</span> <span class="nav-text">1.class文件常量池</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-运行时常量池"><span class="nav-number">1.2.</span> <span class="nav-text">2.运行时常量池</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-字符串常量池"><span class="nav-number">1.3.</span> <span class="nav-text">3.字符串常量池</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#解决问题"><span class="nav-number">1.4.</span> <span class="nav-text">解决问题</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#问题2"><span class="nav-number">1.5.</span> <span class="nav-text">问题2</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#问题3"><span class="nav-number">1.6.</span> <span class="nav-text">问题3</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#类初始化"><span class="nav-number">1.</span> <span class="nav-text">类初始化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#初始化过程"><span class="nav-number">1.0.1.</span> <span class="nav-text">初始化过程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#被动引用"><span class="nav-number">1.0.1.1.</span> <span class="nav-text">被动引用</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#重载"><span class="nav-number">2.</span> <span class="nav-text">重载</span></a></li></ol></div>
             
 
           </div>
