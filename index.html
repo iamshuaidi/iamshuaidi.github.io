@@ -405,8 +405,7 @@
 <p>想必大家也都听说过轻量级锁，重量级锁，自旋锁，自适应自旋锁，偏向锁等等，他们都有哪些区别呢？</p>
 <p>刚才和大家说，锁是加在对象上的，那么一个线程是如何知道这个对象被加了锁呢？又是如何知道它加的是什么类型的锁呢？</p>
 <p>基于这些问题，下面我讲一步一步讲解synchronized是如何被优化的，是如何从偏向锁到重量级锁的。</p>
-<p>锁对象</p>
-<p>刚才我们说，锁实际上是加在对象上的，那么被加了锁的对象我们称之为<strong>锁对象</strong>，在java中，任何一个对象都能成为锁对象。</p>
+<h4 id="锁对象"><a href="#锁对象" class="headerlink" title="锁对象"></a>锁对象</h4><p>刚才我们说，锁实际上是加在对象上的，那么被加了锁的对象我们称之为<strong>锁对象</strong>，在java中，任何一个对象都能成为锁对象。</p>
 <p>为了让大家更好着理解虚拟机是如何知道这个对象就是一个锁对象的，我们下面简单介绍一下java中一个对象的结构。</p>
 <p>java对象在内存中的存储结构主要有一下三个部分：</p>
 <ol>
@@ -1473,6 +1472,169 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://iamshuaidi.github.io/2018/08/12/leetcode/从0打卡leetcode之day 5 ---两个排序数组的中位数/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="帅地">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="帅地">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/08/12/leetcode/从0打卡leetcode之day 5 ---两个排序数组的中位数/" itemprop="url">从0打卡leetcode之day 5 ---两个排序数组的中位数</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-08-12T00:00:00+08:00">
+                2018-08-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/leetcode刷题贴/" itemprop="url" rel="index">
+                    <span itemprop="name">leetcode刷题贴</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><blockquote>
+<p>我靠，才坚持了四天，就差点不想坚持了。不行啊，我得把leetcode上的题给刷完，不然怕是不好进入bat的大门。</p>
+</blockquote>
+<h4 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a>题目描述</h4><blockquote>
+<p>给定两个大小为 m 和 n 的有序数组 nums1 和 nums2 。<br>请找出这两个有序数组的中位数。要求算法的时间复杂度为 O(log (m+n)) 。你可以假设 nums1 和 nums2 均不为空。</p>
+</blockquote>
+<h5 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">nums1 = [1, 3]</span><br><span class="line">nums2 = [2]</span><br><span class="line"></span><br><span class="line">中位数是 2.0</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">nums1 = [1, 2]</span><br><span class="line">nums2 = [3, 4]</span><br><span class="line"></span><br><span class="line">中位数是 (2 + 3)/2 = 2.5``</span><br></pre></td></tr></table></figure>
+<h4 id="解题"><a href="#解题" class="headerlink" title="解题"></a>解题</h4><p>最简单粗暴的就是把这两个数组头尾连接起来，然后重新给他们排序一下，冒泡排序相信你信手拈来，当然，你也可以装逼用快速排序。</p>
+<p>但是，如果这样子做的话，题目给你的<strong>有序数组</strong>就没啥用了，和无序一个样，所以这样做是不行的。题目要求是时间复杂度不能超过O(log(n+m))，说实话，这个复杂度我是不知道怎么做好，我的做法时间复杂度是O(n+m)。</p>
+<p><strong>具体是这样的</strong></p>
+<p>居然两个数组都是有序的了，我们可以再弄一个中间数组，然后把两个数组各自从数组头开始比较，哪个元素小，我们就把它存在中间数组。然后接下下一个元素一直比较下去。</p>
+<p>我还是直接上代码吧。如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">public double findMedianSortedArrays(int[] nums1, int[] nums2) &#123;</span><br><span class="line">        int m = nums1.length;</span><br><span class="line">        int n = nums2.length;</span><br><span class="line">        int t = m + n;//总长度</span><br><span class="line">        int temp[] = new int[t];</span><br><span class="line">        int i  = 0, j = 0, k = 0;</span><br><span class="line">        double obj;//用来存目标值</span><br><span class="line"></span><br><span class="line">        while(i &lt; m &amp;&amp; j &lt; n)&#123;</span><br><span class="line">            //把数组中比较小的值转移到temp数组中</span><br><span class="line">            if(nums1[i] &lt; nums2[j])&#123;</span><br><span class="line">                temp[k++] = nums1[i++];</span><br><span class="line">            &#125;else&#123;</span><br><span class="line">                temp[k++] = nums2[j++];</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        //把剩余的转移过去</span><br><span class="line">    while (i &lt; m)&#123;</span><br><span class="line">            temp[k++] = nums1[i++];</span><br><span class="line">    &#125;</span><br><span class="line">    while(j &lt; n)&#123;</span><br><span class="line">            temp[k++] = nums2[j++];</span><br><span class="line">    &#125;</span><br><span class="line">    //两个数组的总个数是奇数还是偶数</span><br><span class="line">    if(t % 2 == 0)&#123;//偶数</span><br><span class="line">            obj = (temp[t/2] + temp[(t-1)/2]) / 2.0;</span><br><span class="line">    &#125;else&#123;</span><br><span class="line">            obj = temp[t/2];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    return obj;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>虽然时间复杂度是O(n+m)，但是提交的时候居然通过了，而且还打败了93%的人。</p>
+<p>不过，这里还可以在优化，把时间复杂度降低到O((n+m)/2)。<br>就是说其实我们不用给整个temp数组排序，我们只要求出前面一半的数组元素就可以知道中间那个元素了，。例如不管一共是偶数个元素还是奇数个元素，我们让temp存到下标为t/2就可以了。然后再来判断t是奇数还是偶数…..</p>
+<p>例如上面两个示例，示例1一共有三个元素，那么temp[t/2]=temp[1]=2。然后直接把temp[t/2]=temp[1]取出来返回就可以了。</p>
+<p>示例2一共有4个元素，那么temp[t/2]=temp[2]=3。由于是偶数，我们直接把temp[t/2]=3和temp[t/2-1]=2这两个元素取出来处理之后返回就可以了。</p>
+<p>至于代码这么写，我就不写了。知道有这么一回事就可以了。</p>
+<p>如果你坚持想要O(log(n+m))的时间复杂度，那么可以看官方给的答案：</p>
+<p><a href="https://leetcode-cn.com/problems/median-of-two-sorted-arrays/solution/" target="_blank" rel="noopener">答案解析</a></p>
+<p><strong>完</strong></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://iamshuaidi.github.io/2018/08/12/JVM(2)--一文读懂垃圾回收/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1691,169 +1853,6 @@
 <p>刚才我们说了G1收集器哪些优点，例如<strong>可预测停顿</strong>，这也使得<strong>筛选回收</strong>，是可以预测停顿垃圾回收的时间的，也就是说，停顿的时间是用户自己可以控制的，这也使得一般情况下，在<strong>筛选回收</strong>的时候，我们会暂停其他线程的执行，把所有时间都用到<strong>筛选回收</strong>上。</p>
 <p><img src="https://user-gold-cdn.xitu.io/2018/8/12/16529cb849b14484?w=645&amp;h=224&amp;f=png&amp;s=25815" alt=""></p>
 <p>本次讲解到这里。</p>
-<p><strong>完</strong></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://iamshuaidi.github.io/2018/08/12/leetcode/从0打卡leetcode之day 5 ---两个排序数组的中位数/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="帅地">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="帅地">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/08/12/leetcode/从0打卡leetcode之day 5 ---两个排序数组的中位数/" itemprop="url">从0打卡leetcode之day 5 ---两个排序数组的中位数</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-08-12T00:00:00+08:00">
-                2018-08-12
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/leetcode刷题贴/" itemprop="url" rel="index">
-                    <span itemprop="name">leetcode刷题贴</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><blockquote>
-<p>我靠，才坚持了四天，就差点不想坚持了。不行啊，我得把leetcode上的题给刷完，不然怕是不好进入bat的大门。</p>
-</blockquote>
-<h4 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a>题目描述</h4><blockquote>
-<p>给定两个大小为 m 和 n 的有序数组 nums1 和 nums2 。<br>请找出这两个有序数组的中位数。要求算法的时间复杂度为 O(log (m+n)) 。你可以假设 nums1 和 nums2 均不为空。</p>
-</blockquote>
-<h5 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">nums1 = [1, 3]</span><br><span class="line">nums2 = [2]</span><br><span class="line"></span><br><span class="line">中位数是 2.0</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">nums1 = [1, 2]</span><br><span class="line">nums2 = [3, 4]</span><br><span class="line"></span><br><span class="line">中位数是 (2 + 3)/2 = 2.5``</span><br></pre></td></tr></table></figure>
-<h4 id="解题"><a href="#解题" class="headerlink" title="解题"></a>解题</h4><p>最简单粗暴的就是把这两个数组头尾连接起来，然后重新给他们排序一下，冒泡排序相信你信手拈来，当然，你也可以装逼用快速排序。</p>
-<p>但是，如果这样子做的话，题目给你的<strong>有序数组</strong>就没啥用了，和无序一个样，所以这样做是不行的。题目要求是时间复杂度不能超过O(log(n+m))，说实话，这个复杂度我是不知道怎么做好，我的做法时间复杂度是O(n+m)。</p>
-<p><strong>具体是这样的</strong></p>
-<p>居然两个数组都是有序的了，我们可以再弄一个中间数组，然后把两个数组各自从数组头开始比较，哪个元素小，我们就把它存在中间数组。然后接下下一个元素一直比较下去。</p>
-<p>我还是直接上代码吧。如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">public double findMedianSortedArrays(int[] nums1, int[] nums2) &#123;</span><br><span class="line">        int m = nums1.length;</span><br><span class="line">        int n = nums2.length;</span><br><span class="line">        int t = m + n;//总长度</span><br><span class="line">        int temp[] = new int[t];</span><br><span class="line">        int i  = 0, j = 0, k = 0;</span><br><span class="line">        double obj;//用来存目标值</span><br><span class="line"></span><br><span class="line">        while(i &lt; m &amp;&amp; j &lt; n)&#123;</span><br><span class="line">            //把数组中比较小的值转移到temp数组中</span><br><span class="line">            if(nums1[i] &lt; nums2[j])&#123;</span><br><span class="line">                temp[k++] = nums1[i++];</span><br><span class="line">            &#125;else&#123;</span><br><span class="line">                temp[k++] = nums2[j++];</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        //把剩余的转移过去</span><br><span class="line">    while (i &lt; m)&#123;</span><br><span class="line">            temp[k++] = nums1[i++];</span><br><span class="line">    &#125;</span><br><span class="line">    while(j &lt; n)&#123;</span><br><span class="line">            temp[k++] = nums2[j++];</span><br><span class="line">    &#125;</span><br><span class="line">    //两个数组的总个数是奇数还是偶数</span><br><span class="line">    if(t % 2 == 0)&#123;//偶数</span><br><span class="line">            obj = (temp[t/2] + temp[(t-1)/2]) / 2.0;</span><br><span class="line">    &#125;else&#123;</span><br><span class="line">            obj = temp[t/2];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    return obj;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>虽然时间复杂度是O(n+m)，但是提交的时候居然通过了，而且还打败了93%的人。</p>
-<p>不过，这里还可以在优化，把时间复杂度降低到O((n+m)/2)。<br>就是说其实我们不用给整个temp数组排序，我们只要求出前面一半的数组元素就可以知道中间那个元素了，。例如不管一共是偶数个元素还是奇数个元素，我们让temp存到下标为t/2就可以了。然后再来判断t是奇数还是偶数…..</p>
-<p>例如上面两个示例，示例1一共有三个元素，那么temp[t/2]=temp[1]=2。然后直接把temp[t/2]=temp[1]取出来返回就可以了。</p>
-<p>示例2一共有4个元素，那么temp[t/2]=temp[2]=3。由于是偶数，我们直接把temp[t/2]=3和temp[t/2-1]=2这两个元素取出来处理之后返回就可以了。</p>
-<p>至于代码这么写，我就不写了。知道有这么一回事就可以了。</p>
-<p>如果你坚持想要O(log(n+m))的时间复杂度，那么可以看官方给的答案：</p>
-<p><a href="https://leetcode-cn.com/problems/median-of-two-sorted-arrays/solution/" target="_blank" rel="noopener">答案解析</a></p>
 <p><strong>完</strong></p>
 
           

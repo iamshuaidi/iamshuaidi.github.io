@@ -89,7 +89,7 @@
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://user-gold-cdn.xitu.io/2018/8/22/165614893a59be34?w=721&h=344&f=png&s=42033">
 <meta property="og:image" content="https://user-gold-cdn.xitu.io/2018/8/22/165614960abf2f0e?w=549&h=343&f=png&s=35522">
-<meta property="og:updated_time" content="2018-08-22T12:32:23.325Z">
+<meta property="og:updated_time" content="2018-08-22T12:33:02.037Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="线程安全(上)--彻底搞懂synchronized(从偏向锁到重量级锁)">
 <meta name="twitter:description" content="接触过线程安全的同学想必都使用过synchronized这个关键字，在java同步代码快中，synchronized的使用方式无非有两个:  通过对一个对象进行加锁来实现同步，如下面代码。  12345synchronized(lockObject)&amp;#123;    //代码    &amp;#125;  对一个方法进行synchronized声明，进而对一个方法进行加锁来实现同步。如下面代码  123">
@@ -405,8 +405,7 @@
 <p>想必大家也都听说过轻量级锁，重量级锁，自旋锁，自适应自旋锁，偏向锁等等，他们都有哪些区别呢？</p>
 <p>刚才和大家说，锁是加在对象上的，那么一个线程是如何知道这个对象被加了锁呢？又是如何知道它加的是什么类型的锁呢？</p>
 <p>基于这些问题，下面我讲一步一步讲解synchronized是如何被优化的，是如何从偏向锁到重量级锁的。</p>
-<p>锁对象</p>
-<p>刚才我们说，锁实际上是加在对象上的，那么被加了锁的对象我们称之为<strong>锁对象</strong>，在java中，任何一个对象都能成为锁对象。</p>
+<h4 id="锁对象"><a href="#锁对象" class="headerlink" title="锁对象"></a>锁对象</h4><p>刚才我们说，锁实际上是加在对象上的，那么被加了锁的对象我们称之为<strong>锁对象</strong>，在java中，任何一个对象都能成为锁对象。</p>
 <p>为了让大家更好着理解虚拟机是如何知道这个对象就是一个锁对象的，我们下面简单介绍一下java中一个对象的结构。</p>
 <p>java对象在内存中的存储结构主要有一下三个部分：</p>
 <ol>
@@ -765,7 +764,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#偏向锁"><span class="nav-number">1.</span> <span class="nav-text">偏向锁</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#那么，什么是偏向锁"><span class="nav-number">1.1.</span> <span class="nav-text">那么，什么是偏向锁?</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#锁膨胀"><span class="nav-number">2.</span> <span class="nav-text">锁膨胀</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#锁撤销"><span class="nav-number">3.</span> <span class="nav-text">锁撤销</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#轻量级锁"><span class="nav-number">4.</span> <span class="nav-text">轻量级锁</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#自旋锁"><span class="nav-number">4.1.</span> <span class="nav-text">自旋锁</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#自旋锁的一些问题"><span class="nav-number">4.1.1.</span> <span class="nav-text">自旋锁的一些问题</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#自适应自旋锁"><span class="nav-number">4.2.</span> <span class="nav-text">自适应自旋锁</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#重量级锁"><span class="nav-number">5.</span> <span class="nav-text">重量级锁</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#为什么说重量级锁开销大呢"><span class="nav-number">5.1.</span> <span class="nav-text">为什么说重量级锁开销大呢</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#总结"><span class="nav-number">6.</span> <span class="nav-text">总结</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#锁对象"><span class="nav-number">1.</span> <span class="nav-text">锁对象</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#偏向锁"><span class="nav-number">2.</span> <span class="nav-text">偏向锁</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#那么，什么是偏向锁"><span class="nav-number">2.1.</span> <span class="nav-text">那么，什么是偏向锁?</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#锁膨胀"><span class="nav-number">3.</span> <span class="nav-text">锁膨胀</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#锁撤销"><span class="nav-number">4.</span> <span class="nav-text">锁撤销</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#轻量级锁"><span class="nav-number">5.</span> <span class="nav-text">轻量级锁</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#自旋锁"><span class="nav-number">5.1.</span> <span class="nav-text">自旋锁</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#自旋锁的一些问题"><span class="nav-number">5.1.1.</span> <span class="nav-text">自旋锁的一些问题</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#自适应自旋锁"><span class="nav-number">5.2.</span> <span class="nav-text">自适应自旋锁</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#重量级锁"><span class="nav-number">6.</span> <span class="nav-text">重量级锁</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#为什么说重量级锁开销大呢"><span class="nav-number">6.1.</span> <span class="nav-text">为什么说重量级锁开销大呢</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#总结"><span class="nav-number">7.</span> <span class="nav-text">总结</span></a></li></ol></div>
             
 
           </div>
