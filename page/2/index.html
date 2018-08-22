@@ -296,6 +296,191 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://iamshuaidi.github.io/2018/08/05/leetcode/从零打卡leetcode之day 2--两数相加/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="帅地">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="帅地">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/08/05/leetcode/从零打卡leetcode之day 2--两数相加/" itemprop="url">从零打卡leetcode之day 2--两数相加</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-08-05T00:00:00+08:00">
+                2018-08-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/leetcode刷题贴/" itemprop="url" rel="index">
+                    <span itemprop="name">leetcode刷题贴</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><blockquote>
+<p>深知自己在算法方面上很菜，于是打算通过打卡的方式，逼自己一把。每天在leetcode上打卡，并且把自己的想法分享出来。这将是一段漫长而又艰辛的旅程。如果你也想和我一起走上一条充满艰辛的航路，那么，别犹豫了，上车吧，一起学习一起探讨。</p>
+</blockquote>
+<hr>
+<h4 id="从零打卡leetcode之day-2"><a href="#从零打卡leetcode之day-2" class="headerlink" title="从零打卡leetcode之day 2"></a>从零打卡leetcode之day 2</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">题目描述：</span><br><span class="line"></span><br><span class="line">给定两个非空链表来表示两个非负整数。位数按照逆序方式存储，</span><br><span class="line">它们的每个节点只存储单个数字。将两数相加返回一个新的链表。</span><br><span class="line"></span><br><span class="line">你可以假设除了数字 0 之外，这两个数字都不会以零开头。</span><br><span class="line">示例：</span><br><span class="line">输入：(2 -&gt; 4 -&gt; 3) + (5 -&gt; 6 -&gt; 4)</span><br><span class="line">输出：7 -&gt; 0 -&gt; 8</span><br><span class="line">原因：342 + 465 = 807</span><br></pre></td></tr></table></figure>
+<h3 id="我的想法"><a href="#我的想法" class="headerlink" title="我的想法"></a>我的想法</h3><p>我靠，居然还用到了链表的知识，突然就想起了当初用c语言自学链表的那段日子，真的差点被搞死。各种指针指来指去的。</p>
+<p>好吧，我这里需要声明一下，如果你还没接触过链表，或者对链表超级不熟悉，麻烦你先去学好链表再来刷题，因为，链表是真的贼重要啊。</p>
+<h4 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h4><p><strong>方法1：</strong></p>
+<p>说实话，看到这道题的时候，我的想法是不管三七二十一，直接把链表代表的数字给直接算出来，然后在把两个数字给加起来，最后在把得到的和拆分成链表。可谓是暴力思路又简单啊。不过感觉代码量会有点多。</p>
+<p>例如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">(2 -&gt; 4 -&gt; 3) =&gt; 2 + 4 * 10 + 3 * 100 = 342 </span><br><span class="line">(5 -&gt; 6 -&gt; 4) =&gt; 5 + 6 * 10 + 4 * 100 = 465</span><br><span class="line">然后</span><br><span class="line">342 + 465 = 807</span><br><span class="line">接着</span><br><span class="line">807 =&gt; 7 -&gt; 0 -&gt; 8</span><br></pre></td></tr></table></figure></p>
+<p>代码如下所示：</p>
+<p>先给出链表的结构<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">class ListNode &#123;</span><br><span class="line">    int val;</span><br><span class="line">    ListNode next;</span><br><span class="line">    ListNode(int x) &#123; val = x; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">//方法1</span><br><span class="line">public ListNode addTwoNumbers1(ListNode l1, ListNode l2) &#123;</span><br><span class="line">    int num1 = 0;//用来存放第一个链表代表的数字</span><br><span class="line">    int num2 = 0;//用来存放第二个链表代表的数字</span><br><span class="line">    int sum = 0;//存放和</span><br><span class="line">    //t = 1,10,100....用来代表链表中的个位，十位，百位...</span><br><span class="line">    int t = 1;//因为是从个位开始遍历的，所以初值为1</span><br><span class="line">    //算第一个数字</span><br><span class="line">    while(l1 != null)&#123;</span><br><span class="line">        num1 = num1 + l1.val * t;</span><br><span class="line">        t = t * 10;</span><br><span class="line">        l1 = l1.next;</span><br><span class="line">    &#125;</span><br><span class="line">    t = 1;</span><br><span class="line">    //算第二个数字</span><br><span class="line">    while(l2 != null)&#123;</span><br><span class="line">        num2 = num2 + l2.val * t;</span><br><span class="line">        t = t * 10;</span><br><span class="line">        l2 = l2.next;</span><br><span class="line">    &#125;</span><br><span class="line">    //相加</span><br><span class="line">    sum = num1 + num2;</span><br><span class="line">    //拆分出来放进链表里；</span><br><span class="line">    ListNode head  = null;//作为链表的头节点</span><br><span class="line">    ListNode temp = head;//跟踪链表</span><br><span class="line">    while(sum &gt; 0) &#123;//结束条件为sum等于0</span><br><span class="line">        if(head == null)&#123;</span><br><span class="line">            head = new ListNode(sum % 10);</span><br><span class="line">            temp = head;</span><br><span class="line">        &#125;else&#123;</span><br><span class="line">            temp.next = new ListNode(sum % 10);</span><br><span class="line">            temp = temp.next;</span><br><span class="line">        &#125;</span><br><span class="line">        sum = sum / 10;</span><br><span class="line">    &#125;</span><br><span class="line">    //由于有可能sum一开始就为0，所以还需要在检查一下</span><br><span class="line">    if(head == null)&#123;</span><br><span class="line">        head = new ListNode(0);</span><br><span class="line">    &#125;</span><br><span class="line">    return head;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<p>大家一起探讨探讨，你们觉得这种思路可行吗？觉得可行的举个爪，不可行的站起来说说为啥不可行。</p>
+<p>反正，我是觉得不可行，为什么？</p>
+<p>因为题目并没有说这条链表有多长啊，假如这条链表很长的话，一个int型整数根本存不了这个数字，当然，你可能会说，我可以用long long啊。 不好意思，long long也可能存不了。你可能又会说，java或python什么的，不是有大整数咪？好吧，我没去用过这些大整数，不知道具体个什么情况，所以当作没有这么一回事处理,haha。有兴趣的可以去尝试一下。</p>
+<hr>
+<p><strong>方法2</strong></p>
+<p>刚才方法1已经被告知不可行了。实际上，这道题我是觉得在解法思路上还是比较简单的，我相信大家也都能想到方法2这种方法：</p>
+<p>就是我们可以让两个数的个位数相加，十位数相加….然后个位数有进位的话，再把进位给十位数….</p>
+<p>例如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(1 -&gt; 4 -&gt; 5) + (1 -&gt; 6 -&gt; 4 -&gt; 5)</span><br><span class="line">(我是故意给出两条链表长度不相等的情况的)</span><br></pre></td></tr></table></figure></p>
+<p>解法如下图：</p>
+<p>代码如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">int cout = 0;//用来检查是否有进位,默认没有进位</span><br><span class="line">  ListNode head = null;//用来作为链表头</span><br><span class="line">  ListNode temp = head;//用来跟踪链表</span><br><span class="line">  //注意循环结束条件</span><br><span class="line">  while(l1 != null &amp;&amp; l2 != null)&#123;</span><br><span class="line">      if(head == null)&#123;</span><br><span class="line">          head = new ListNode((l1.val + l2.val + cout) % 10);</span><br><span class="line">          temp = head;</span><br><span class="line">      &#125;else&#123;</span><br><span class="line">          temp.next = new ListNode((l1.val + l2.val + cout) % 10);</span><br><span class="line">          temp = temp.next;</span><br><span class="line">      &#125;</span><br><span class="line">      //检查是否有进位</span><br><span class="line">      cout = (l1.val + l2.val + cout) / 10;</span><br><span class="line">      l1 = l1.next;</span><br><span class="line">      l2 = l2.next;</span><br><span class="line">  &#125;</span><br><span class="line">  while(l1 != null)&#123;</span><br><span class="line">      temp.next = new ListNode((l1.val + cout) % 10);</span><br><span class="line">      cout = (l1.val + cout) / 10;</span><br><span class="line">      l1 = l1.next;</span><br><span class="line">      temp = temp.next;</span><br><span class="line">  &#125;</span><br><span class="line">  while(l2 != null)&#123;</span><br><span class="line">      temp.next = new ListNode((l2.val + cout) % 10);</span><br><span class="line">      cout = (l2.val + cout) / 10;</span><br><span class="line">      l2 = l2.next;</span><br><span class="line">      temp = temp.next;</span><br><span class="line"></span><br><span class="line">  &#125;</span><br><span class="line">  //最后还得在检测一下时候最高位有进位</span><br><span class="line">  if(cout == 1)&#123;</span><br><span class="line">      temp.next = new ListNode(cout);</span><br><span class="line">  &#125;</span><br><span class="line">  return head;</span><br></pre></td></tr></table></figure>
+<p>这里需要注意的一些点：</p>
+<ol>
+<li>就是第一个循环的结束条件.</li>
+</ol>
+<ol start="2">
+<li>当循环结束之后，还得把那条比较长的链表剩余的部分再循环一遍。</li>
+<li>最后还得看一下是否最高位有进位。</li>
+</ol>
+<p>我觉得这道题在解法思路上还是比较简单，不过并不意味着做起来简单，因为这道题如果不仔细看，还是很容易出错的，细节点不叫多。</p>
+<p><strong>不过</strong></p>
+<p>除了方法二，我是不知道还要其他什么比较好的方法了，但是我是觉得方法二里面的代码有点多，于是绞尽脑汁，各种简化，写出了一份代码比较简练的<strong>精简代码</strong>。放出来给各位看看：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">//作为头节点，且最后返回时不要这个头节点</span><br><span class="line">        ListNode head = new ListNode(0);</span><br><span class="line">        ListNode temp = head;//跟踪</span><br><span class="line">        int cout = 0;</span><br><span class="line"></span><br><span class="line">        while(l1 != null || l2 != null || cout != 0)&#123;</span><br><span class="line">            if(l1 != null)&#123;</span><br><span class="line">                cout += l1.val;</span><br><span class="line">                l1 = l1.next;</span><br><span class="line">            &#125;</span><br><span class="line">            if(l2 != null)&#123;</span><br><span class="line">                cout += l2.val;</span><br><span class="line">                l2 = l2.next;</span><br><span class="line">            &#125;</span><br><span class="line">            temp.next = new ListNode(cout % 10);</span><br><span class="line">            temp = temp.next;</span><br><span class="line">            cout = cout / 10;</span><br><span class="line">        &#125;</span><br><span class="line">        return head.next;</span><br></pre></td></tr></table></figure>
+<p>先得意一下：虽然大家都能想到方法二，不过我就不信你能比我的简洁。哈哈哈</p>
+<p>几点说明:</p>
+<ol>
+<li>先把头节点直接new出来，可以省略判断语句。</li>
+<li>以前的while循环是判断两个链表都不为空，不过我现在换了一种想法，因为i你想我，只要有一个链表是不为空的，或者只要coun=1，那么我们就得继续处理，于是乎…..</li>
+</ol>
+<p><strong>此题到此结束</strong></p>
+<hr>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://iamshuaidi.github.io/2018/08/04/leetcode/从零打卡leetcode之day 1--两数之和/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -870,7 +1055,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-count">14</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

@@ -296,6 +296,353 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://iamshuaidi.github.io/2018/08/22/java/线程安全(上)--彻底搞懂synchronized(从偏向锁到重量级锁)/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="帅地">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="帅地">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/08/22/java/线程安全(上)--彻底搞懂synchronized(从偏向锁到重量级锁)/" itemprop="url">线程安全(上)--彻底搞懂synchronized(从偏向锁到重量级锁)</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-08-22T00:00:00+08:00">
+                2018-08-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>接触过线程安全的同学想必都使用过synchronized这个关键字，在java同步代码快中，synchronized的使用方式无非有两个:</p>
+<ol>
+<li>通过对一个对象进行加锁来实现同步，如下面代码。</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">synchronized(lockObject)&#123;</span><br><span class="line">    //代码</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>对一个方法进行synchronized声明，进而对一个方法进行加锁来实现同步。如下面代码</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">public synchornized void test()&#123;</span><br><span class="line">    //代码</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>但这里需要指出的是，无论是对一个对象进行加锁还是对一个方法进行加锁，实际上，都是对<strong>对象进行加锁</strong>。</p>
+<p>也就是说，对于方式2，实际上虚拟机会根据synchronized修饰的是实例方法还是类方法，去取对应的实例对象或者Class对象来进行加锁。</p>
+<p>对于synchronized这个关键字，可能之前大家有听过，他是一个<strong>重量级锁</strong>，开销很大，建议大家少用点。但大家可能也听说过，但到了jdk1.6之后，该关键字被进行了很多的优化，已经不像以前那样不给力了，建议大家多使用。</p>
+<p>那么它是进行了什么样的优化，才使得synchronized又深得人心呢？为何重量级锁开销就大呢？</p>
+<p>想必大家也都听说过轻量级锁，重量级锁，自旋锁，自适应自旋锁，偏向锁等等，他们都有哪些区别呢？</p>
+<p>刚才和大家说，锁是加在对象上的，那么一个线程是如何知道这个对象被加了锁呢？又是如何知道它加的是什么类型的锁呢？</p>
+<p>基于这些问题，下面我讲一步一步讲解synchronized是如何被优化的，是如何从偏向锁到重量级锁的。</p>
+<p>锁对象</p>
+<p>刚才我们说，锁实际上是加在对象上的，那么被加了锁的对象我们称之为<strong>锁对象</strong>，在java中，任何一个对象都能成为锁对象。</p>
+<p>为了让大家更好着理解虚拟机是如何知道这个对象就是一个锁对象的，我们下面简单介绍一下java中一个对象的结构。</p>
+<p>java对象在内存中的存储结构主要有一下三个部分：</p>
+<ol>
+<li>对象头</li>
+<li>实例数据</li>
+<li>填充数据</li>
+</ol>
+<p>这里强调一下，<strong>对象头</strong>里的数据主要是一些运行时的数据。</p>
+<p>其简单的结构如下</p>
+<table>
+<thead>
+<tr>
+<th>长度</th>
+<th>内容</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>32/64bit</td>
+<td>Mark Work</td>
+<td>hashCode,GC分代年龄，锁信息</td>
+</tr>
+<tr>
+<td>32/64bit</td>
+<td>Class Metadata Address</td>
+<td>指向对象类型数据的指针</td>
+</tr>
+<tr>
+<td>32/64bit</td>
+<td>Array Length</td>
+<td>数组的长度(当对象为数组时)</td>
+</tr>
+</tbody>
+</table>
+<p>从该表格中我们可以看到，对象中关于锁的信息是存在Markword里的。</p>
+<p>我们来看一段代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">LockObject lockObject = new LockObject();//随便创建一个对象</span><br><span class="line"></span><br><span class="line">synchronized(lockObject)&#123;</span><br><span class="line">    //代码</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>当我们创建一个对象LockObject时，该对象的部分Markword关键数据如下。</p>
+<table>
+<thead>
+<tr>
+<th>bit fields</th>
+<th>是否偏向锁</th>
+<th>锁标志位</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>hash</td>
+<td>0</td>
+<td>01</td>
+</tr>
+</tbody>
+</table>
+<p>从图中可以看出，<strong>偏向锁</strong>的标志位是“01”，状态是“0”，表示该对象还没有被加上偏向锁。（“1”是表示被加上偏向锁）。该对象被创建出来的那一刻，就有了偏向锁的标志位，这也说明了所有对象都是可偏向的，但所有对象的状态都为“0”，也同时说明所有被创建的对象的偏向锁并没有生效。</p>
+<h4 id="偏向锁"><a href="#偏向锁" class="headerlink" title="偏向锁"></a>偏向锁</h4><p>不过，当线程执行到临界区（critical section）时，此时会利用CAS(Compare and Swap)操作，将线程ID插入到Markword中，同时修改偏向锁的标志位。</p>
+<blockquote>
+<p>所谓临界区，就是只允许一个线程进去执行操作的区域，即同步代码块。CAS是一个原子性操作</p>
+</blockquote>
+<p>此时的Mark word的结构信息如下：</p>
+<table>
+<thead>
+<tr>
+<th>bit fields</th>
+<th></th>
+<th>是否偏向锁</th>
+<th>锁标志位</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>threadId</td>
+<td>epoch</td>
+<td>1</td>
+<td>01</td>
+</tr>
+</tbody>
+</table>
+<p>此时偏向锁的状态为“1”，说明对象的偏向锁生效了，同时也可以看到，哪个线程获得了该对象的锁。</p>
+<h5 id="那么，什么是偏向锁"><a href="#那么，什么是偏向锁" class="headerlink" title="那么，什么是偏向锁?"></a>那么，什么是偏向锁?</h5><p>偏向锁是jdk1.6引入的一项锁优化，其中的“偏”是偏心的偏。它的意思就是说，这个锁会偏向于第一个获得它的线程，在接下来的执行过程中，假如该锁没有被其他线程所获取，没有其他线程来竞争该锁，那么持有偏向锁的线程将永远不需要进行同步操作。</p>
+<p>也就是说:</p>
+<p>在此线程之后的执行过程中，如果再次进入或者退出同一段同步块代码，并不再需要去进行<strong>加锁</strong>或者<strong>解锁</strong>操作，而是会做以下的步骤：</p>
+<ol>
+<li>Load-and-test，也就是简单判断一下当前线程id是否与Markword当中的线程id是否一致.</li>
+<li>如果一致，则说明此线程已经成功获得了锁，继续执行下面的代码.</li>
+<li>如果不一致，则要检查一下对象是否还是可偏向，即“是否偏向锁”标志位的值。</li>
+<li>如果还未偏向，则利用CAS操作来竞争锁，也即是第一次获取锁时的操作。</li>
+</ol>
+<p>如果此对象已经偏向了，并且不是偏向自己，则说明存在了<strong>竞争</strong>。此时可能就要根据另外线程的情况，可能是重新偏向，也有可能是做偏向撤销，但大部分情况下就是升级成<strong>轻量级锁</strong>了。</p>
+<p>可以看出，偏向锁是针对于一个线程而言的，线程获得锁之后就不会再有解锁等操作了，这样可以省略很多开销。假如有两个线程来竞争该锁话，那么偏向锁就失效了，进而升级成轻量级锁了。</p>
+<p>为什么要这样做呢？因为经验表明，其实大部分情况下，都会是同一个线程进入同一块同步代码块的。这也是为什么会有偏向锁出现的原因。</p>
+<p>在Jdk1.6中，偏向锁的开关是默认开启的，适用于只有一个线程访问同步块的场景。</p>
+<h4 id="锁膨胀"><a href="#锁膨胀" class="headerlink" title="锁膨胀"></a>锁膨胀</h4><p>刚才说了，当出现有两个线程来竞争锁的话，那么偏向锁就失效了，此时锁就会膨胀，升级为轻量级锁。这也是我们经常所说的<strong>锁膨胀</strong></p>
+<h4 id="锁撤销"><a href="#锁撤销" class="headerlink" title="锁撤销"></a>锁撤销</h4><p>由于偏向锁失效了，那么接下来就得把该锁撤销，锁撤销的开销花费还是挺大的，其大概的过程如下：</p>
+<ol>
+<li>在一个安全点停止拥有锁的线程。</li>
+<li>遍历线程栈，如果存在锁记录的话，需要修复锁记录和Markword，使其变成无锁状态。</li>
+<li>唤醒当前线程，将当前锁升级成轻量级锁。</li>
+</ol>
+<p>所以，如果某些同步代码块大多数情况下都是有两个及以上的线程竞争的话，那么偏向锁就会是一种累赘，对于这种情况，我们可以一开始就把偏向锁这个默认功能给关闭</p>
+<h4 id="轻量级锁"><a href="#轻量级锁" class="headerlink" title="轻量级锁"></a>轻量级锁</h4><p>锁撤销升级为轻量级锁之后，那么对象的Markword也会进行相应的的变化。下面先简单描述下锁撤销之后，升级为轻量级锁的过程：</p>
+<ol>
+<li>线程在自己的栈桢中创建锁记录 LockRecord。</li>
+<li>将锁对象的对象头中的MarkWord复制到线程的刚刚创建的锁记录中。</li>
+<li>将锁记录中的Owner指针指向锁对象。</li>
+<li>将锁对象的对象头的MarkWord替换为指向锁记录的指针。</li>
+</ol>
+<p>对应的图描述如下(图来自周志明深入java虚拟机)</p>
+<p><img src="https://user-gold-cdn.xitu.io/2018/8/22/165614893a59be34?w=721&amp;h=344&amp;f=png&amp;s=42033" alt="图片1"></p>
+<p><img src="https://user-gold-cdn.xitu.io/2018/8/22/165614960abf2f0e?w=549&amp;h=343&amp;f=png&amp;s=35522" alt="图片2"></p>
+<p>之后Markwork如下：</p>
+<table>
+<thead>
+<tr>
+<th>bit fields</th>
+<th>锁标志位</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>指向LockRecord的指针</td>
+<td>00</td>
+</tr>
+</tbody>
+</table>
+<p>注：锁标志位”00”表示<strong>轻量级锁</strong></p>
+<p>轻量级锁主要有两种</p>
+<ol>
+<li>自旋锁</li>
+<li>自适应自旋锁</li>
+</ol>
+<h5 id="自旋锁"><a href="#自旋锁" class="headerlink" title="自旋锁"></a>自旋锁</h5><p>所谓自旋，就是指当有另外一个线程来竞争锁时，这个线程会在原地循环等待，而不是把该线程给<strong>阻塞</strong>，直到那个获得锁的线程释放锁之后，这个线程就可以马上获得锁的。</p>
+<p>注意，锁在原地循环的时候，是会消耗cpu的，就相当于在执行一个啥也没有的for循环。</p>
+<p>所以，轻量级锁适用于那些同步代码块执行的很快的场景，这样，线程原地等待很短很短的时间就能够获得锁了。</p>
+<p>经验表明，大部分同步代码块执行的时间都是很短很短的，也正是基于这个原因，才有了轻量级锁这么个东西。</p>
+<h6 id="自旋锁的一些问题"><a href="#自旋锁的一些问题" class="headerlink" title="自旋锁的一些问题"></a>自旋锁的一些问题</h6><ol>
+<li>如果同步代码块执行的很慢，需要消耗大量的时间，那么这个时侯，其他线程在原地等待空消耗cpu，这会让人很难受。</li>
+<li>本来一个线程把锁释放之后，当前线程是能够获得锁的，但是假如这个时候有好几个线程都在竞争这个锁的话，那么有可能当前线程会获取不到锁，还得原地等待继续空循环消耗cup，甚至有可能一直获取不到锁。</li>
+</ol>
+<p>基于这个问题，我们必须给线程空循环设置一个次数，当线程超过了这个次数，我们就认为，继续使用自旋锁就不适合了，此时锁会再次膨胀，升级为<strong>重量级锁</strong>。</p>
+<p>默认情况下，自旋的次数为10次，用户可以通过-XX:PreBlockSpin来进行更改。</p>
+<blockquote>
+<p>自旋锁是在JDK1.4.2的时候引入的</p>
+</blockquote>
+<h5 id="自适应自旋锁"><a href="#自适应自旋锁" class="headerlink" title="自适应自旋锁"></a>自适应自旋锁</h5><p>所谓自适应自旋锁就是线程空循环等待的自旋次数并非是固定的，而是会动态着根据实际情况来改变自旋等待的次数。</p>
+<p>其大概原理是这样的：</p>
+<p>假如一个线程1刚刚成功获得一个锁，当它把锁释放了之后，线程2获得该锁，并且线程2在运行的过程中，此时线程1又想来获得该锁了，但线程2还没有释放该锁，所以线程1只能自旋等待，但是虚拟机认为，<strong>由于线程1刚刚获得过该锁，那么虚拟机觉得线程1这次自旋也是很有可能能够再次成功获得该锁的，所以会延长线程1自旋的次数</strong>。</p>
+<p>另外，如果对于某一个锁，一个线程自旋之后，很少成功获得该锁，那么以后这个线程要获取该锁时，是有可能直接忽略掉自旋过程，直接升级为重量级锁的，以免空循环等待浪费资源。</p>
+<blockquote>
+<p>轻量级锁也被称为<strong>非阻塞同步</strong>、<strong>乐观锁</strong>，因为这个过程并没有把线程阻塞挂起，而是让线程空循环等待，串行执行。</p>
+</blockquote>
+<h4 id="重量级锁"><a href="#重量级锁" class="headerlink" title="重量级锁"></a>重量级锁</h4><p>轻量级锁膨胀之后，就升级为重量级锁了。重量级锁是依赖对象内部的monitor锁来实现的，而monitor又依赖操作系统的MutexLock(互斥锁)来实现的，所以重量级锁也被成为<strong>互斥锁</strong>。</p>
+<p>当轻量级所经过锁撤销等步骤升级为重量级锁之后，它的Markword部分数据大体如下</p>
+<table>
+<thead>
+<tr>
+<th>bit fields</th>
+<th>锁标志位</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>指向Mutex的指针</td>
+<td>10</td>
+</tr>
+</tbody>
+</table>
+<h5 id="为什么说重量级锁开销大呢"><a href="#为什么说重量级锁开销大呢" class="headerlink" title="为什么说重量级锁开销大呢"></a>为什么说重量级锁开销大呢</h5><p>主要是，当系统检查到锁是重量级锁之后，会把等待想要获得锁的线程进行<strong>阻塞</strong>，被阻塞的线程不会消耗cup。但是阻塞或者唤醒一个线程时，都需要操作系统来帮忙，这就需要从<strong>用户态</strong>转换到<strong>内核态</strong>，而转换状态是需要消耗很多时间的，有可能比用户执行代码的时间还要长。</p>
+<p>这就是说为什么重量级线程开销很大的。</p>
+<blockquote>
+<p>互斥锁(重量级锁)也称为<strong>阻塞同步</strong>、<strong>悲观锁</strong></p>
+</blockquote>
+<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>通过上面的分析，我们知道了为什么synchronized关键字为何又深得人心，也知道了锁的演变过程。</p>
+<p>也就是说，synchronized关键字并非一开始就该对象加上重量级锁，也是从偏向锁，轻量级锁，再到重量级锁的过程。</p>
+<p>这个过程也告诉我们，假如我们一开始就知道某个同步代码块的竞争很激烈、很慢的话，那么我们一开始就应该使用重量级锁了，从而省掉一些锁转换的开销。</p>
+<p>讲到这里就大概完了，希望能对你有所帮助</p>
+<p><strong>完</strong></p>
+<p><strong>参考资料</strong></p>
+<ol>
+<li>深入理解java虚拟机(JVM高级特性与最佳实践)</li>
+<li>java并发编程</li>
+<li><a href="http://www.oracle.com/technetwork/java/javase/tech/biasedlocking-oopsla2006-preso-150106.pdf" target="_blank" rel="noopener">Eliminating Synchronization Related Atomic Operations with Biased Locking and Bulk Rebiasing</a></li>
+</ol>
+<blockquote>
+<p>关注我的公众号：<strong>苦逼的码农</strong>，获取更多原创文章，后台回复”礼包”送你一份特别的资源大礼包。</p>
+</blockquote>
+<p><a href="https://iamshuaidi.github.io/">个人博客</a></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://iamshuaidi.github.io/2018/08/20/java/线程安全(上)--彻底搞懂volatile关键字/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1126,169 +1473,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://iamshuaidi.github.io/2018/08/12/leetcode/从0打卡leetcode之day 5 ---两个排序数组的中位数/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="帅地">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="帅地">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/08/12/leetcode/从0打卡leetcode之day 5 ---两个排序数组的中位数/" itemprop="url">从0打卡leetcode之day 5 ---两个排序数组的中位数</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-08-12T00:00:00+08:00">
-                2018-08-12
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/leetcode刷题贴/" itemprop="url" rel="index">
-                    <span itemprop="name">leetcode刷题贴</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><blockquote>
-<p>我靠，才坚持了四天，就差点不想坚持了。不行啊，我得把leetcode上的题给刷完，不然怕是不好进入bat的大门。</p>
-</blockquote>
-<h4 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a>题目描述</h4><blockquote>
-<p>给定两个大小为 m 和 n 的有序数组 nums1 和 nums2 。<br>请找出这两个有序数组的中位数。要求算法的时间复杂度为 O(log (m+n)) 。你可以假设 nums1 和 nums2 均不为空。</p>
-</blockquote>
-<h5 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">nums1 = [1, 3]</span><br><span class="line">nums2 = [2]</span><br><span class="line"></span><br><span class="line">中位数是 2.0</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">nums1 = [1, 2]</span><br><span class="line">nums2 = [3, 4]</span><br><span class="line"></span><br><span class="line">中位数是 (2 + 3)/2 = 2.5``</span><br></pre></td></tr></table></figure>
-<h4 id="解题"><a href="#解题" class="headerlink" title="解题"></a>解题</h4><p>最简单粗暴的就是把这两个数组头尾连接起来，然后重新给他们排序一下，冒泡排序相信你信手拈来，当然，你也可以装逼用快速排序。</p>
-<p>但是，如果这样子做的话，题目给你的<strong>有序数组</strong>就没啥用了，和无序一个样，所以这样做是不行的。题目要求是时间复杂度不能超过O(log(n+m))，说实话，这个复杂度我是不知道怎么做好，我的做法时间复杂度是O(n+m)。</p>
-<p><strong>具体是这样的</strong></p>
-<p>居然两个数组都是有序的了，我们可以再弄一个中间数组，然后把两个数组各自从数组头开始比较，哪个元素小，我们就把它存在中间数组。然后接下下一个元素一直比较下去。</p>
-<p>我还是直接上代码吧。如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">public double findMedianSortedArrays(int[] nums1, int[] nums2) &#123;</span><br><span class="line">        int m = nums1.length;</span><br><span class="line">        int n = nums2.length;</span><br><span class="line">        int t = m + n;//总长度</span><br><span class="line">        int temp[] = new int[t];</span><br><span class="line">        int i  = 0, j = 0, k = 0;</span><br><span class="line">        double obj;//用来存目标值</span><br><span class="line"></span><br><span class="line">        while(i &lt; m &amp;&amp; j &lt; n)&#123;</span><br><span class="line">            //把数组中比较小的值转移到temp数组中</span><br><span class="line">            if(nums1[i] &lt; nums2[j])&#123;</span><br><span class="line">                temp[k++] = nums1[i++];</span><br><span class="line">            &#125;else&#123;</span><br><span class="line">                temp[k++] = nums2[j++];</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        //把剩余的转移过去</span><br><span class="line">    while (i &lt; m)&#123;</span><br><span class="line">            temp[k++] = nums1[i++];</span><br><span class="line">    &#125;</span><br><span class="line">    while(j &lt; n)&#123;</span><br><span class="line">            temp[k++] = nums2[j++];</span><br><span class="line">    &#125;</span><br><span class="line">    //两个数组的总个数是奇数还是偶数</span><br><span class="line">    if(t % 2 == 0)&#123;//偶数</span><br><span class="line">            obj = (temp[t/2] + temp[(t-1)/2]) / 2.0;</span><br><span class="line">    &#125;else&#123;</span><br><span class="line">            obj = temp[t/2];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    return obj;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>虽然时间复杂度是O(n+m)，但是提交的时候居然通过了，而且还打败了93%的人。</p>
-<p>不过，这里还可以在优化，把时间复杂度降低到O((n+m)/2)。<br>就是说其实我们不用给整个temp数组排序，我们只要求出前面一半的数组元素就可以知道中间那个元素了，。例如不管一共是偶数个元素还是奇数个元素，我们让temp存到下标为t/2就可以了。然后再来判断t是奇数还是偶数…..</p>
-<p>例如上面两个示例，示例1一共有三个元素，那么temp[t/2]=temp[1]=2。然后直接把temp[t/2]=temp[1]取出来返回就可以了。</p>
-<p>示例2一共有4个元素，那么temp[t/2]=temp[2]=3。由于是偶数，我们直接把temp[t/2]=3和temp[t/2-1]=2这两个元素取出来处理之后返回就可以了。</p>
-<p>至于代码这么写，我就不写了。知道有这么一回事就可以了。</p>
-<p>如果你坚持想要O(log(n+m))的时间复杂度，那么可以看官方给的答案：</p>
-<p><a href="https://leetcode-cn.com/problems/median-of-two-sorted-arrays/solution/" target="_blank" rel="noopener">答案解析</a></p>
-<p><strong>完</strong></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://iamshuaidi.github.io/2018/08/12/JVM(2)--一文读懂垃圾回收/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1507,6 +1691,169 @@
 <p>刚才我们说了G1收集器哪些优点，例如<strong>可预测停顿</strong>，这也使得<strong>筛选回收</strong>，是可以预测停顿垃圾回收的时间的，也就是说，停顿的时间是用户自己可以控制的，这也使得一般情况下，在<strong>筛选回收</strong>的时候，我们会暂停其他线程的执行，把所有时间都用到<strong>筛选回收</strong>上。</p>
 <p><img src="https://user-gold-cdn.xitu.io/2018/8/12/16529cb849b14484?w=645&amp;h=224&amp;f=png&amp;s=25815" alt=""></p>
 <p>本次讲解到这里。</p>
+<p><strong>完</strong></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://iamshuaidi.github.io/2018/08/12/leetcode/从0打卡leetcode之day 5 ---两个排序数组的中位数/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="帅地">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="帅地">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/08/12/leetcode/从0打卡leetcode之day 5 ---两个排序数组的中位数/" itemprop="url">从0打卡leetcode之day 5 ---两个排序数组的中位数</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-08-12T00:00:00+08:00">
+                2018-08-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/leetcode刷题贴/" itemprop="url" rel="index">
+                    <span itemprop="name">leetcode刷题贴</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><blockquote>
+<p>我靠，才坚持了四天，就差点不想坚持了。不行啊，我得把leetcode上的题给刷完，不然怕是不好进入bat的大门。</p>
+</blockquote>
+<h4 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a>题目描述</h4><blockquote>
+<p>给定两个大小为 m 和 n 的有序数组 nums1 和 nums2 。<br>请找出这两个有序数组的中位数。要求算法的时间复杂度为 O(log (m+n)) 。你可以假设 nums1 和 nums2 均不为空。</p>
+</blockquote>
+<h5 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">nums1 = [1, 3]</span><br><span class="line">nums2 = [2]</span><br><span class="line"></span><br><span class="line">中位数是 2.0</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">nums1 = [1, 2]</span><br><span class="line">nums2 = [3, 4]</span><br><span class="line"></span><br><span class="line">中位数是 (2 + 3)/2 = 2.5``</span><br></pre></td></tr></table></figure>
+<h4 id="解题"><a href="#解题" class="headerlink" title="解题"></a>解题</h4><p>最简单粗暴的就是把这两个数组头尾连接起来，然后重新给他们排序一下，冒泡排序相信你信手拈来，当然，你也可以装逼用快速排序。</p>
+<p>但是，如果这样子做的话，题目给你的<strong>有序数组</strong>就没啥用了，和无序一个样，所以这样做是不行的。题目要求是时间复杂度不能超过O(log(n+m))，说实话，这个复杂度我是不知道怎么做好，我的做法时间复杂度是O(n+m)。</p>
+<p><strong>具体是这样的</strong></p>
+<p>居然两个数组都是有序的了，我们可以再弄一个中间数组，然后把两个数组各自从数组头开始比较，哪个元素小，我们就把它存在中间数组。然后接下下一个元素一直比较下去。</p>
+<p>我还是直接上代码吧。如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">public double findMedianSortedArrays(int[] nums1, int[] nums2) &#123;</span><br><span class="line">        int m = nums1.length;</span><br><span class="line">        int n = nums2.length;</span><br><span class="line">        int t = m + n;//总长度</span><br><span class="line">        int temp[] = new int[t];</span><br><span class="line">        int i  = 0, j = 0, k = 0;</span><br><span class="line">        double obj;//用来存目标值</span><br><span class="line"></span><br><span class="line">        while(i &lt; m &amp;&amp; j &lt; n)&#123;</span><br><span class="line">            //把数组中比较小的值转移到temp数组中</span><br><span class="line">            if(nums1[i] &lt; nums2[j])&#123;</span><br><span class="line">                temp[k++] = nums1[i++];</span><br><span class="line">            &#125;else&#123;</span><br><span class="line">                temp[k++] = nums2[j++];</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        //把剩余的转移过去</span><br><span class="line">    while (i &lt; m)&#123;</span><br><span class="line">            temp[k++] = nums1[i++];</span><br><span class="line">    &#125;</span><br><span class="line">    while(j &lt; n)&#123;</span><br><span class="line">            temp[k++] = nums2[j++];</span><br><span class="line">    &#125;</span><br><span class="line">    //两个数组的总个数是奇数还是偶数</span><br><span class="line">    if(t % 2 == 0)&#123;//偶数</span><br><span class="line">            obj = (temp[t/2] + temp[(t-1)/2]) / 2.0;</span><br><span class="line">    &#125;else&#123;</span><br><span class="line">            obj = temp[t/2];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    return obj;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>虽然时间复杂度是O(n+m)，但是提交的时候居然通过了，而且还打败了93%的人。</p>
+<p>不过，这里还可以在优化，把时间复杂度降低到O((n+m)/2)。<br>就是说其实我们不用给整个temp数组排序，我们只要求出前面一半的数组元素就可以知道中间那个元素了，。例如不管一共是偶数个元素还是奇数个元素，我们让temp存到下标为t/2就可以了。然后再来判断t是奇数还是偶数…..</p>
+<p>例如上面两个示例，示例1一共有三个元素，那么temp[t/2]=temp[1]=2。然后直接把temp[t/2]=temp[1]取出来返回就可以了。</p>
+<p>示例2一共有4个元素，那么temp[t/2]=temp[2]=3。由于是偶数，我们直接把temp[t/2]=3和temp[t/2-1]=2这两个元素取出来处理之后返回就可以了。</p>
+<p>至于代码这么写，我就不写了。知道有这么一回事就可以了。</p>
+<p>如果你坚持想要O(log(n+m))的时间复杂度，那么可以看官方给的答案：</p>
+<p><a href="https://leetcode-cn.com/problems/median-of-two-sorted-arrays/solution/" target="_blank" rel="noopener">答案解析</a></p>
 <p><strong>完</strong></p>
 
           
@@ -2171,191 +2518,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://iamshuaidi.github.io/2018/08/05/leetcode/从零打卡leetcode之day 2--两数相加/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="帅地">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="帅地">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/08/05/leetcode/从零打卡leetcode之day 2--两数相加/" itemprop="url">从零打卡leetcode之day 2--两数相加</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-08-05T00:00:00+08:00">
-                2018-08-05
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/leetcode刷题贴/" itemprop="url" rel="index">
-                    <span itemprop="name">leetcode刷题贴</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><blockquote>
-<p>深知自己在算法方面上很菜，于是打算通过打卡的方式，逼自己一把。每天在leetcode上打卡，并且把自己的想法分享出来。这将是一段漫长而又艰辛的旅程。如果你也想和我一起走上一条充满艰辛的航路，那么，别犹豫了，上车吧，一起学习一起探讨。</p>
-</blockquote>
-<hr>
-<h4 id="从零打卡leetcode之day-2"><a href="#从零打卡leetcode之day-2" class="headerlink" title="从零打卡leetcode之day 2"></a>从零打卡leetcode之day 2</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">题目描述：</span><br><span class="line"></span><br><span class="line">给定两个非空链表来表示两个非负整数。位数按照逆序方式存储，</span><br><span class="line">它们的每个节点只存储单个数字。将两数相加返回一个新的链表。</span><br><span class="line"></span><br><span class="line">你可以假设除了数字 0 之外，这两个数字都不会以零开头。</span><br><span class="line">示例：</span><br><span class="line">输入：(2 -&gt; 4 -&gt; 3) + (5 -&gt; 6 -&gt; 4)</span><br><span class="line">输出：7 -&gt; 0 -&gt; 8</span><br><span class="line">原因：342 + 465 = 807</span><br></pre></td></tr></table></figure>
-<h3 id="我的想法"><a href="#我的想法" class="headerlink" title="我的想法"></a>我的想法</h3><p>我靠，居然还用到了链表的知识，突然就想起了当初用c语言自学链表的那段日子，真的差点被搞死。各种指针指来指去的。</p>
-<p>好吧，我这里需要声明一下，如果你还没接触过链表，或者对链表超级不熟悉，麻烦你先去学好链表再来刷题，因为，链表是真的贼重要啊。</p>
-<h4 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h4><p><strong>方法1：</strong></p>
-<p>说实话，看到这道题的时候，我的想法是不管三七二十一，直接把链表代表的数字给直接算出来，然后在把两个数字给加起来，最后在把得到的和拆分成链表。可谓是暴力思路又简单啊。不过感觉代码量会有点多。</p>
-<p>例如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">(2 -&gt; 4 -&gt; 3) =&gt; 2 + 4 * 10 + 3 * 100 = 342 </span><br><span class="line">(5 -&gt; 6 -&gt; 4) =&gt; 5 + 6 * 10 + 4 * 100 = 465</span><br><span class="line">然后</span><br><span class="line">342 + 465 = 807</span><br><span class="line">接着</span><br><span class="line">807 =&gt; 7 -&gt; 0 -&gt; 8</span><br></pre></td></tr></table></figure></p>
-<p>代码如下所示：</p>
-<p>先给出链表的结构<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">class ListNode &#123;</span><br><span class="line">    int val;</span><br><span class="line">    ListNode next;</span><br><span class="line">    ListNode(int x) &#123; val = x; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">//方法1</span><br><span class="line">public ListNode addTwoNumbers1(ListNode l1, ListNode l2) &#123;</span><br><span class="line">    int num1 = 0;//用来存放第一个链表代表的数字</span><br><span class="line">    int num2 = 0;//用来存放第二个链表代表的数字</span><br><span class="line">    int sum = 0;//存放和</span><br><span class="line">    //t = 1,10,100....用来代表链表中的个位，十位，百位...</span><br><span class="line">    int t = 1;//因为是从个位开始遍历的，所以初值为1</span><br><span class="line">    //算第一个数字</span><br><span class="line">    while(l1 != null)&#123;</span><br><span class="line">        num1 = num1 + l1.val * t;</span><br><span class="line">        t = t * 10;</span><br><span class="line">        l1 = l1.next;</span><br><span class="line">    &#125;</span><br><span class="line">    t = 1;</span><br><span class="line">    //算第二个数字</span><br><span class="line">    while(l2 != null)&#123;</span><br><span class="line">        num2 = num2 + l2.val * t;</span><br><span class="line">        t = t * 10;</span><br><span class="line">        l2 = l2.next;</span><br><span class="line">    &#125;</span><br><span class="line">    //相加</span><br><span class="line">    sum = num1 + num2;</span><br><span class="line">    //拆分出来放进链表里；</span><br><span class="line">    ListNode head  = null;//作为链表的头节点</span><br><span class="line">    ListNode temp = head;//跟踪链表</span><br><span class="line">    while(sum &gt; 0) &#123;//结束条件为sum等于0</span><br><span class="line">        if(head == null)&#123;</span><br><span class="line">            head = new ListNode(sum % 10);</span><br><span class="line">            temp = head;</span><br><span class="line">        &#125;else&#123;</span><br><span class="line">            temp.next = new ListNode(sum % 10);</span><br><span class="line">            temp = temp.next;</span><br><span class="line">        &#125;</span><br><span class="line">        sum = sum / 10;</span><br><span class="line">    &#125;</span><br><span class="line">    //由于有可能sum一开始就为0，所以还需要在检查一下</span><br><span class="line">    if(head == null)&#123;</span><br><span class="line">        head = new ListNode(0);</span><br><span class="line">    &#125;</span><br><span class="line">    return head;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
-<p>大家一起探讨探讨，你们觉得这种思路可行吗？觉得可行的举个爪，不可行的站起来说说为啥不可行。</p>
-<p>反正，我是觉得不可行，为什么？</p>
-<p>因为题目并没有说这条链表有多长啊，假如这条链表很长的话，一个int型整数根本存不了这个数字，当然，你可能会说，我可以用long long啊。 不好意思，long long也可能存不了。你可能又会说，java或python什么的，不是有大整数咪？好吧，我没去用过这些大整数，不知道具体个什么情况，所以当作没有这么一回事处理,haha。有兴趣的可以去尝试一下。</p>
-<hr>
-<p><strong>方法2</strong></p>
-<p>刚才方法1已经被告知不可行了。实际上，这道题我是觉得在解法思路上还是比较简单的，我相信大家也都能想到方法2这种方法：</p>
-<p>就是我们可以让两个数的个位数相加，十位数相加….然后个位数有进位的话，再把进位给十位数….</p>
-<p>例如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(1 -&gt; 4 -&gt; 5) + (1 -&gt; 6 -&gt; 4 -&gt; 5)</span><br><span class="line">(我是故意给出两条链表长度不相等的情况的)</span><br></pre></td></tr></table></figure></p>
-<p>解法如下图：</p>
-<p>代码如下:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">int cout = 0;//用来检查是否有进位,默认没有进位</span><br><span class="line">  ListNode head = null;//用来作为链表头</span><br><span class="line">  ListNode temp = head;//用来跟踪链表</span><br><span class="line">  //注意循环结束条件</span><br><span class="line">  while(l1 != null &amp;&amp; l2 != null)&#123;</span><br><span class="line">      if(head == null)&#123;</span><br><span class="line">          head = new ListNode((l1.val + l2.val + cout) % 10);</span><br><span class="line">          temp = head;</span><br><span class="line">      &#125;else&#123;</span><br><span class="line">          temp.next = new ListNode((l1.val + l2.val + cout) % 10);</span><br><span class="line">          temp = temp.next;</span><br><span class="line">      &#125;</span><br><span class="line">      //检查是否有进位</span><br><span class="line">      cout = (l1.val + l2.val + cout) / 10;</span><br><span class="line">      l1 = l1.next;</span><br><span class="line">      l2 = l2.next;</span><br><span class="line">  &#125;</span><br><span class="line">  while(l1 != null)&#123;</span><br><span class="line">      temp.next = new ListNode((l1.val + cout) % 10);</span><br><span class="line">      cout = (l1.val + cout) / 10;</span><br><span class="line">      l1 = l1.next;</span><br><span class="line">      temp = temp.next;</span><br><span class="line">  &#125;</span><br><span class="line">  while(l2 != null)&#123;</span><br><span class="line">      temp.next = new ListNode((l2.val + cout) % 10);</span><br><span class="line">      cout = (l2.val + cout) / 10;</span><br><span class="line">      l2 = l2.next;</span><br><span class="line">      temp = temp.next;</span><br><span class="line"></span><br><span class="line">  &#125;</span><br><span class="line">  //最后还得在检测一下时候最高位有进位</span><br><span class="line">  if(cout == 1)&#123;</span><br><span class="line">      temp.next = new ListNode(cout);</span><br><span class="line">  &#125;</span><br><span class="line">  return head;</span><br></pre></td></tr></table></figure>
-<p>这里需要注意的一些点：</p>
-<ol>
-<li>就是第一个循环的结束条件.</li>
-</ol>
-<ol start="2">
-<li>当循环结束之后，还得把那条比较长的链表剩余的部分再循环一遍。</li>
-<li>最后还得看一下是否最高位有进位。</li>
-</ol>
-<p>我觉得这道题在解法思路上还是比较简单，不过并不意味着做起来简单，因为这道题如果不仔细看，还是很容易出错的，细节点不叫多。</p>
-<p><strong>不过</strong></p>
-<p>除了方法二，我是不知道还要其他什么比较好的方法了，但是我是觉得方法二里面的代码有点多，于是绞尽脑汁，各种简化，写出了一份代码比较简练的<strong>精简代码</strong>。放出来给各位看看：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">//作为头节点，且最后返回时不要这个头节点</span><br><span class="line">        ListNode head = new ListNode(0);</span><br><span class="line">        ListNode temp = head;//跟踪</span><br><span class="line">        int cout = 0;</span><br><span class="line"></span><br><span class="line">        while(l1 != null || l2 != null || cout != 0)&#123;</span><br><span class="line">            if(l1 != null)&#123;</span><br><span class="line">                cout += l1.val;</span><br><span class="line">                l1 = l1.next;</span><br><span class="line">            &#125;</span><br><span class="line">            if(l2 != null)&#123;</span><br><span class="line">                cout += l2.val;</span><br><span class="line">                l2 = l2.next;</span><br><span class="line">            &#125;</span><br><span class="line">            temp.next = new ListNode(cout % 10);</span><br><span class="line">            temp = temp.next;</span><br><span class="line">            cout = cout / 10;</span><br><span class="line">        &#125;</span><br><span class="line">        return head.next;</span><br></pre></td></tr></table></figure>
-<p>先得意一下：虽然大家都能想到方法二，不过我就不信你能比我的简洁。哈哈哈</p>
-<p>几点说明:</p>
-<ol>
-<li>先把头节点直接new出来，可以省略判断语句。</li>
-<li>以前的while循环是判断两个链表都不为空，不过我现在换了一种想法，因为i你想我，只要有一个链表是不为空的，或者只要coun=1，那么我们就得继续处理，于是乎…..</li>
-</ol>
-<p><strong>此题到此结束</strong></p>
-<hr>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2406,7 +2568,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-count">14</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
