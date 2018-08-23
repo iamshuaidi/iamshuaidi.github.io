@@ -1473,6 +1473,169 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://iamshuaidi.github.io/2018/08/12/leetcode/从0打卡leetcode之day 5 ---两个排序数组的中位数/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="帅地">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="帅地">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/08/12/leetcode/从0打卡leetcode之day 5 ---两个排序数组的中位数/" itemprop="url">从0打卡leetcode之day 5 ---两个排序数组的中位数</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-08-12T00:00:00+08:00">
+                2018-08-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/leetcode刷题贴/" itemprop="url" rel="index">
+                    <span itemprop="name">leetcode刷题贴</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><blockquote>
+<p>我靠，才坚持了四天，就差点不想坚持了。不行啊，我得把leetcode上的题给刷完，不然怕是不好进入bat的大门。</p>
+</blockquote>
+<h4 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a>题目描述</h4><blockquote>
+<p>给定两个大小为 m 和 n 的有序数组 nums1 和 nums2 。<br>请找出这两个有序数组的中位数。要求算法的时间复杂度为 O(log (m+n)) 。你可以假设 nums1 和 nums2 均不为空。</p>
+</blockquote>
+<h5 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">nums1 = [1, 3]</span><br><span class="line">nums2 = [2]</span><br><span class="line"></span><br><span class="line">中位数是 2.0</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">nums1 = [1, 2]</span><br><span class="line">nums2 = [3, 4]</span><br><span class="line"></span><br><span class="line">中位数是 (2 + 3)/2 = 2.5``</span><br></pre></td></tr></table></figure>
+<h4 id="解题"><a href="#解题" class="headerlink" title="解题"></a>解题</h4><p>最简单粗暴的就是把这两个数组头尾连接起来，然后重新给他们排序一下，冒泡排序相信你信手拈来，当然，你也可以装逼用快速排序。</p>
+<p>但是，如果这样子做的话，题目给你的<strong>有序数组</strong>就没啥用了，和无序一个样，所以这样做是不行的。题目要求是时间复杂度不能超过O(log(n+m))，说实话，这个复杂度我是不知道怎么做好，我的做法时间复杂度是O(n+m)。</p>
+<p><strong>具体是这样的</strong></p>
+<p>居然两个数组都是有序的了，我们可以再弄一个中间数组，然后把两个数组各自从数组头开始比较，哪个元素小，我们就把它存在中间数组。然后接下下一个元素一直比较下去。</p>
+<p>我还是直接上代码吧。如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">public double findMedianSortedArrays(int[] nums1, int[] nums2) &#123;</span><br><span class="line">        int m = nums1.length;</span><br><span class="line">        int n = nums2.length;</span><br><span class="line">        int t = m + n;//总长度</span><br><span class="line">        int temp[] = new int[t];</span><br><span class="line">        int i  = 0, j = 0, k = 0;</span><br><span class="line">        double obj;//用来存目标值</span><br><span class="line"></span><br><span class="line">        while(i &lt; m &amp;&amp; j &lt; n)&#123;</span><br><span class="line">            //把数组中比较小的值转移到temp数组中</span><br><span class="line">            if(nums1[i] &lt; nums2[j])&#123;</span><br><span class="line">                temp[k++] = nums1[i++];</span><br><span class="line">            &#125;else&#123;</span><br><span class="line">                temp[k++] = nums2[j++];</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        //把剩余的转移过去</span><br><span class="line">    while (i &lt; m)&#123;</span><br><span class="line">            temp[k++] = nums1[i++];</span><br><span class="line">    &#125;</span><br><span class="line">    while(j &lt; n)&#123;</span><br><span class="line">            temp[k++] = nums2[j++];</span><br><span class="line">    &#125;</span><br><span class="line">    //两个数组的总个数是奇数还是偶数</span><br><span class="line">    if(t % 2 == 0)&#123;//偶数</span><br><span class="line">            obj = (temp[t/2] + temp[(t-1)/2]) / 2.0;</span><br><span class="line">    &#125;else&#123;</span><br><span class="line">            obj = temp[t/2];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    return obj;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>虽然时间复杂度是O(n+m)，但是提交的时候居然通过了，而且还打败了93%的人。</p>
+<p>不过，这里还可以在优化，把时间复杂度降低到O((n+m)/2)。<br>就是说其实我们不用给整个temp数组排序，我们只要求出前面一半的数组元素就可以知道中间那个元素了，。例如不管一共是偶数个元素还是奇数个元素，我们让temp存到下标为t/2就可以了。然后再来判断t是奇数还是偶数…..</p>
+<p>例如上面两个示例，示例1一共有三个元素，那么temp[t/2]=temp[1]=2。然后直接把temp[t/2]=temp[1]取出来返回就可以了。</p>
+<p>示例2一共有4个元素，那么temp[t/2]=temp[2]=3。由于是偶数，我们直接把temp[t/2]=3和temp[t/2-1]=2这两个元素取出来处理之后返回就可以了。</p>
+<p>至于代码这么写，我就不写了。知道有这么一回事就可以了。</p>
+<p>如果你坚持想要O(log(n+m))的时间复杂度，那么可以看官方给的答案：</p>
+<p><a href="https://leetcode-cn.com/problems/median-of-two-sorted-arrays/solution/" target="_blank" rel="noopener">答案解析</a></p>
+<p><strong>完</strong></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://iamshuaidi.github.io/2018/08/12/JVM(2)--一文读懂垃圾回收/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1691,169 +1854,6 @@
 <p>刚才我们说了G1收集器哪些优点，例如<strong>可预测停顿</strong>，这也使得<strong>筛选回收</strong>，是可以预测停顿垃圾回收的时间的，也就是说，停顿的时间是用户自己可以控制的，这也使得一般情况下，在<strong>筛选回收</strong>的时候，我们会暂停其他线程的执行，把所有时间都用到<strong>筛选回收</strong>上。</p>
 <p><img src="https://user-gold-cdn.xitu.io/2018/8/12/16529cb849b14484?w=645&amp;h=224&amp;f=png&amp;s=25815" alt=""></p>
 <p>本次讲解到这里。</p>
-<p><strong>完</strong></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://iamshuaidi.github.io/2018/08/12/leetcode/从0打卡leetcode之day 5 ---两个排序数组的中位数/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="帅地">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="帅地">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/08/12/leetcode/从0打卡leetcode之day 5 ---两个排序数组的中位数/" itemprop="url">从0打卡leetcode之day 5 ---两个排序数组的中位数</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-08-12T00:00:00+08:00">
-                2018-08-12
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/leetcode刷题贴/" itemprop="url" rel="index">
-                    <span itemprop="name">leetcode刷题贴</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><blockquote>
-<p>我靠，才坚持了四天，就差点不想坚持了。不行啊，我得把leetcode上的题给刷完，不然怕是不好进入bat的大门。</p>
-</blockquote>
-<h4 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a>题目描述</h4><blockquote>
-<p>给定两个大小为 m 和 n 的有序数组 nums1 和 nums2 。<br>请找出这两个有序数组的中位数。要求算法的时间复杂度为 O(log (m+n)) 。你可以假设 nums1 和 nums2 均不为空。</p>
-</blockquote>
-<h5 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">nums1 = [1, 3]</span><br><span class="line">nums2 = [2]</span><br><span class="line"></span><br><span class="line">中位数是 2.0</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">nums1 = [1, 2]</span><br><span class="line">nums2 = [3, 4]</span><br><span class="line"></span><br><span class="line">中位数是 (2 + 3)/2 = 2.5``</span><br></pre></td></tr></table></figure>
-<h4 id="解题"><a href="#解题" class="headerlink" title="解题"></a>解题</h4><p>最简单粗暴的就是把这两个数组头尾连接起来，然后重新给他们排序一下，冒泡排序相信你信手拈来，当然，你也可以装逼用快速排序。</p>
-<p>但是，如果这样子做的话，题目给你的<strong>有序数组</strong>就没啥用了，和无序一个样，所以这样做是不行的。题目要求是时间复杂度不能超过O(log(n+m))，说实话，这个复杂度我是不知道怎么做好，我的做法时间复杂度是O(n+m)。</p>
-<p><strong>具体是这样的</strong></p>
-<p>居然两个数组都是有序的了，我们可以再弄一个中间数组，然后把两个数组各自从数组头开始比较，哪个元素小，我们就把它存在中间数组。然后接下下一个元素一直比较下去。</p>
-<p>我还是直接上代码吧。如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">public double findMedianSortedArrays(int[] nums1, int[] nums2) &#123;</span><br><span class="line">        int m = nums1.length;</span><br><span class="line">        int n = nums2.length;</span><br><span class="line">        int t = m + n;//总长度</span><br><span class="line">        int temp[] = new int[t];</span><br><span class="line">        int i  = 0, j = 0, k = 0;</span><br><span class="line">        double obj;//用来存目标值</span><br><span class="line"></span><br><span class="line">        while(i &lt; m &amp;&amp; j &lt; n)&#123;</span><br><span class="line">            //把数组中比较小的值转移到temp数组中</span><br><span class="line">            if(nums1[i] &lt; nums2[j])&#123;</span><br><span class="line">                temp[k++] = nums1[i++];</span><br><span class="line">            &#125;else&#123;</span><br><span class="line">                temp[k++] = nums2[j++];</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        //把剩余的转移过去</span><br><span class="line">    while (i &lt; m)&#123;</span><br><span class="line">            temp[k++] = nums1[i++];</span><br><span class="line">    &#125;</span><br><span class="line">    while(j &lt; n)&#123;</span><br><span class="line">            temp[k++] = nums2[j++];</span><br><span class="line">    &#125;</span><br><span class="line">    //两个数组的总个数是奇数还是偶数</span><br><span class="line">    if(t % 2 == 0)&#123;//偶数</span><br><span class="line">            obj = (temp[t/2] + temp[(t-1)/2]) / 2.0;</span><br><span class="line">    &#125;else&#123;</span><br><span class="line">            obj = temp[t/2];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    return obj;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>虽然时间复杂度是O(n+m)，但是提交的时候居然通过了，而且还打败了93%的人。</p>
-<p>不过，这里还可以在优化，把时间复杂度降低到O((n+m)/2)。<br>就是说其实我们不用给整个temp数组排序，我们只要求出前面一半的数组元素就可以知道中间那个元素了，。例如不管一共是偶数个元素还是奇数个元素，我们让temp存到下标为t/2就可以了。然后再来判断t是奇数还是偶数…..</p>
-<p>例如上面两个示例，示例1一共有三个元素，那么temp[t/2]=temp[1]=2。然后直接把temp[t/2]=temp[1]取出来返回就可以了。</p>
-<p>示例2一共有4个元素，那么temp[t/2]=temp[2]=3。由于是偶数，我们直接把temp[t/2]=3和temp[t/2-1]=2这两个元素取出来处理之后返回就可以了。</p>
-<p>至于代码这么写，我就不写了。知道有这么一回事就可以了。</p>
-<p>如果你坚持想要O(log(n+m))的时间复杂度，那么可以看官方给的答案：</p>
-<p><a href="https://leetcode-cn.com/problems/median-of-two-sorted-arrays/solution/" target="_blank" rel="noopener">答案解析</a></p>
 <p><strong>完</strong></p>
 
           
@@ -2232,6 +2232,48 @@
             <h1 id="类初始化"><a href="#类初始化" class="headerlink" title="类初始化"></a>类初始化</h1><p>在讲类的初始化之前，我们先来大概了解一下类的声明周期。如下图</p>
 <p>类的声明周期可以分为7个阶段，但今天我们只讲<strong>初始化</strong>阶段。我们我觉得出来<strong>使用</strong>和<strong>卸载</strong>阶段外，<strong>初始化</strong>阶段是最贴近我们平时学的，也是笔试做题过程中最容易遇到的，假如你想了解每一个阶段的话，可以看看<strong>深入理解Java虚拟机</strong>这本书。</p>
 <p>下面开始讲解初始化过程。</p>
+<p><strong>注意：</strong></p>
+<p>这里需要指出的是，在执行类的初始化之前，其实在<strong>准备</strong>阶段就已经为<strong>类变量</strong>分配过内存，并且也已经设置过<strong>类变量</strong>的初始值了。例如像整数的初始值是0，对象的初始值是null之类的。基本数据类型的初始值如下：</p>
+<table>
+<thead>
+<tr>
+<th>数据类型</th>
+<th>初始值</th>
+<th>数据类型</th>
+<th>初始值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>int</td>
+<td>0</td>
+<td>boolean</td>
+<td>false</td>
+</tr>
+<tr>
+<td>long</td>
+<td>0L</td>
+<td>float</td>
+<td>0.0f</td>
+</tr>
+<tr>
+<td>short</td>
+<td>(short)0</td>
+<td>double</td>
+<td>0.0d</td>
+</tr>
+<tr>
+<td>char</td>
+<td>‘\u0000’</td>
+<td>reference</td>
+<td>null</td>
+</tr>
+<tr>
+<td>byte</td>
+<td>(byte)0 </td>
+</tr>
+</tbody>
+</table>
 <p>大家先想一个问题，当我们在运行一个java程序时，每个类都会被初始化吗？假如并非每个类都会执行初始化过程，那什么时候一个类会执行初始化过程呢？</p>
 <p>答案是并非每个类都会执行初始化过程，你想啊，如果这个类根本就不用用到，那初始化它干嘛，占用空间。</p>
 <p>至于何时执行初始化过程，虚拟机规范则是严格规定了<strong>有且只有</strong>5中情况会马上对类进行<strong>初始化</strong>。</p>
@@ -2244,16 +2286,16 @@
 </ol>
 <p>注意是<strong>有且只有</strong>。这5种行为我们称为对一个类的<strong>主动引用</strong>。</p>
 <h3 id="初始化过程"><a href="#初始化过程" class="headerlink" title="初始化过程"></a>初始化过程</h3><p>类的初始化过程都干了些什么呢？</p>
-<p>在类的初始化过程中，说白了就是执行了一个<strong>类构造器<clinit>()方法</clinit></strong>过程。</p>
+<p>在类的初始化过程中，说白了就是执行了一个<strong>类构造器<clinit>()方法</clinit></strong>过程。注意，这个clinit并非类的构造函数(init())。</p>
 <p>至于clinit()方法都包含了哪些内容？</p>
-<p>实际上，clinit()方法是由编辑器自动收集类中的所有<strong>类变量</strong>的赋值动作和静态语句块(static{}块)中的语句合并产生的，编辑器收集的顺序则是由语句在源文件中出现的顺序来决定的。并且<strong>静态语句块中只能访问到定义在静态语句块之前的变量，定义在它之后的变量，在前面的静态语句块可以赋值，但不能访问</strong>。如下面的程序。</p>
+<p>实际上，clinit()方法是由编译器自动收集类中的所有<strong>类变量</strong>的赋值动作和<strong>静态语句块</strong>(static{}块)中的语句合并产生的，编译器收集的顺序则是由语句在源文件中出现的顺序来决定的。并且<strong>静态语句块中只能访问到定义在静态语句块之前的变量，定义在它之后的变量，在前面的静态语句块可以赋值，但不能访问</strong>。如下面的程序。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test1</span> </span>&#123;</span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        t = <span class="number">10</span>;<span class="comment">//编译可以正常通过</span></span><br><span class="line">        System.out.println(t);<span class="comment">//提示illegal forward reference错误</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">int</span> t = <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>给大家抛个练习</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">public class Father &#123;</span><br><span class="line">    public static int t1 = 10;</span><br><span class="line">    static &#123;</span><br><span class="line">        t1 = 20;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">class Son extends Father&#123;</span><br><span class="line">    public static int t2 = t1;</span><br><span class="line">&#125;</span><br><span class="line">//测试调用</span><br><span class="line">class Test2&#123;</span><br><span class="line">    public static void main(String[] args)&#123;</span><br><span class="line">        System.out.println(Son.t2);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>输出结果是什么呢？</p>
 <p>答案是20。我相信大家都知道为啥。因为会先初始化父类啊。</p>
 <p>不过这里需要注意的是，对于类来说，执行该类的clinit()方法时，会先执行父类的clinit()方法，但对于接口来说，执行接口的clinit()方法并不会执行父接口的clinit()方法。只有当用到父类接口中定义的变量时，才会执行父接口的clinit()方法。</p>
-<h4 id="被动引用"><a href="#被动引用" class="headerlink" title="被动引用"></a>被动引用</h4><p>上面说了类初始化的五种情况，且称之为主动引用。居然存在主动，也意味着存在所谓的<strong>被动</strong>引用。这里需要提出的是，被动引用并不会触发类的初始化。下面，我们举例几个被动引用的例子：</p>
+<h4 id="被动引用"><a href="#被动引用" class="headerlink" title="被动引用"></a>被动引用</h4><p>上面说了类初始化的五种情况，我们称之为称之为<strong>主动引用</strong>。居然存在主动，也意味着存在所谓的<strong>被动</strong>引用。这里需要提出的是，被动引用并不会触发类的初始化。下面，我们举例几个被动引用的例子：</p>
 <ol>
 <li>通过子类引用父类的静态字段，不会触发子类的初始化</li>
 </ol>
@@ -2272,7 +2314,7 @@
 <p>输出结果:hello</p>
 <p>实际上，之所以没有输出”FatherClass init”,是因为在编译阶段就已经对这个常量进行了一些优化处理，例如，由于Test3这个类用到了这个常量”hello”，在编译阶段就已经将”hello”这个常量储存到了Test3类的常量池中了，以后对FatherClass.value的引用实际上都被转化为Test3类对自身常量池的引用了。也就是说，在编译成class文件之后，两个class已经没啥毛关系了。</p>
 <hr>
-<h1 id="重载"><a href="#重载" class="headerlink" title="重载"></a>重载</h1><p>对于重载，我想学过java的都懂，但是今天我们中虚拟机的角度来看看重载是怎么回视。</p>
+<h1 id="重载"><a href="#重载" class="headerlink" title="重载"></a>重载</h1><p>对于重载，我想学过java的都懂，但是今天我们中虚拟机的角度来看看重载是怎么回事。</p>
 <p>首先我们先来看一段代码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">//定义几个类</span><br><span class="line">public abstract class Animal &#123;</span><br><span class="line">&#125;</span><br><span class="line">class Dog extends Animal&#123;</span><br><span class="line">&#125;</span><br><span class="line">class Lion extends Animal&#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class Test4&#123;</span><br><span class="line">    public void run(Animal animal)&#123;</span><br><span class="line">        System.out.println(&quot;动物跑啊跑&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">    public void run(Dog dog)&#123;</span><br><span class="line">        System.out.println(&quot;小狗跑啊跑&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">    public void run(Lion lion)&#123;</span><br><span class="line">        System.out.println(&quot;狮子跑啊跑&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">    //测试</span><br><span class="line">    public static void main(String[] args)&#123;</span><br><span class="line">        Animal dog = new Dog();</span><br><span class="line">        Animal lion = new Lion();;</span><br><span class="line">        Test4 test4 = new Test4();</span><br><span class="line">        test4.run(dog);</span><br><span class="line">        test4.run(lion);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>运行结果：</p>
 <p>动物跑啊跑</p>
@@ -2281,13 +2323,65 @@
 <p>在此之前我们先来了解两个概念。</p>
 <p>先来看一行代码：</p>
 <p>Animal dog = new Dog();</p>
-<p>对于这一行代码，我们把Animal成为变量dong<strong>的静态类型</strong>，而后面的Dog称为变量dog的<strong>实际类型</strong>。</p>
-<p>所谓静态类型也就是说，在代码的编译期就可以判断出来了，也就是说在编译期就可以判断dog的静态类型是啥了。但在编译器无法知道变量dog的<strong>实际类型</strong>是什么。</p>
+<p>对于这一行代码，我们把Animal称之为变量dog的<strong>静态类型</strong>，而后面的Dog称为变量dog的<strong>实际类型</strong>。</p>
+<p>所谓静态类型也就是说，在代码的编译期就可以判断出来了，也就是说在编译期就可以判断dog的静态类型是啥了。但在编译期无法知道变量dog的<strong>实际类型</strong>是什么。</p>
 <p>现在我们再来看看虚拟机是根据什么来<strong>重载</strong>选择哪个方法的。</p>
 <p>对于静态类型相同，但实际类型不同的变量，虚拟机在重载的时候是根据参数的静态类型而不是实际类型作为判断选择的。并且静态类型在编译器就是已知的了，这也代表在编译阶段，就已经决定好了选择哪一个重载方法。</p>
 <p>由于dog和lion的静态类型都是Animal,所以选择了run(Animal animal)这个方法。</p>
 <p>不过需要注意的是，有时候是可以有多个重载版本的，也就是说，重载版本并非是唯一的。我们不妨来看下面的代码。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">public class Test &#123;</span><br><span class="line">    public static void sayHello(Object arg)&#123;</span><br><span class="line">        System.out.println(&quot;hello Object&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">    public static void sayHello(int arg)&#123;</span><br><span class="line">        System.out.println(&quot;hello int&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">    public static void sayHello(long arg)&#123;</span><br><span class="line">        System.out.println(&quot;hello long&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">    public static void sayHello(Character arg)&#123;</span><br><span class="line">        System.out.println(&quot;hello Character&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">    public static void sayHello(char arg)&#123;</span><br><span class="line">        System.out.println(&quot;hello char&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">    public static void sayHello(char... arg)&#123;</span><br><span class="line">        System.out.println(&quot;hello char...&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">    public static void sayHello(Serializable arg)&#123;</span><br><span class="line">        System.out.println(&quot;hello Serializable&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    //测试</span><br><span class="line">    public static void main(String[] args)&#123;</span><br><span class="line">        sayHello(&apos;a&apos;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">public class Test &#123;</span><br><span class="line">    public static void sayHello(Object arg)&#123;</span><br><span class="line">        System.out.println(&quot;hello Object&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">    public static void sayHello(int arg)&#123;</span><br><span class="line">        System.out.println(&quot;hello int&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">    public static void sayHello(long arg)&#123;</span><br><span class="line">        System.out.println(&quot;hello long&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">    public static void sayHello(Character arg)&#123;</span><br><span class="line">        System.out.println(&quot;hello Character&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">    public static void sayHello(char arg)&#123;</span><br><span class="line">        System.out.println(&quot;hello char&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">    public static void sayHello(char... arg)&#123;</span><br><span class="line">        System.out.println(&quot;hello char...&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">    public static void sayHello(Serializable arg)&#123;</span><br><span class="line">        System.out.println(&quot;hello Serializable&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    //测试</span><br><span class="line">    public static void main(String[] args)&#123;</span><br><span class="line">        char a = &apos;a&apos;;</span><br><span class="line">        sayHello(&apos;a&apos;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行下代码。<br>相信大家都知道输出结果是</p>
+<p>hello char</p>
+<p>因为a的静态类型是char,随意会匹配到sayHello(char arg);</p>
+<p>但是，如果我们把sayHello(char arg)这个方法注释掉，再运行下。</p>
+<p>结果输出:</p>
+<p>hello int</p>
+<p>实际上这个时候由于方法中并没有静态类型为char的方法，它就会自动进行类型转换。‘a’除了可以是字符，还可以代表数字97。因此会选择int类型的进行重载。</p>
+<p>我们继续注释掉sayHello(int arg)这个方法。结果会输出：</p>
+<p>hello long。</p>
+<p>这个时候’a’进行两次类型转换，即 ‘a’ -&gt; 97 -&gt; 97L。所以匹配到了sayHell(long arg)方法。</p>
+<p>实际上，’a’会按照char -&gt;int -&gt; long -&gt; float -&gt;double的顺序来转换。但并不会转换成byte或者short，因为从char到byte或者short的转换是不安全的。(为什么不安全？留给你思考下)</p>
+<p>继续注释掉long类型的方法。输出结果是：</p>
+<p>hello Character</p>
+<p>这时发生了一次自动装箱，’a’被封装为Character类型。</p>
+<p>继续注释掉Character类型的方法。输出</p>
+<p>hello Serializable</p>
+<p>为什么？</p>
+<p>一个字符或者数字与序列化有什么关系？实际上，这是因为Serializable是Character类实现的一个接口，当自动装箱之后发现找不到装箱类，但是找到了装箱类实现了的接口类型，所以在一次发生了自动转型。</p>
+<p>我们继续注释掉Serialiable，这个时候的输出结果是：</p>
+<p>hello Object</p>
+<p>这时是’a’装箱后转型为父类了，如果有多个父类，那将从继承关系中从下往上开始搜索，即越接近上层的优先级越低。</p>
+<p>继续注释掉Object方法，这时候输出：</p>
+<p>hello char…</p>
+<p>这个时候’a’被转换为了一个数组元素。</p>
+<p>从上面的例子中，我们可以看出，元素的静态类型并非就是一定是固定的，<strong>它在编译期根根据优先级原则来进行转换。其实这也是java语言实现重载的本质</strong></p>
+<h1 id="重写"><a href="#重写" class="headerlink" title="重写"></a>重写</h1><p>我们先来看一段代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">//定义几个类</span><br><span class="line">public abstract class Animal &#123;</span><br><span class="line">    public abstract void run();</span><br><span class="line">&#125;</span><br><span class="line">class Dog extends Animal&#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        System.out.println(&quot;小狗跑啊跑&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">class Lion extends Animal&#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        System.out.println(&quot;狮子跑啊跑&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">class Test4&#123;</span><br><span class="line">    //测试</span><br><span class="line">    public static void main(String[] args)&#123;</span><br><span class="line">        Animal dog = new Dog();</span><br><span class="line">        Animal lion = new Lion();;</span><br><span class="line">        dog.run();</span><br><span class="line">        lion.run();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<p>小狗跑啊跑<br>狮子跑啊跑</p>
+<p>我相信大家对这个结果是毫无疑问的。他们的静态类型是一样的，虚拟机是怎么知道要执行哪个方法呢？</p>
+<p>显然，虚拟机是根据<strong>实际类型</strong>来执行方法的。我们来看看main()方法中的一部分<strong>字节码</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">//声明：我只是挑出了一部分关键的字节码</span><br><span class="line">public static void (java.lang.String[]);</span><br><span class="line">    Code:</span><br><span class="line">    Stack=2, Locals=3, Args_size=1;//可以不用管这个</span><br><span class="line">    //下面的是关键</span><br><span class="line">    0：new #16;//即new Dog</span><br><span class="line">    3: dup</span><br><span class="line">    4: invokespecial #18; //调用初始化方法</span><br><span class="line">    7: astore_1</span><br><span class="line">    8: new #19 ;即new Lion</span><br><span class="line">    11: dup</span><br><span class="line">    12: invokespecial #21;//调用初始化方法</span><br><span class="line">    15: astore_2</span><br><span class="line">    </span><br><span class="line">    16: aload_1; 压入栈顶</span><br><span class="line">    17: invokevirtual #22;//调用run()方法</span><br><span class="line">    20: aload_2 ;压入栈顶</span><br><span class="line">    21: invokevirtual #22;//调用run()方法</span><br><span class="line">    24: return</span><br></pre></td></tr></table></figure>
+<p>解释一下这段字节码：</p>
+<p>0-15行的作用是创建Dog和Lion对象的内存空间，调用Dog,Lion类型的实例构造器。对应的代码:</p>
+<p>Animal dog = new Dog();</p>
+<p>Animal lion = new Lion();</p>
+<p>接下来的16-21句是关键部分，16、20两句分分别把刚刚创建的两个对象的引用压到栈顶。17和21是run()方法的调用指令。</p>
+<p>从指令可以看出，这两条方法的调用指令是完全一样的。可是最终执行的目标方法却并不相同。这是为啥？</p>
+<p>实际上：</p>
+<p>invokevirtual方法调用指令在执行的时候是这样的：</p>
+<ol>
+<li>找到栈顶的第一个元素所指向的对象的实际类型，记作C.</li>
+<li>如果类型C中找到run()这个方法，则进行访问权限的检验，如果可以访问，则方法这个方法的直接引用，查找结束；如果这个方法不可以访问，则抛出java.lang.IllegalAccessEror异常。</li>
+<li>如果在该对象中没有找到run()方法，则按照继承关系从下往上对C的各个父类进行第二步的搜索和检验。</li>
+<li>如果都没有找到，则抛出java.lang.AbstractMethodError异常。</li>
+</ol>
+<p>所以虽然指令的调用是相同的，但17行调用run方法时，此时栈顶存放的对象引用是Dog，21行则是Lion。</p>
+<p>这，就是java语言中方法重写的本质。</p>
+<p>本次的讲解到此结束，希望对你有所帮助。</p>
+<blockquote>
+<p>关注公我的众号：<strong>苦逼的码农</strong>，获取更多原创文章，后台回复”礼包”送你一份特别的资源大礼包。</p>
+</blockquote>
 
           
         
